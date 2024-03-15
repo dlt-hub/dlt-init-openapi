@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 TSchemaType = Literal["boolean", "object", "array", "number", "string", "integer"]
 
-MAX_RECURSION_DEPTH = 4
+MAX_RECURSION_DEPTH = 6
 
 
 @dataclass
@@ -24,7 +24,7 @@ class DataPropertyPath:
     """Describes a json path to a property"""
 
     path: Tuple[str, ...]
-    prop: "SchemaWrapper"
+    prop: "SchemaWrapper"  # TODO: Why is this not pointing to Property?
 
     @property
     def json_path(self) -> str:
@@ -61,6 +61,12 @@ class SchemaWrapper:
     all_of: List["SchemaWrapper"] = field(default_factory=list)
     any_of: List["SchemaWrapper"] = field(default_factory=list)
     one_of: List["SchemaWrapper"] = field(default_factory=list)
+
+    def __getitem__(self, item: str) -> "Property":
+        try:
+            return next(prop for prop in self.properties if prop.name == item)
+        except StopIteration:
+            raise KeyError(f"No property with name {item} in {self.name}")
 
     @property
     def has_properties(self) -> bool:
@@ -191,8 +197,7 @@ class SchemaWrapper:
                 nullable = True
                 schema_types.remove("null")
         else:
-            # TODO: Fallback on string. Should warn
-            schema_types = ["string"]
+            schema_types = []  # No types, they may be taken from all_of/one_of/any_of
         for obj in all_of + one_of + any_of:
             schema_types.extend(obj.types)
 
@@ -243,8 +248,9 @@ class Property:
     def is_object(self) -> bool:
         return self.schema.is_object
 
+    @property
     def type_hint(self) -> str:
-        return self.schema.type_hint
+        return DataType.from_property(self).type_hint
 
     @classmethod
     def from_reference_guarded(

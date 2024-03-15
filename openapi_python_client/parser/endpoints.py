@@ -13,6 +13,7 @@ from openapi_python_client.utils import PythonIdentifier
 from openapi_python_client.parser.responses import process_responses
 from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
+from openapi_python_client.parser.types import DataType
 
 TMethod = Literal["get", "post", "put", "patch"]
 TParamIn = Literal["query", "header", "path", "cookie"]
@@ -60,13 +61,15 @@ class Parameter:
     def nullable(self) -> bool:
         return self.schema.nullable
 
+    @property
+    def type_hint(self) -> str:
+        return DataType.from_schema(self.schema, required=self.required).type_hint
+
     def to_string(self) -> str:
-        type_hint = self.schema.type_hint
+        type_hint = self.type_hint
         default = self.default
         if default is None and not self.required:
             default = "UNSET"
-        if self.nullable:
-            type_hint = f"Optional[{type_hint}]"
 
         base_string = f"{self.python_name}: {type_hint}"
         if default is not None:
@@ -372,6 +375,11 @@ class EndpointCollection:
     def endpoints_by_id(self) -> Dict[str, Endpoint]:
         """Endpoints by operation ID"""
         return {ep.operation_id: ep for ep in self.endpoints}
+
+    @property
+    def endpoints_by_path(self) -> Dict[str, Endpoint]:
+        """Endpoints by path"""
+        return {ep.path: ep for ep in self.endpoints}
 
     @property
     def root_endpoints(self) -> List[Endpoint]:

@@ -1,4 +1,4 @@
-from parser.paths import table_names_from_paths
+from openapi_python_client.parser.paths import table_names_from_paths
 
 
 def test_table_names_from_paths_prefixed() -> None:

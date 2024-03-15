@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Literal, TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.models import SchemaWrapper
+    from openapi_python_client.parser.models import SchemaWrapper, Property
 
 
 TOpenApiType = Literal["boolean", "object", "array", "number", "string", "integer"]
@@ -12,9 +12,10 @@ TOpenApiType = Literal["boolean", "object", "array", "number", "string", "intege
 OATypeToPyType = {"boolean": "bool", "number": "float", "string": "str", "integer": "int"}
 
 
-def schema_to_type_hint(schema: SchemaWrapper) -> str:
+def schema_to_type_hint(schema: SchemaWrapper, required: bool = True) -> str:
     types = schema.types
-    tpl = "Optional[{}]" if schema.nullable else "{}"
+    nullable = schema.nullable or not required
+    tpl = "Optional[{}]" if nullable else "{}"
     union_types: Dict[str, None] = {}  # Using a dict as a faux ordered set (for deterministic client code)
     for s_type in types:
         py_type = OATypeToPyType.get(s_type)
@@ -45,5 +46,11 @@ class DataType:
     type_hint: str
 
     @classmethod
-    def from_schema(cls, schema: "SchemaWrapper") -> "DataType":
-        return cls(type_hint=schema_to_type_hint(schema))
+    def from_schema(cls, schema: "SchemaWrapper", required: bool = True) -> "DataType":
+        return cls(type_hint=schema_to_type_hint(schema, required=required))
+
+    @classmethod
+    def from_property(cls, prop: "Property") -> "DataType":
+        """Create a DataType from a Property.
+        Properties may be required or not, so we need to pass that information."""
+        return cls(type_hint=schema_to_type_hint(prop.schema, required=prop.required))

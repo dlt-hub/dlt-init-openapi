@@ -68,6 +68,12 @@ class SchemaWrapper:
         except StopIteration:
             raise KeyError(f"No property with name {item} in {self.name}")
 
+    def __contains__(self, item: str) -> bool:
+        return any(prop.name == item for prop in self.properties)
+
+    def __iter__(self) -> Iterable["str"]:
+        return (prop.name for prop in self.properties)
+
     @property
     def has_properties(self) -> bool:
         return bool(self.properties or self.any_of or self.all_of)
@@ -282,6 +288,21 @@ class SchemaCrawler:
         self.list_properties: Dict[Tuple[str, ...], SchemaWrapper] = {}
         self.all_properties: Dict[Tuple[str, ...], SchemaWrapper] = {}
         self.required_properties: List[Tuple[str, ...]] = []  # Paths of required properties
+
+    def __getitem__(self, item: Tuple[str, ...]) -> SchemaWrapper:
+        return self.all_properties[item]
+
+    def __contains__(self, item: Tuple[str, ...]) -> bool:
+        return item in self.all_properties
+
+    def __iter__(self) -> Iterable[Tuple[str, ...]]:
+        return iter(self.all_properties.keys())
+
+    def __len__(self) -> int:
+        return len(self.all_properties)
+
+    def __bool__(self) -> bool:
+        return bool(self.all_properties)
 
     def _is_optional(self, path: Tuple[str, ...]) -> bool:
         """Check whether the property itself or any of its parents is nullable"""

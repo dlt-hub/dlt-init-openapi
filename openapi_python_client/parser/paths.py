@@ -1,4 +1,6 @@
-from typing import Iterable, Dict
+from collections import defaultdict
+
+from typing import Iterable, Dict, Tuple, Sequence
 
 import os.path
 
@@ -28,3 +30,53 @@ def table_names_from_paths(paths: Iterable[str]) -> Dict[str, str]:
     split_paths = [[p for p in path.split("/") if p and not p.startswith("{")] for path in norm_paths]
 
     return {key: "_".join(value) for key, value in zip(paths, split_paths)}
+
+
+def find_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, ...]:
+    paths = list(paths)
+    if not paths:
+        return ()
+
+    common_prefix = list(paths[0])
+
+    for path in paths[1:]:
+        # Compare the current common prefix with the next path
+        # Truncate the common prefix or keep it as is
+        common_prefix = [
+            common_prefix[i] for i in range(min(len(common_prefix), len(path))) if common_prefix[i] == path[i]
+        ]
+
+    return tuple(common_prefix)
+
+
+def find_longest_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, ...]:
+    """Given a list of path tuples, return the longest prefix
+    that is common to all of them. This may be the root path which is simply
+    an empty tuple.
+
+    For example:
+    >>> find_longest_common_prefix([("a", "b", "c"), ("a", "b", "d"), ("a", "b"), ("a", "b", "c", "d")])
+    ('a', 'b')
+
+    >>> find_longest_common_prefix([("a", "b", "c"), ("k", "b"), ("a", "b"), ("a", "b", "c", "d")])
+    ()
+
+    >>> find_longest_common_prefix(("a",), ("a", "b"), ("a", "b", "c"), ("a", "b", "d"))
+    ("a", "b")
+    """
+    paths = set(paths)
+
+    if not paths:
+        return ()
+
+    prefix = find_common_prefix(paths)
+    while True:
+        # Do multiple passes to find the most nested prefix
+        paths.discard(prefix)
+        longer_prefix = find_common_prefix(paths)
+
+        if not longer_prefix or longer_prefix == prefix:
+            break
+        prefix = longer_prefix
+
+    return prefix

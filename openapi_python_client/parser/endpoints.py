@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Optional, Literal, cast, Union, List, Dict, Any, Iterable, Tuple, Set
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
 
 import openapi_schema_pydantic as osp
 
@@ -111,6 +112,7 @@ class Response:
     raw_schema: osp.Response
     content_schema: Optional[SchemaWrapper]
     list_property: Optional[DataPropertyPath] = None
+    payload: Optional[DataPropertyPath] = None
 
     @property
     def has_content(self) -> bool:
@@ -147,8 +149,23 @@ class Response:
             if (content_type == "application/json" or content_type.endswith("+json")) and media_type.media_type_schema:
                 content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
 
+        payload_schema: Optional[SchemaWrapper] = content_schema
+        payload: Optional[DataPropertyPath] = None
+        if payload_schema:
+            payload_path = []
+            while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
+                # Schema contains only a single object property. The payload is inside
+                prop_obj = payload_schema.properties[0]
+                payload_path.append(prop_obj.name)
+                payload_schema = prop_obj.schema
+            payload = DataPropertyPath(tuple(payload_path), payload_schema)
+
         return cls(
-            status_code=status_code, description=description, raw_schema=raw_schema, content_schema=content_schema
+            status_code=status_code,
+            description=description,
+            raw_schema=raw_schema,
+            content_schema=content_schema,
+            payload=payload,
         )
 
 
@@ -167,7 +184,8 @@ class Endpoint:
     python_name: PythonIdentifier
     credentials: Optional[CredentialsProperty]
 
-    parent: Optional["Endpoint"] = None
+    _parent: Optional["Endpoint"] = None
+    children: List["Endpoint"] = field(default_factory=list)
 
     summary: Optional[str] = None
     description: Optional[str] = None
@@ -191,6 +209,16 @@ class Endpoint:
     def to_docstring(self) -> str:
         lines = [self.path_summary, self.summary, self.path_description, self.description]
         return "\n".join(line for line in lines if line)
+
+    @property
+    def parent(self) -> Optional["Endpoint"]:
+        return self._parent
+
+    @parent.setter
+    def parent(self, value: Optional["Endpoint"]) -> None:
+        self._parent = value
+        if value:
+            value.children.append(self)
 
     @property
     def path_parameters(self) -> Dict[str, Parameter]:

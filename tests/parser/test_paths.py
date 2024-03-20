@@ -1,4 +1,6 @@
-from openapi_python_client.parser.paths import table_names_from_paths
+import pytest
+
+from openapi_python_client.parser.paths import table_names_from_paths, find_longest_common_prefix
 
 
 def test_table_names_from_paths_prefixed() -> None:
@@ -45,7 +47,27 @@ def test_table_names_from_paths_no_prefix() -> None:
     }
 
 
-if __name__ == "__main__":
-    import pytest
-
-    pytest.main(["tests/parser", "-k", "table_names_from_paths", "--pdb"])
+@pytest.mark.parametrize(
+    "paths, expected",
+    [
+        (
+            [("data", "[*]", "email", "[*]"), ("data", "[*]", "phone", "[*]")],
+            ("data", "[*]"),
+        ),
+        (
+            [("a", "b", "c"), ("a", "b", "d"), ("a", "b"), ("a", "b", "c", "d")],
+            ("a", "b"),
+        ),
+        (
+            [("a", "b", "c"), ("k", "b"), ("a", "b"), ("a", "b", "c", "d")],
+            (),
+        ),
+        (
+            [("a",), ("a", "b"), ("a", "b", "c"), ("a", "b", "d")],
+            ("a", "b"),
+        ),
+    ],
+)
+def test_find_longest_common_prefix(paths: list[tuple[str, ...]], expected: tuple[str, ...]) -> None:
+    result = find_longest_common_prefix(paths)
+    assert result == expected

@@ -211,6 +211,17 @@ class Endpoint:
         return "\n".join(line for line in lines if line)
 
     @property
+    def payload(self) -> Optional[DataPropertyPath]:
+        if not self.data_response:
+            return None
+        return self.data_response.payload
+
+    @property
+    def is_list(self) -> bool:
+        payload = self.payload
+        return payload.is_list if payload else False
+
+    @property
     def parent(self) -> Optional["Endpoint"]:
         return self._parent
 
@@ -285,30 +296,23 @@ class Endpoint:
 
     @property
     def table_name(self) -> str:
-        # TODO:
-        # 1. Media schema ref name
-        # 2. Media schema title property
-        # 3. Endpoint title or path component (e.g. first part of path that's not common with all other endpoints)
         name: Optional[str] = None
-        if self.data_response:
-            if self.list_property:
-                name = self.list_property.prop.name
-            else:
-                name = self.data_response.content_schema.name
+        if self.payload:
+            name = self.payload.name
         if name:
             return name
         return self.path_table_name
 
-    @property
-    def list_property(self) -> Optional[DataPropertyPath]:
-        if not self.data_response:
-            return None
-        return self.data_response.list_property
+    # @property
+    # def list_property(self) -> Optional[DataPropertyPath]:
+    #     if not self.data_response:
+    #         return None
+    #     return self.data_response.list_property
 
     @property
     def data_json_path(self) -> str:
-        list_prop = self.list_property
-        return list_prop.json_path if list_prop else ""
+        payload = self.payload
+        return payload.json_path if payload else ""
 
     @property
     def is_transformer(self) -> bool:
@@ -318,7 +322,7 @@ class Endpoint:
     def transformer(self) -> Optional[TransformerSetting]:
         if not self.parent:
             return None
-        if not self.parent.list_property:
+        if not self.parent.is_list:
             return None
         if not self.path_parameters:
             return None
@@ -326,7 +330,9 @@ class Endpoint:
             # TODO: Can't handle endpoints with more than 1 path param for now
             return None
         path_param = list(self.path_parameters.values())[-1]
-        list_object = self.parent.list_property.prop
+        payload = self.parent.payload
+        assert payload
+        list_object = payload.prop
         transformer_arg = list_object.crawled_properties.find_property_by_name(path_param.name, fallback="id")
         if not transformer_arg:
             return None
@@ -411,7 +417,7 @@ class EndpointCollection:
 
     @property
     def root_endpoints(self) -> List[Endpoint]:
-        return [e for e in self.all_endpoints_to_render if e.list_property and not e.path_parameters]
+        return [e for e in self.all_endpoints_to_render if e.is_list and not e.path_parameters]
 
     @property
     def transformer_endpoints(self) -> List[Endpoint]:
@@ -476,7 +482,7 @@ class EndpointCollection:
             for part in parts:
                 current_node = current_node[part]  # type: ignore[assignment]
             if parent_endpoint := current_node.get("<endpoint>"):
-                if cast(Endpoint, parent_endpoint).list_property:
+                if cast(Endpoint, parent_endpoint).is_list:
                     return cast(Endpoint, parent_endpoint)
         return None
 

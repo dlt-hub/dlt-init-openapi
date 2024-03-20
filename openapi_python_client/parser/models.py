@@ -1,5 +1,19 @@
 from __future__ import annotations
-from typing import Literal, TYPE_CHECKING, Optional, Union, List, TypeVar, Any, Iterable, Sequence, cast, Tuple, Dict
+from typing import (
+    Literal,
+    TYPE_CHECKING,
+    Optional,
+    Union,
+    List,
+    TypeVar,
+    Any,
+    Iterable,
+    Sequence,
+    cast,
+    Tuple,
+    Dict,
+    Iterator,
+)
 from itertools import chain
 from dataclasses import dataclass, field
 
@@ -27,8 +41,16 @@ class DataPropertyPath:
     prop: "SchemaWrapper"  # TODO: Why is this not pointing to Property?
 
     @property
+    def name(self) -> str:
+        return self.prop.name
+
+    @property
     def json_path(self) -> str:
         return ".".join(self.path)
+
+    @property
+    def is_list(self) -> bool:
+        return self.prop.is_list
 
     def __str__(self) -> str:
         return f"DataPropertyPath {self.path}: {self.prop.name}"
@@ -303,6 +325,14 @@ class SchemaCrawler:
 
     def __bool__(self) -> bool:
         return bool(self.all_properties)
+
+    def paths_with_types(self) -> Iterator[tuple[tuple[str, ...], tuple[TSchemaType, ...]]]:
+        for path, schema in self.all_properties.items():
+            # if schema.is_list and schema.array_item:
+            #     # Include the array item type for full comparison
+            #     yield path, tuple(schema.types + schema.array_item.types])
+            # else:
+            yield path, tuple(schema.types)
 
     def _is_optional(self, path: Tuple[str, ...]) -> bool:
         """Check whether the property itself or any of its parents is nullable"""

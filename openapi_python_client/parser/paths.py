@@ -40,11 +40,22 @@ def find_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, ...]:
     common_prefix = list(paths[0])
 
     for path in paths[1:]:
-        # Compare the current common prefix with the next path
-        # Truncate the common prefix or keep it as is
-        common_prefix = [
-            common_prefix[i] for i in range(min(len(common_prefix), len(path))) if common_prefix[i] == path[i]
-        ]
+        # Initialize a new prefix list for comparison results
+        new_prefix = []
+        for i in range(min(len(common_prefix), len(path))):
+            if common_prefix[i] == path[i]:
+                new_prefix.append(common_prefix[i])
+            else:
+                # As soon as a mismatch is found, break the loop
+                break
+        common_prefix = new_prefix
+
+    # for path in paths[1:]:
+    #     # Compare the current common prefix with the next path
+    #     # Truncate the common prefix or keep it as is
+    #     common_prefix = [
+    #         common_prefix[i] for i in range(min(len(common_prefix), len(path))) if common_prefix[i] == path[i]
+    #     ]
 
     return tuple(common_prefix)
 
@@ -63,6 +74,9 @@ def find_longest_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, .
 
     >>> find_longest_common_prefix(("a",), ("a", "b"), ("a", "b", "c"), ("a", "b", "d"))
     ("a", "b")
+
+    >>> find_longest_common_prefix({('data', '[*]', 'email', '[*]'), ('data', '[*]', 'phone', '[*]')})
+    ("data", "[*]")
     """
     paths = set(paths)
 

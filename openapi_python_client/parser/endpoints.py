@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Optional, Literal, cast, Union, List, Dict, Any, Iterable, Tuple, Set
 
 from dataclasses import dataclass, field
+from itertools import groupby
 
 
 import openapi_schema_pydantic as osp
@@ -395,15 +396,19 @@ class EndpointCollection:
     @property
     def all_endpoints_to_render(self) -> List[Endpoint]:
         # return [e for e in self.endpoints if e.has_content]
-        return sorted(
+        # Sum of endpoint ranks by table name
+        to_render = sorted(
             [
                 e
                 for e in self.endpoints
                 if (not self.names_to_render or e.python_name in self.names_to_render) and e.has_content
             ],
-            key=lambda e: e.rank,
-            reverse=True,
+            key=lambda e: e.table_name,
         )
+        groups = groupby(to_render, key=lambda e: e.table_name)
+        groups = [(name, list(group)) for name, group in groups]
+        groups = sorted(groups, key=lambda g: max(e.rank for e in g[1]), reverse=True)
+        return [e for _, group in groups for e in group]
 
     @property
     def endpoints_by_id(self) -> Dict[str, Endpoint]:

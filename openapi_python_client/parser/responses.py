@@ -89,8 +89,13 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
         # Payload path is the deepest nested parent of all remaining props
         payload_path = find_longest_common_prefix([path for path, _ in payload_props])
 
+    payload_path = root_path + payload_path
+    while payload_path and payload_path[-1] == "[*]":
+        # We want the path to point to the list property, not the list item
+        # so that payload is correctly detected as list
+        payload_path = payload_path[:-1]
     payload_schema = schema.crawled_properties[payload_path]
-    ret = DataPropertyPath(root_path + payload_path, payload_schema)
+    ret = DataPropertyPath(payload_path, payload_schema)
     print(endpoint.path)
     print(ret.path)
     print(ret.prop.name)

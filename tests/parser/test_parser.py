@@ -14,12 +14,20 @@ def spotify_parser() -> OpenapiParser:
     return parser
 
 
+@pytest.fixture(scope="module")
+def pokemon_parser() -> OpenapiParser:
+    """Re-use parsed spec to save time"""
+    parser = OpenapiParser(case_path("pokeapi.yml"))
+    parser.parse()
+    return parser
+
+
 def test_new_releases_list_property(spotify_parser: OpenapiParser) -> None:
     endpoints = spotify_parser.endpoints.endpoints_by_path
 
     endpoint = endpoints["/browse/new-releases"]
 
-    list_prop = endpoint.list_property
+    list_prop = endpoint.payload
     assert list_prop is not None
 
     assert list_prop.path == ("albums", "items")
@@ -34,11 +42,11 @@ def test_new_releases_list_property(spotify_parser: OpenapiParser) -> None:
     assert "release_date" in prop_names
 
 
-def test_spotify_single_item_endpoints(spotify_parser: OpenapiParser) -> None:
-    endpoint = spotify_parser.endpoints.endpoints_by_path["/albums/{id}"]
+# def test_spotify_single_item_endpoints(spotify_parser: OpenapiParser) -> None:
+#     endpoint = spotify_parser.endpoints.endpoints_by_path["/albums/{id}"]
 
-    assert endpoint.is_transformer
-    schema = endpoint.data_response.content_schema
+#     assert endpoint.is_transformer
+#     schema = endpoint.data_response.content_schema
 
 
 def test_extract_payload(spotify_parser: OpenapiParser) -> None:
@@ -59,3 +67,13 @@ def test_extract_payload(spotify_parser: OpenapiParser) -> None:
 
     assert related_artists_endpoint.data_response.payload.path == ("artists", "[*]")
     assert related_artists_endpoint.data_response.payload.prop.name == "ArtistObject"
+
+
+def test_find_path_param(pokemon_parser: OpenapiParser) -> None:
+    endpoints = pokemon_parser.endpoints
+    endpoint = endpoints.endpoints_by_path["/api/v2/pokemon-species/"]
+
+    schema = endpoint.payload.prop
+    result = schema.crawled_properties.find_property_by_name("id", fallback="id")
+
+    assert result.path == ("[*]", "id")

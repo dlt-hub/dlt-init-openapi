@@ -42,6 +42,8 @@ class DataPropertyPath:
 
     @property
     def name(self) -> str:
+        if self.is_list and self.prop.array_item:
+            return self.prop.array_item.name
         return self.prop.name
 
     @property
@@ -359,18 +361,34 @@ class SchemaCrawler:
         """
         named = []
         fallbacks = []
+        named_optional = []
+        fallbacks_optional = []
         for path, prop in self.all_properties.items():
-            if name in path and not self._is_optional(path):
-                named.append((path, prop))
-            if fallback and fallback in path and not self._is_optional(path):
-                fallbacks.append((path, prop))
+            if name in path:
+                if self._is_optional(path):
+                    named_optional.append((path, prop))
+                else:
+                    named.append((path, prop))
+            if fallback and fallback in path:
+                if self._is_optional(path):
+                    fallbacks_optional.append((path, prop))
+                else:
+                    fallbacks.append((path, prop))
         # Prefer the least nested path
         named.sort(key=lambda item: len(item[0]))
         fallbacks.sort(key=lambda item: len(item[0]))
+        named_optional.sort(key=lambda item: len(item[0]))
+        fallbacks_optional.sort(key=lambda item: len(item[0]))
+        # Prefer required property and required fallback over optional properties
+        # If not required props found, assume the spec is wrong and optional properties are required in practice
         if named:
             return DataPropertyPath(*named[0])
         elif fallbacks:
             return DataPropertyPath(*fallbacks[0])
+        elif named_optional:
+            return DataPropertyPath(*named_optional[0])
+        elif fallbacks_optional:
+            return DataPropertyPath(*fallbacks_optional[0])
         return None
 
     def crawl(self, schema: SchemaWrapper, path: Tuple[str, ...] = ()) -> None:

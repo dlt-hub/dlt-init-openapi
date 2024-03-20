@@ -54,6 +54,12 @@ class DataPropertyPath:
     def is_list(self) -> bool:
         return self.prop.is_list
 
+    @property
+    def schema(self) -> "SchemaWrapper":
+        if self.is_list and self.prop.array_item:
+            return self.prop.array_item
+        return self.prop
+
     def __str__(self) -> str:
         return f"DataPropertyPath {self.path}: {self.prop.name}"
 

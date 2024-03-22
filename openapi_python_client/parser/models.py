@@ -87,6 +87,9 @@ class SchemaWrapper:
     crawled_properties: SchemaCrawler
     hash_key: str
 
+    type_format: Optional[str] = None
+    """Format (e.g. datetime, uuid) as an extension of the data type"""
+
     array_item: Optional["SchemaWrapper"] = None
     all_of: List["SchemaWrapper"] = field(default_factory=list)
     any_of: List["SchemaWrapper"] = field(default_factory=list)
@@ -258,6 +261,7 @@ class SchemaWrapper:
             default=default,
             crawled_properties=crawler,
             hash_key=digest128(schema.json(sort_keys=True)),
+            type_format=schema.schema_format,
         )
         crawler.crawl(result)
         return result
@@ -334,15 +338,21 @@ class SchemaCrawler:
     def __bool__(self) -> bool:
         return bool(self.all_properties)
 
-    def paths_with_types(self) -> Iterator[tuple[tuple[str, ...], tuple[TSchemaType, ...]]]:
+    def items(self) -> Iterable[Tuple[Tuple[str, ...], SchemaWrapper]]:
+        return self.all_properties.items()
+
+    def paths_with_types(self) -> Iterator[tuple[tuple[str, ...], tuple[tuple[TSchemaType, ...], Optional[str]]]]:
+        """
+        yields a tuple of (path, ( (types, ...), "format")) for each property in the schema
+        """
         for path, schema in self.all_properties.items():
             # if schema.is_list and schema.array_item:
             #     # Include the array item type for full comparison
             #     yield path, tuple(schema.types + schema.array_item.types])
             # else:
-            yield path, tuple(schema.types)
+            yield path, (tuple(schema.types), schema.type_format)
 
-    def _is_optional(self, path: Tuple[str, ...]) -> bool:
+    def is_optional(self, path: Tuple[str, ...]) -> bool:
         """Check whether the property itself or any of its parents is nullable"""
         check_path = list(path)
         while check_path:

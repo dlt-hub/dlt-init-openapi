@@ -88,8 +88,8 @@ credentials: {{ endpoint.credentials.type_hint }} = dlt.secrets.value,
 {% endif %}
 data_json_path: Optional[str]="{{endpoint.data_json_path}}",
 {% if endpoint.transformer %}
-parent_property_path: str="{{ endpoint.transformer.parent_property.json_path }}",
-path_parameter_name: str="{{ endpoint.transformer.path_parameter.name }}",
+{# Render the dict of path params #}
+path_parameter_paths={{ endpoint.transformer.path_params_mapping }}
 {% endif %}
 {% endmacro %}
 

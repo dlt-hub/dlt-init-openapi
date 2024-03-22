@@ -16,94 +16,23 @@ from openapi_python_client.parser.responses import process_responses
 from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.types import DataType
+from openapi_python_client.parser.parameters import Parameter
 
 TMethod = Literal["get", "post", "put", "patch"]
-TParamIn = Literal["query", "header", "path", "cookie"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
 
 
 @dataclass
 class TransformerSetting:
     parent_endpoint: Endpoint
-    parent_property: DataPropertyPath
-    path_parameter: Parameter
-
-
-@dataclass
-class Parameter:
-    name: str
-    description: Optional[str]
-    schema: SchemaWrapper
-    raw_schema: osp.Parameter
-    required: bool
-    location: TParamIn
-    python_name: PythonIdentifier
-    explode: bool
-    style: Optional[str] = None
-
-    def get_imports(self) -> List[str]:
-        imports = []
-        if self.schema.is_union:
-            imports.append("from typing import Union")
-        return imports
+    # parent_property: DataPropertyPath
+    # path_parameter: Parameter
+    path_parameters: List[Parameter]
+    parent_properties: List[DataPropertyPath]
 
     @property
-    def types(self) -> List[TSchemaType]:
-        return self.schema.types
-
-    @property
-    def template(self) -> str:
-        return self.schema.property_template
-
-    @property
-    def default(self) -> Optional[Any]:
-        return self.schema.default
-
-    @property
-    def nullable(self) -> bool:
-        return self.schema.nullable
-
-    @property
-    def type_hint(self) -> str:
-        return DataType.from_schema(self.schema, required=self.required).type_hint
-
-    def to_string(self) -> str:
-        type_hint = self.type_hint
-        default = self.default
-        if default is None and not self.required:
-            default = "UNSET"
-
-        base_string = f"{self.python_name}: {type_hint}"
-        if default is not None:
-            base_string += f" = {default}"
-        return base_string
-
-    def to_docstring(self) -> str:
-        doc = f"{self.python_name}: {self.description or ''}"
-        if self.default:
-            doc += f" Default: {self.default}."
-        # TODO: Example
-        return doc
-
-    @classmethod
-    def from_reference(cls, param_ref: Union[osp.Reference, osp.Parameter], context: OpenapiContext) -> "Parameter":
-        osp_param = context.parameter_from_reference(param_ref)
-        schema = SchemaWrapper.from_reference(osp_param.param_schema, context)
-        description = param_ref.description or osp_param.description or schema.description
-        location = osp_param.param_in
-        required = osp_param.required
-
-        return cls(
-            name=osp_param.name,
-            description=description,
-            raw_schema=osp_param,
-            schema=schema,
-            location=cast(TParamIn, location),
-            required=required,
-            python_name=PythonIdentifier(osp_param.name, prefix=context.config.field_prefix),
-            explode=osp_param.explode or False,
-            style=osp_param.style,
-        )
+    def path_params_mapping(self) -> Dict[str, str]:
+        return {param.name: prop.json_path for param, prop in zip(self.path_parameters, self.parent_properties)}
 
 
 @dataclass
@@ -323,23 +252,48 @@ class Endpoint:
     def transformer(self) -> Optional[TransformerSetting]:
         if not self.parent:
             return None
-        if not self.parent.is_list:
+        # if not self.parent.is_list:
+        #     return None
+        path_parameters = self.path_parameters
+        if not path_parameters:
             return None
-        if not self.path_parameters:
-            return None
-        if len(self.path_parameters) > 1:
-            # TODO: Can't handle endpoints with more than 1 path param for now
-            return None
-        path_param = list(self.path_parameters.values())[-1]
-        payload = self.parent.payload
-        assert payload
-        list_object = payload.prop
-        transformer_arg = list_object.crawled_properties.find_property_by_name(path_param.name, fallback="id")
-        if not transformer_arg:
-            return None
+        # # Are we nested more than 1 level?
+        # # Must ensure all path params are resolved in parent transformers
+        # if len(self.path_parameters) > 1:
+        #     for i in range(len(self.path_parameters) - 1):
+        #         parent = self.parent
+        #         if not parent.is_transformer:
+        #             return None
+
+        # Must resolve all path parameters from the parent response
+        # TODO: Consider multiple levels of transformers.
+        # This would need to forward resolved ancestor params through meta arg
+        parent_payload = self.parent.payload
+        assert parent_payload
+        resolved_props = []
+        for param in path_parameters.values():
+            prop = param.find_input_property(parent_payload.schema, fallback="id")
+            if not prop:
+                return None
+            resolved_props.append(prop)
+
         return TransformerSetting(
-            parent_endpoint=self.parent, parent_property=transformer_arg, path_parameter=path_param
+            parent_endpoint=self.parent,
+            parent_properties=resolved_props,
+            path_parameters=list(path_parameters.values()),
         )
+
+        # path_param = list(self.path_parameters.values())[-1]
+        # payload = self.parent.payload
+        # assert payload
+        # list_object = payload.prop
+        # # transformer_arg = list_object.crawled_properties.find_property_by_name(path_param.name, fallback="id")
+        # transformer_arg = path_param.find_input_property(list_object, fallback="id")
+        # if not transformer_arg:
+        #     return None
+        # return TransformerSetting(
+        #     parent_endpoint=self.parent, parent_property=transformer_arg, path_parameter=path_param
+        # )
 
     @classmethod
     def from_operation(

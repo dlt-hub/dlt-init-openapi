@@ -50,6 +50,10 @@ class Parameter:
         return self.schema.nullable
 
     @property
+    def maximum(self) -> Optional[float]:
+        return self.schema.maximum
+
+    @property
     def type_hint(self) -> str:
         return DataType.from_schema(self.schema, required=self.required).type_hint
 

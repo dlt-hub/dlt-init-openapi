@@ -2,7 +2,8 @@
 from typing import List
 
 from dlt.extract.source import DltResource
-from dlt.sources.helpers.rest_client import RestClient
+from dlt.sources.helpers.rest_client import RESTClient
+from dlt.common.jsonpath import TJsonPath
 
 {% for import_string  in imports %}
 {{ import_string }}

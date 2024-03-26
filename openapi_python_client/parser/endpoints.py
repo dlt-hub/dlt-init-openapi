@@ -125,6 +125,8 @@ class Endpoint:
     path_description: Optional[str] = None
     """Description applying to all methods of the path"""
 
+    pagination: Optional[Pagination] = None
+
     rank: int = 0
 
     def get_imports(self) -> List[str]:
@@ -188,6 +190,18 @@ class Endpoint:
     @property
     def optional_parameters(self) -> Dict[str, Parameter]:
         return {name: p for name, p in self.parameters.items() if not p.required}
+
+    def resource_parameters(
+        self, required: bool = True, optional: bool = True, pagination: bool = False
+    ) -> Dict[str, Parameter]:
+        result = {}
+        if required:
+            result.update(self.required_parameters)
+        if optional:
+            result.update(self.optional_parameters)
+        if not pagination and self.pagination:
+            result = {name: p for name, p in result.items() if p.name not in self.pagination.param_names}
+        return result
 
     @property
     def request_args_meta(self) -> Dict[str, Dict[str, Dict[str, str]]]:
@@ -324,7 +338,7 @@ class Endpoint:
 
         credentials = CredentialsProperty.from_requirements(operation.security, context) if operation.security else None
 
-        return cls(
+        endpoint = cls(
             method=method,
             path=path,
             raw_schema=operation,
@@ -339,6 +353,8 @@ class Endpoint:
             path_description=path_description,
             credentials=credentials,
         )
+        endpoint.pagination = Pagination.from_endpoint(endpoint)
+        return endpoint
 
 
 @dataclass

@@ -53,35 +53,16 @@ params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 {% endmacro %}
 
 
-{# The all the kwargs passed into an endpoint (and variants thereof)) #}
-{% macro arguments(endpoint) %}
-rest_client: RESTClient,
-{% for parameter in endpoint.required_parameters.values() %}
-{{ parameter.to_string() }},
-{% endfor %}
-{% for parameter in endpoint.optional_parameters.values() %}
-{{ parameter.to_string() }},
-{% endfor %}
-{# Security #}
-{% if endpoint.credentials_parameter %}
-{{ endpoint.credentials_parameter.to_string('dlt.secrets.value') }},
-{% endif %}
-{% endmacro %}
-
 {% macro resource_arguments(endpoint) %}
 {% if endpoint.transformer %}
 data: Any,
 rest_client: RESTClient,
 {% else %}
 rest_client: RESTClient,
-{% for parameter in endpoint.required_parameters.values() %}
+{% for parameter in endpoint.resource_parameters().values() %}
 {{ parameter.to_string() }},
 {% endfor %}
 {% endif %}
-{% for parameter in endpoint.optional_parameters.values() %}
-{{ parameter.to_string() }},
-{% endfor %}
-base_url: str = dlt.config.value,
 {# Security #}
 {% if endpoint.credentials %}
 credentials: {{ endpoint.credentials.type_hint }} = dlt.secrets.value,
@@ -95,19 +76,16 @@ path_parameter_paths: Dict[str, TJsonPath]={{ endpoint.transformer.path_params_m
 
 {# Just lists all kwargs to endpoints as name=name for passing to other functions #}
 {% macro kwargs(endpoint) %}
-{% for parameter in endpoint.required_parameters.values() %}
-{{ parameter.python_name }}={{ parameter.python_name }},    
+{% for parameter in endpoint.resource_parameters().values() %}
+{{ parameter.python_name }}={{ parameter.python_name }},
 {% endfor %}
-{% for parameter in endpoint.optional_parameters.values() %}
-{{ parameter.python_name }}={{ parameter.python_name }},    
-{% endfor %}    
 {% endmacro %}
 
 {% macro transformer_kwargs(endpoint) %}
 {#{% for parameter in endpoint.required_parameters.values() %} #}
 {#{{ parameter.python_name }}={{ parameter.python_name }},    #]
 {#{% endfor %} #}
-{% for parameter in endpoint.optional_parameters.values() %}
+{% for parameter in endpoint.resource_parameters(required=False).values() %}
 {{ parameter.python_name }}={{ parameter.python_name }},    
 {% endfor %}
 {% endmacro %}

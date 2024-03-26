@@ -16,8 +16,13 @@ RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)")
 @dataclass
 class Pagination:
     pagination_params: List["Parameter"] = field(default_factory=list)
-    paginator_class: Optional[str] = None
-    paginator_config: Optional[Dict[str, str]] = None
+    paginator_class: str = None
+    paginator_config: Dict[str, str] = None
+
+    @property
+    def param_names(self) -> List[str]:
+        """All params used for pagination"""
+        return [param.name for param in self.pagination_params]
 
     @classmethod
     def from_endpoint(cls, endpoint: "Endpoint") -> "Pagination":
@@ -79,11 +84,13 @@ class Pagination:
         if offset_props:
             offset_props.sort(key=lambda x: len(x[1].path))
             offset_param, offset_prop = offset_props[0]
+        elif offset_params:  # No matching property found in response, fallback to use the first param detected
+            offset_param = offset_params[0]
         for limit_param in limit_params:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
-        if offset_param and offset_prop and limit_param and limit_initial:
+        if offset_param and limit_param and limit_initial:
             pagination_config = {
                 "initial_limit": limit_initial,
                 "offset_param": offset_param.name,
@@ -96,4 +103,4 @@ class Pagination:
             )
 
         # No pagination detected
-        return cls()
+        return None

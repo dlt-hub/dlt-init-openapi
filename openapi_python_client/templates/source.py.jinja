@@ -2,7 +2,7 @@
 from typing import List
 
 from dlt.extract.source import DltResource
-from .rest_api.client import RESTClient
+from dlt.sources.helpers.rest_client import RestClient
 
 {% for import_string  in imports %}
 {{ import_string }}

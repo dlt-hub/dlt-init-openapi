@@ -51,6 +51,7 @@ def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -
             {% if endpoint.credentials %}
             auth=credentials,
             {% endif %}
+            data_selector=data_json_path,
         )
     {% else %}
     params_dict: Dict[str, Any] = dict({{ kwargs(endpoint) }})
@@ -63,6 +64,7 @@ def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -
         {% if endpoint.credentials %}
         auth=credentials,
         {% endif %}
+        data_selector=data_json_path,
     )
     {% endif %}
 {% endmacro %}

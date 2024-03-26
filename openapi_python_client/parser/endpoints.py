@@ -256,7 +256,7 @@ class Endpoint:
     @property
     def data_json_path(self) -> str:
         payload = self.payload
-        return payload.json_path if payload else ""
+        return (payload.json_path if payload else "") or "$"
 
     @property
     def is_transformer(self) -> bool:

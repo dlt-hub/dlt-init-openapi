@@ -32,7 +32,7 @@ python-dateutil = "^2.8.1"
 httpx = ">=0.15.4,<0.25.0"
 autoflake = "^1.4 || ^2.0.0"
 PyYAML = "^6.0"
-dlt = {git = "https://github.com/dlt-hub/dlt.git", rev = "b8fb7fd2", extras = ["duckdb"]}
+dlt = {git = "https://github.com/dlt-hub/dlt.git", branch="sthor/remove-rest-client-cyclic-import", extras = ["duckdb"]}
 requests = "^2.30.0"
 questionary = "^1.10.0"
 enlighten = "^1.11.2"

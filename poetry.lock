@@ -534,8 +534,8 @@ weaviate = ["weaviate-client (>=3.22)"]
 [package.source]
 type = "git"
 url = "https://github.com/dlt-hub/dlt.git"
-reference = "b8fb7fd2"
-resolved_reference = "b8fb7fd23e7ed81981c41eb1eb89e68d4cdb757c"
+reference = "sthor/remove-rest-client-cyclic-import"
+resolved_reference = "09e306ac3e071403a0d7365c741b30109876ee2b"
 
 [[package]]
 name = "dparse"
@@ -2141,4 +2141,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1,<3.13"
-content-hash = "45f32def51315920572396ac57fdec70976153cd28bcde5f462609f7938446e7"
+content-hash = "2ea49a42c60916ca621a5dc118bdca8be787fd7c5ce6ae0ce305565abaeceaad"

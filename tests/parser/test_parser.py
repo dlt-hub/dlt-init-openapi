@@ -2,6 +2,8 @@ import pytest
 
 from openapi_python_client.parser.openapi_parser import OpenapiParser
 from openapi_schema_pydantic import Reference
+from openapi_python_client.parser.models import SchemaWrapper
+import openapi_schema_pydantic as osp
 
 from tests.cases import case_path
 
@@ -75,9 +77,38 @@ def test_extract_payload(spotify_parser: OpenapiParser) -> None:
 
 def test_find_path_param(pokemon_parser: OpenapiParser) -> None:
     endpoints = pokemon_parser.endpoints
-    endpoint = endpoints.endpoints_by_path["/api/v2/pokemon-species/"]
+    parent_endpoint = endpoints.endpoints_by_path["/api/v2/pokemon-species/"]
+    endpoint = endpoints.endpoints_by_path["/api/v2/pokemon-species/{id}/"]
 
-    schema = endpoint.payload.prop
-    result = schema.crawled_properties.find_property_by_name("id", fallback="id")
+    schema = parent_endpoint.payload.prop
+    param = endpoint.parameters["id"]
+    result = param.find_input_property(schema, fallback="id")
 
     assert result.path == ("[*]", "id")
+
+
+def test_schema_parse_types(pokemon_parser: OpenapiParser) -> None:
+    osp_schema = osp.Schema.parse_obj(
+        {
+            "anyOf": [
+                {"type": "string"},
+                {"type": "null"},
+            ],
+            "title": "Pathname",
+        }
+    )
+
+    parsed = SchemaWrapper.from_reference(osp_schema, context=pokemon_parser.context)
+
+    assert parsed.nullable is True
+    assert parsed.types == ["string"]
+
+
+def test_resource_arguments(pokemon_parser: OpenapiParser) -> None:
+    path = "/api/v2/pokemon-species/{id}/"
+    endpoint = pokemon_parser.endpoints.endpoints_by_path[path]
+
+    pos_args = endpoint.positional_arguments()
+
+    # Does not include the id arg from transformer parent
+    assert pos_args == []

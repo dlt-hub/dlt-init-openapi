@@ -34,7 +34,7 @@ def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -
     params_dict: Dict[str, Any] = dict(
         {{ transformer_kwargs(endpoint) }}
     )
-    for child_kwargs in extract_iterate_parent(data, path_parameter_paths, "{{ endpoint.path }}"):
+    for child_kwargs in extract_iterate_parent(data, path_parameter_paths, endpoint_url):
         formatted_url = build_formatted_url(
             endpoint_url,
             dict(params_dict, **child_kwargs),

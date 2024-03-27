@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import Endpoint, Parameter
 
 RE_OFFSET_PARAM = re.compile(r"(?i)(page|start|offset)")
-RE_LIMIT_PARAM = re.compile(r"(?i)(limit|per_page|page_size)")
+RE_LIMIT_PARAM = re.compile(r"(?i)(limit|per_page|page_size|size)")
 RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)")
 
 
@@ -25,10 +25,10 @@ class Pagination:
         return [param.name for param in self.pagination_params]
 
     @classmethod
-    def from_endpoint(cls, endpoint: "Endpoint") -> "Pagination":
+    def from_endpoint(cls, endpoint: "Endpoint") -> Optional["Pagination"]:
         resp = endpoint.data_response
         if not resp or not resp.content_schema:
-            raise ValueError(f"Endpoint {endpoint.path} does not have a content response")
+            return None
 
         offset_params: List["Parameter"] = []
         cursor_params: List["Parameter"] = []

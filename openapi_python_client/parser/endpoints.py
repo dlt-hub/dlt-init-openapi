@@ -183,25 +183,19 @@ class Endpoint:
     def list_all_parameters(self) -> List[Parameter]:
         return list(self.parameters.values())
 
-    @property
-    def required_parameters(self) -> Dict[str, Parameter]:
-        return {name: p for name, p in self.parameters.items() if p.required}
+    def positional_arguments(self) -> List[Parameter]:
+        include_path_params = not self.transformer
+        ret = (p for p in self.parameters.values() if p.required and p.default is None)
+        if not include_path_params:
+            ret = (p for p in ret if p.location != "path")
+        return list(ret)
 
-    @property
-    def optional_parameters(self) -> Dict[str, Parameter]:
-        return {name: p for name, p in self.parameters.items() if not p.required}
+    def keyword_arguments(self) -> List[Parameter]:
+        ret = (p for p in self.parameters.values() if p.default is not None)
+        return list(ret)
 
-    def resource_parameters(
-        self, required: bool = True, optional: bool = True, pagination: bool = False
-    ) -> Dict[str, Parameter]:
-        result = {}
-        if required:
-            result.update(self.required_parameters)
-        if optional:
-            result.update(self.optional_parameters)
-        if not pagination and self.pagination:
-            result = {name: p for name, p in result.items() if p.name not in self.pagination.param_names}
-        return result
+    def all_arguments(self) -> List[Parameter]:
+        return self.positional_arguments() + self.keyword_arguments()
 
     @property
     def request_args_meta(self) -> Dict[str, Dict[str, Dict[str, str]]]:
@@ -258,12 +252,13 @@ class Endpoint:
         payload = self.payload
         return (payload.json_path if payload else "") or "$"
 
-    @property
-    def is_transformer(self) -> bool:
-        return not not self.required_parameters
+    # @property
+    # def is_transformer(self) -> bool:
+    #     return not not self.path_parameters
 
     @property
     def transformer(self) -> Optional[TransformerSetting]:
+        # TODO: compute once when generating endpoints
         if not self.parent:
             return None
         # if not self.parent.is_list:

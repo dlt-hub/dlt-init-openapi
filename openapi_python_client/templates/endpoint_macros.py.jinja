@@ -53,16 +53,16 @@ params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 {% endmacro %}
 
 
+{# Resource function signature #}
 {% macro resource_arguments(endpoint) %}
 {% if endpoint.transformer %}
 data: Any,
+{% endif %}
 rest_client: RESTClient,
-{% else %}
-rest_client: RESTClient,
-{% for parameter in endpoint.resource_parameters().values() %}
+{# Positional arguments #}
+{% for parameter in endpoint.positional_arguments() %}
 {{ parameter.to_string() }},
 {% endfor %}
-{% endif %}
 {# Security #}
 {% if endpoint.credentials %}
 credentials: {{ endpoint.credentials.type_hint }} = dlt.secrets.value,
@@ -70,13 +70,17 @@ credentials: {{ endpoint.credentials.type_hint }} = dlt.secrets.value,
 data_json_path: Optional[str]="{{endpoint.data_json_path}}",
 {% if endpoint.transformer %}
 {# Render the dict of path params #}
-path_parameter_paths: Dict[str, TJsonPath]={{ endpoint.transformer.path_params_mapping }}
+path_parameter_paths: Dict[str, TJsonPath]={{ endpoint.transformer.path_params_mapping }},
 {% endif %}
+{# Keyword arguments #}
+{% for parameter in endpoint.keyword_arguments() %}
+{{ parameter.to_string() }},
+{% endfor %}
 {% endmacro %}
 
 {# Just lists all kwargs to endpoints as name=name for passing to other functions #}
 {% macro kwargs(endpoint) %}
-{% for parameter in endpoint.resource_parameters().values() %}
+{% for parameter in endpoint.all_arguments() %}
 {{ parameter.python_name }}={{ parameter.python_name }},
 {% endfor %}
 {% endmacro %}
@@ -85,11 +89,13 @@ path_parameter_paths: Dict[str, TJsonPath]={{ endpoint.transformer.path_params_m
 {#{% for parameter in endpoint.required_parameters.values() %} #}
 {#{{ parameter.python_name }}={{ parameter.python_name }},    #]
 {#{% endfor %} #}
-{% for parameter in endpoint.resource_parameters(required=False).values() %}
+{% for parameter in endpoint.all_arguments() %}
 {{ parameter.python_name }}={{ parameter.python_name }},    
 {% endfor %}
 {% endmacro %}
 
+
+{# Docstring #}    
 {% macro docstring_content(endpoint, return_string, is_detailed) %}
 {% if endpoint.summary %}{{ endpoint.summary | wordwrap(100)}}
 
@@ -105,7 +111,7 @@ Parent endpoint: {{ endpoint.parent.path }}
 {# Leave extra space so that Args or Returns isn't at the top #}
 
 {% endif %}
-{% set all_parameters = endpoint.list_all_parameters %}
+{% set all_parameters = endpoint.all_arguments() %}
 {% if all_parameters %}
 Args:
     {% for parameter in all_parameters %}

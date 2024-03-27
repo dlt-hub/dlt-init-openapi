@@ -235,13 +235,15 @@ class SchemaWrapper:
                 schema_types = [schema.type]
             else:
                 schema_types = schema.type.copy()
-            if "null" in schema_types:
-                nullable = True
-                schema_types.remove("null")
         else:
             schema_types = []  # No types, they may be taken from all_of/one_of/any_of
         for obj in all_of + one_of + any_of:
             schema_types.extend(obj.types)
+            if obj.nullable:
+                nullable = True
+        if "null" in schema_types:
+            nullable = True
+            schema_types.remove("null")
 
         default = schema.default
         # Only do string escaping, other types can go as-is

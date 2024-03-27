@@ -28,8 +28,8 @@ def schema_to_type_hint(schema: SchemaWrapper, required: bool = True) -> str:
             item_type = schema_to_type_hint(schema.array_item)
             py_type = f"List[{item_type}]"
             union_types[py_type] = None
-    for one_of in schema.one_of + schema.any_of:
-        union_types[schema_to_type_hint(one_of)] = None
+    # for one_of in schema.one_of + schema.any_of:  # all these are already included in top level schema
+    #     union_types[schema_to_type_hint(one_of)] = None
 
     final_type = ""
     if len(union_types) == 1:

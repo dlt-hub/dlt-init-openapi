@@ -1,9 +1,9 @@
 {% macro generate_resource(endpoint) %}
 from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Union, cast, Iterator
-import dlt
 
 from dlt.sources.helpers import requests
+from dlt.sources.helpers.rest_client.paginators import JSONResponseCursorPaginator, OffsetPaginator
 
 from .types import UNSET, Unset
 from .utils import extract_nested_data, extract_iterate_parent
@@ -14,7 +14,7 @@ from .api_helpers import build_query_parameters, build_formatted_url, TParameter
 {% endfor %}
 
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params,
-    arguments, resource_arguments, kwargs, transformer_kwargs, parse_response, docstring %}
+    arguments, resource_arguments, kwargs, transformer_kwargs, parse_response, docstring, paginator %}
 
 {# {% set return_string = endpoint.response_type() %} #}
 {% set return_string = "Any" %}
@@ -52,6 +52,7 @@ def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -
             auth=credentials,
             {% endif %}
             data_selector=data_json_path,
+            paginator={{ paginator(endpoint) }}
         )
     {% else %}
     params_dict: Dict[str, Any] = dict({{ kwargs(endpoint) }})
@@ -65,6 +66,7 @@ def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -
         auth=credentials,
         {% endif %}
         data_selector=data_json_path,
+        paginator={{ paginator(endpoint) }}
     )
     {% endif %}
 {% endmacro %}

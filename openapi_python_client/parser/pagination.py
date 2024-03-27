@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 RE_OFFSET_PARAM = re.compile(r"(?i)(page|start|offset)")
 RE_LIMIT_PARAM = re.compile(r"(?i)(limit|per_page|page_size|size)")
+RE_TOTAL_PROPERTY = re.compile(r"(?i)(total|count)")
 RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)")
 
 
@@ -18,6 +19,15 @@ class Pagination:
     pagination_params: List["Parameter"] = field(default_factory=list)
     paginator_class: str = None
     paginator_config: Dict[str, str] = None
+
+    def to_string(self) -> str:
+        assert self.paginator_class
+        assert self.paginator_config is not None
+        ret = self.paginator_class + "(\n"
+        for key, value in self.paginator_config.items():
+            ret += f"{key}={repr(value)},\n"
+        ret += ")"
+        return ret
 
     @property
     def param_names(self) -> List[str]:
@@ -90,11 +100,14 @@ class Pagination:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
-        if offset_param and limit_param and limit_initial:
+        total_prop = resp.content_schema.crawled_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+
+        if offset_param and limit_param and limit_initial and total_prop:
             pagination_config = {
                 "initial_limit": limit_initial,
                 "offset_param": offset_param.name,
                 "limit_param": limit_param.name,
+                "total_path": total_prop.json_path,
             }
             return cls(
                 paginator_class="OffsetPaginator",

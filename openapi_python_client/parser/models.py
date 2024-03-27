@@ -16,11 +16,12 @@ from typing import (
 )
 from itertools import chain
 from dataclasses import dataclass, field
+import re
 
 from dlt.common.utils import digest128
 
 import openapi_schema_pydantic as osp
-from openapi_python_client.parser.types import DataType
+from openapi_python_client.parser.types import DataType, TOpenApiType
 from openapi_python_client.parser.properties.converter import convert
 from openapi_python_client.utils import unique_list
 
@@ -368,6 +369,34 @@ class SchemaCrawler:
                 return True
             check_path.pop()
         return False
+
+    def find_property(
+        self, pattern: re.Pattern[str], require_type: Optional[TOpenApiType] = None
+    ) -> Optional[DataPropertyPath]:
+        candidates = []
+        unknown_type_candidates = []
+        for path, schema in self.items():
+            if not path:
+                continue
+            if not pattern.match(path[-1]):
+                continue
+            if require_type:
+                if require_type in schema.types:
+                    candidates.append((path, schema))
+                elif not schema.types:
+                    unknown_type_candidates.append((path, schema))
+            else:
+                candidates.append((path, schema))
+
+        # prefer least nested path
+        candidates.sort(key=lambda item: len(item[0]))
+        unknown_type_candidates.sort(key=lambda item: len(item[0]))
+
+        if candidates:
+            return DataPropertyPath(*candidates[0])
+        elif unknown_type_candidates:
+            return DataPropertyPath(*unknown_type_candidates[0])
+        return None
 
     # def find_property_by_name(self, name: str, fallback: Optional[str] = None) -> Optional[DataPropertyPath]:
     #     """Find a property with the given name somewhere in the object tree.

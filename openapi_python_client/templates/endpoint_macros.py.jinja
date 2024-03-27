@@ -90,12 +90,12 @@ path_parameter_paths: Dict[str, TJsonPath]={{ endpoint.transformer.path_params_m
 {#{{ parameter.python_name }}={{ parameter.python_name }},    #]
 {#{% endfor %} #}
 {% for parameter in endpoint.all_arguments() %}
-{{ parameter.python_name }}={{ parameter.python_name }},    
+{{ parameter.python_name }}={{ parameter.python_name }},
 {% endfor %}
 {% endmacro %}
 
 
-{# Docstring #}    
+{# Docstring #}
 {% macro docstring_content(endpoint, return_string, is_detailed) %}
 {% if endpoint.summary %}{{ endpoint.summary | wordwrap(100)}}
 
@@ -125,4 +125,13 @@ Returns:
 
 {% macro docstring(endpoint, return_string, is_detailed) %}
 {{ safe_docstring(docstring_content(endpoint, return_string, is_detailed)) }}
+{% endmacro %}
+
+
+{% macro paginator(endpoint) %}
+{% if endpoint.pagination %}
+{{ endpoint.pagination.to_string() }}
+{% else %}
+None
+{% endif %}
 {% endmacro %}

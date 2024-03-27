@@ -58,6 +58,8 @@ def build_query_parameters(parameters: Dict[str, Any], parameter_config: TParame
     query_params = {}
 
     for python_name, param_info in parameter_config.get("query", {}).items():
+        if python_name not in parameters:  # may be pagination params, etc that are not included
+            continue
         query_params.update(build_query_param(param_info, parameters[python_name]))
 
     return query_params

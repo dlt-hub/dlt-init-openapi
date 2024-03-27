@@ -5,7 +5,7 @@ import openapi_schema_pydantic as osp
 
 from openapi_python_client.utils import PythonIdentifier
 from openapi_python_client.parser.models import SchemaWrapper, TSchemaType, DataPropertyPath
-from openapi_python_client.parser.types import DataType
+from openapi_python_client.parser.types import DataType, compare_openapi_types
 from openapi_python_client.parser.context import OpenapiContext
 
 TParamIn = Literal["query", "header", "path", "cookie"]
@@ -76,7 +76,7 @@ class Parameter:
         return doc
 
     def _matches_type(self, schema: SchemaWrapper) -> bool:
-        return schema.types == self.types and schema.type_format == self.type_format
+        return compare_openapi_types(self.types, self.type_format, schema.types, schema.type_format)
 
     def find_input_property(self, schema: SchemaWrapper, fallback: Optional[str] = None) -> Optional[DataPropertyPath]:
         """Find property in the given schema that's potentially an input to this parameter"""

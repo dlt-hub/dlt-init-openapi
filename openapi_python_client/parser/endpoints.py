@@ -186,12 +186,18 @@ class Endpoint:
     def positional_arguments(self) -> List[Parameter]:
         include_path_params = not self.transformer
         ret = (p for p in self.parameters.values() if p.required and p.default is None)
+        # exclude pagination params
+        if self.pagination:
+            ret = (p for p in ret if p.name not in self.pagination.param_names)
         if not include_path_params:
             ret = (p for p in ret if p.location != "path")
         return list(ret)
 
     def keyword_arguments(self) -> List[Parameter]:
-        ret = (p for p in self.parameters.values() if p.default is not None)
+        ret = (p for p in self.parameters.values() if not p.required)
+        # exclude pagination params
+        if self.pagination:
+            ret = (p for p in ret if p.name not in self.pagination.param_names)
         return list(ret)
 
     def all_arguments(self) -> List[Parameter]:

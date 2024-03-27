@@ -112,3 +112,8 @@ def test_resource_arguments(pokemon_parser: OpenapiParser) -> None:
 
     # Does not include the id arg from transformer parent
     assert pos_args == []
+
+
+def test_parent_endpoints(spotify_parser: OpenapiParser) -> None:
+    # TODO: test e.g. /browse/categories -> /browse/categories/{category_id}/playlists
+    pass

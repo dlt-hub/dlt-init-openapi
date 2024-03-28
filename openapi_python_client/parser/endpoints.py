@@ -43,6 +43,8 @@ class Response:
     content_schema: Optional[SchemaWrapper]
     list_property: Optional[DataPropertyPath] = None
     payload: Optional[DataPropertyPath] = None
+    initial_payload: Optional[DataPropertyPath] = None
+    """Payload set initially before comparing other endpoints"""
 
     @property
     def has_content(self) -> bool:
@@ -96,6 +98,7 @@ class Response:
             raw_schema=raw_schema,
             content_schema=content_schema,
             payload=payload,
+            initial_payload=payload,
         )
 
 
@@ -162,6 +165,11 @@ class Endpoint:
         self._parent = value
         if value:
             value.children.append(self)
+
+    @property
+    def primary_key(self) -> Optional[str]:
+        payload = self.payload
+        return payload.schema.primary_key if payload else None
 
     @property
     def path_parameters(self) -> Dict[str, Parameter]:
@@ -475,3 +483,14 @@ class EndpointCollection:
                 current_node = current_node[part]  # type: ignore
             current_node["<endpoint>"] = endpoint
         return tree
+
+    def _endpoint_tree_to_str(self) -> str:
+        # Pretty print presentation of the tree
+        def _tree_to_str(node: Union["Endpoint", "Tree"], indent: int = 0) -> str:
+            if isinstance(node, dict):
+                return "\n".join(
+                    f"{'  ' * indent}{key}\n{_tree_to_str(value, indent + 1)}" for key, value in node.items()
+                )
+            return f"{'  ' * indent}{node.path} -> {node.operation_id}"
+
+        return _tree_to_str(self.endpoint_tree)

@@ -51,28 +51,26 @@ def test_new_releases_list_property(spotify_parser: OpenapiParser) -> None:
 #     schema = endpoint.data_response.content_schema
 
 
-def test_extract_payload(spotify_parser: OpenapiParser) -> None:
+@pytest.mark.parametrize(
+    "endpoint_path,payload_path,payload_name",
+    [
+        ("/browse/new-releases", ("albums", "items"), "SimplifiedAlbumObject"),
+        # ("/playlists/{playlist_id}/tracks", ("items",), "PlaylistTrackObject"),
+        ("/me/tracks", ("items", "[*]", "track"), "TrackObject"),
+        ("/me/albums", ("items", "[*]", "album"), "AlbumObject"),
+        ("/artists/{id}/related-artists", ("artists",), "ArtistObject"),
+        # ("/browse/categories/{category_id}", (), "CategoryObject"),
+    ],
+)
+def test_extract_payload(
+    endpoint_path: str, payload_path: tuple[str], payload_name: str, spotify_parser: OpenapiParser
+) -> None:
     endpoints = spotify_parser.endpoints
-    pl_tr_endpoint = endpoints.endpoints_by_path["/playlists/{playlist_id}/tracks"]
-    new_releases_endpoint = endpoints.endpoints_by_path["/browse/new-releases"]
-    saved_tracks_endpoint = endpoints.endpoints_by_path["/me/tracks"]
-    related_artists_endpoint = endpoints.endpoints_by_path["/artists/{id}/related-artists"]
 
-    assert new_releases_endpoint.data_response.payload.path == (
-        "albums",
-        "items",
-    )
-    assert new_releases_endpoint.data_response.payload.name == "SimplifiedAlbumObject"
+    endpoint = endpoints.endpoints_by_path[endpoint_path]
 
-    # TODO:
-    # assert pl_tr_endpoint.data_response.payload.path == ("items",)
-    # assert pl_tr_endpoint.data_response.payload.name == "PlaylistTrackObject"
-
-    assert saved_tracks_endpoint.data_response.payload.path == ("items",)
-    assert saved_tracks_endpoint.data_response.payload.name == "SavedTrackObject"
-
-    assert related_artists_endpoint.data_response.payload.path == ("artists",)
-    assert related_artists_endpoint.data_response.payload.name == "ArtistObject"
+    assert endpoint.payload.path == payload_path
+    assert endpoint.payload.name == payload_name
 
 
 def test_find_path_param(pokemon_parser: OpenapiParser) -> None:
@@ -116,4 +114,21 @@ def test_resource_arguments(pokemon_parser: OpenapiParser) -> None:
 
 def test_parent_endpoints(spotify_parser: OpenapiParser) -> None:
     # TODO: test e.g. /browse/categories -> /browse/categories/{category_id}/playlists
-    pass
+    parent_path = "/browse/categories"
+    child_path = "/browse/categories/{category_id}/playlists"
+
+    parent = spotify_parser.endpoints.endpoints_by_path[parent_path]
+    child = spotify_parser.endpoints.endpoints_by_path[child_path]
+
+    assert child.parent is parent
+
+
+def test_schema_name(spotify_parser: OpenapiParser) -> None:
+    path = "/me/albums"
+    endpoint = spotify_parser.endpoints.endpoints_by_path[path]
+
+    schema = endpoint.data_response.content_schema
+
+    album_schema = schema["items"].schema.array_item["album"].schema
+    # Name taken from nested schema in all_of
+    assert album_schema.name == "AlbumObject"

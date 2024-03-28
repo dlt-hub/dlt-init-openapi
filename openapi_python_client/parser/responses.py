@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Dict, Tuple
+from typing import TYPE_CHECKING, Dict, Tuple, Optional
 
 if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import EndpointCollection, Endpoint, Response
@@ -45,35 +45,20 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
     for other in sorted(endpoints.all_endpoints_to_render, key=lambda ep: ep.path):
         if other.path == endpoint.path:
             continue
-        other_payload = other.data_response.payload
+        other_payload = other.data_response.initial_payload
         if not other_payload:
             continue
         other_schema = other_payload.prop
-        # other_props = set(other_schema.crawled_properties)  # type: ignore[call-overload]
         other_props = set(other_schema.crawled_properties.paths_with_types())
-
         # Remove all common props from the payload, assume most of those are metadata
         common_props = response_props & other_props
-        # remaining_props = response_props - common_props
-        # remaining props including their ancestry starting at top level parents
         new_props = payload_props - common_props
-        # # Check if new props contain any object type props
-        # has_object_props = any(
-        #     prop_path in schema.crawled_properties.object_properties
-        #     or prop_path in schema.crawled_properties.list_properties
-        #     for prop_path in new_props
-        # )
-        # if len(new_props) == 1:
-        #     prop_obj = schema.crawled_properties[list(new_props)[0]]
-        #     if not prop_obj.is_object and not prop_obj.is_list:
-        #         new_props.add(())
-
         if not new_props:
             # Don't remove all props
             continue
         payload_props = new_props
 
-    payload_path: Tuple[str, ...] = ()
+    payload_path: Optional[Tuple[str, ...]] = None
 
     if len(payload_props) == 1:
         # When there's only one remaining prop it can mean the payload is just
@@ -85,16 +70,30 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
                 prop_path = tuple(list(prop_path)[:-1])
                 payload_path = prop_path  # type: ignore[assignment]
 
-    if not payload_path:
+    if payload_path is None:
         # Payload path is the deepest nested parent of all remaining props
         payload_path = find_longest_common_prefix([path for path, _ in payload_props])
 
-    payload_path = payload_path
     while payload_path and payload_path[-1] == "[*]":
         # We want the path to point to the list property, not the list item
         # so that payload is correctly detected as list
         payload_path = payload_path[:-1]
     payload_schema = schema.crawled_properties[payload_path]
+
+    # If no primary key in the payload, try climbing up the tree and prefer the nearest schema with pk
+    if not payload_schema.primary_key:
+        new_path = list(payload_path)
+        new_schema = payload_schema
+        while new_path:
+            new_path.pop()
+            while new_path and new_path[-1] == "[*]":
+                new_path.pop()
+            new_schema = schema.crawled_properties[tuple(new_path)]
+            if new_schema.primary_key:
+                payload_path = tuple(new_path)
+                payload_schema = new_schema
+                break
+
     ret = DataPropertyPath(root_path + payload_path, payload_schema)
     print(endpoint.path)
     print(ret.path)

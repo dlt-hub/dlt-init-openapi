@@ -99,6 +99,9 @@ class SchemaWrapper:
     any_of: List["SchemaWrapper"] = field(default_factory=list)
     one_of: List["SchemaWrapper"] = field(default_factory=list)
 
+    enum_values: Optional[List[Any]] = None
+    primary_key: Optional[str] = None
+
     def __getitem__(self, item: str) -> "Property":
         try:
             return next(prop for prop in self.properties if prop.name == item)
@@ -110,6 +113,31 @@ class SchemaWrapper:
 
     def __iter__(self) -> Iterable["str"]:
         return (prop.name for prop in self.properties)
+
+    def _find_primary_key(self) -> Optional[str]:
+        """Attempt to find the name of primary key field in the schema"""
+        # Regex pattern finding the words "unique", "id" or "identifier" in description
+        # Use word boundaries
+        desc_pattern = re.compile(r"\b(unique|id|identifier)\b", re.IGNORECASE)
+
+        description_paths = []
+        uuid_paths = []
+
+        for prop in self.all_properties:
+            if not set(prop.schema.types) & {"string", "integer"}:
+                continue
+            if prop.name.lower() == "id":
+                return prop.name
+            elif prop.schema.description and desc_pattern.search(prop.schema.description):
+                description_paths.append(prop.name)
+            elif prop.schema.type_format == "uuid":
+                uuid_paths.append(prop.name)
+
+        if description_paths:
+            return description_paths[0]
+        elif uuid_paths:
+            return uuid_paths[0]
+        return None
 
     @property
     def has_properties(self) -> bool:
@@ -191,6 +219,12 @@ class SchemaWrapper:
 
         all_of = _remove_nones([cls.from_reference_guarded(ref, context, level=level) for ref in schema.allOf or []])
 
+        if not name:
+            for sub in all_of:
+                name = sub.name
+                if name:
+                    break
+
         # Properties from all_of child schemas should be merged
         property_map = {prop.name: prop for prop in parent_properties or []}
         property_map.update({prop.name: prop for prop in chain.from_iterable(s.properties for s in all_of)})
@@ -269,7 +303,9 @@ class SchemaWrapper:
             hash_key=digest128(schema.json(sort_keys=True)),
             type_format=schema.schema_format,
             maximum=schema.maximum,
+            enum_values=schema.enum,
         )
+        result.primary_key = result._find_primary_key()
         crawler.crawl(result)
         return result
 
@@ -348,7 +384,9 @@ class SchemaCrawler:
     def items(self) -> Iterable[Tuple[Tuple[str, ...], SchemaWrapper]]:
         return self.all_properties.items()
 
-    def paths_with_types(self) -> Iterator[tuple[tuple[str, ...], tuple[tuple[TSchemaType, ...], Optional[str]]]]:
+    def paths_with_types(
+        self,
+    ) -> Iterator[tuple[tuple[str, ...], tuple[tuple[TSchemaType, ...], Optional[str], tuple[Any, ...]]]]:
         """
         yields a tuple of (path, ( (types, ...), "format")) for each property in the schema
         """
@@ -357,7 +395,8 @@ class SchemaCrawler:
             #     # Include the array item type for full comparison
             #     yield path, tuple(schema.types + schema.array_item.types])
             # else:
-            yield path, (tuple(schema.types), schema.type_format)
+            # yield path, (tuple(schema.types), schema.type_format, tuple(schema.enum_values or []))
+            yield path, (tuple(schema.types), schema.type_format, tuple(schema.enum_values or []))
 
     def is_optional(self, path: Tuple[str, ...]) -> bool:
         """Check whether the property itself or any of its parents is nullable"""

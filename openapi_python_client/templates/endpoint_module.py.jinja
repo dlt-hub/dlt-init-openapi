@@ -21,10 +21,20 @@ from .api_helpers import build_query_parameters, build_formatted_url, TParameter
 {% set parsed_responses = (endpoint.responses | length > 0) and return_string != "Any" %}
 
 {% if endpoint.transformer %}
-@dlt.transformer(table_name="{{ endpoint.table_name}}")
+@dlt.transformer(
+    table_name="{{ endpoint.table_name}}"
+    {% if endpoint.primary_key %}
+    , primary_key="{{ endpoint.primary_key }}"
+    {% endif %}
+)
 def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -> Iterator[{{ return_string}}]:
 {% else %}
-@dlt.resource(table_name="{{ endpoint.table_name }}")
+@dlt.resource(
+    table_name="{{ endpoint.table_name}}"
+    {% if endpoint.primary_key %}
+    , primary_key="{{ endpoint.primary_key }}"
+    {% endif %}
+)
 def {{ endpoint.python_name }}({{ resource_arguments(endpoint) | indent(4) }}) -> Iterator[{{ return_string}}]:
 {% endif %}
     {{ docstring(endpoint, return_string, is_detailed=false) | indent(4) }}

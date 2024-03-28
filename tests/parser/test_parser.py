@@ -59,13 +59,32 @@ def test_new_releases_list_property(spotify_parser: OpenapiParser) -> None:
         ("/me/tracks", ("items", "[*]", "track"), "TrackObject"),
         ("/me/albums", ("items", "[*]", "album"), "AlbumObject"),
         ("/artists/{id}/related-artists", ("artists",), "ArtistObject"),
-        # ("/browse/categories/{category_id}", (), "CategoryObject"),
+        ("/browse/categories/{category_id}", (), "CategoryObject"),
     ],
 )
-def test_extract_payload(
+def test_extract_payload_spotify(
     endpoint_path: str, payload_path: tuple[str], payload_name: str, spotify_parser: OpenapiParser
 ) -> None:
     endpoints = spotify_parser.endpoints
+
+    endpoint = endpoints.endpoints_by_path[endpoint_path]
+
+    assert endpoint.payload.path == payload_path
+    assert endpoint.payload.name == payload_name
+
+
+@pytest.mark.parametrize(
+    "endpoint_path,payload_path,payload_name",
+    [
+        ("/api/v2/pokemon/{id}/", (), "Pokemon"),
+        ("/api/v2/pokemon-species/", ("results",), "PokemonSpecies"),
+        ("/api/v2/egg-group/", (), "EggGroup"),
+    ],
+)
+def test_extract_payload_pokeapi(
+    endpoint_path: str, payload_path: tuple[str], payload_name: str, pokemon_parser: OpenapiParser
+) -> None:
+    endpoints = pokemon_parser.endpoints
 
     endpoint = endpoints.endpoints_by_path[endpoint_path]
 
@@ -132,3 +151,10 @@ def test_schema_name(spotify_parser: OpenapiParser) -> None:
     album_schema = schema["items"].schema.array_item["album"].schema
     # Name taken from nested schema in all_of
     assert album_schema.name == "AlbumObject"
+
+
+def test_detect_primary_key(pokemon_parser: OpenapiParser) -> None:
+    path = "/api/v2/egg-group/"
+    endpoint = pokemon_parser.endpoints.endpoints_by_path[path]
+
+    assert endpoint.primary_key == "id"

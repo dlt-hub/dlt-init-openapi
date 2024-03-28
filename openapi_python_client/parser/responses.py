@@ -74,24 +74,19 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
         # Payload path is the deepest nested parent of all remaining props
         payload_path = find_longest_common_prefix([path for path, _ in payload_props])
 
-    while payload_path and payload_path[-1] == "[*]":
-        # We want the path to point to the list property, not the list item
-        # so that payload is correctly detected as list
-        payload_path = payload_path[:-1]
+    payload_path = _unnest_array(payload_path)
     payload_schema = schema.crawled_properties[payload_path]
 
     # If no primary key in the payload, try climbing up the tree and prefer the nearest schema with pk
-    if not payload_schema.primary_key:
+    if (not payload_schema.primary_key) or (payload_schema.is_list and not payload_schema.array_item.primary_key):
         new_path = list(payload_path)
         new_schema = payload_schema
         while new_path:
             new_path.pop()
-            while new_path and new_path[-1] == "[*]":
-                new_path.pop()
             new_schema = schema.crawled_properties[tuple(new_path)]
-            if new_schema.primary_key:
-                payload_path = tuple(new_path)
-                payload_schema = new_schema
+            if new_schema.primary_key or (new_schema.is_list and new_schema.array_item.primary_key):
+                payload_path = _unnest_array(tuple(new_path))
+                payload_schema = schema.crawled_properties[payload_path]
                 break
 
     ret = DataPropertyPath(root_path + payload_path, payload_schema)
@@ -100,6 +95,14 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
     print(ret.prop.name)
     print("---")
     response.payload = ret
+
+
+def _unnest_array(path: Tuple[str, ...]) -> Tuple[str, ...]:
+    while path and path[-1] == "[*]":
+        # We want the path to point to the list property, not the list item
+        # so that payload is correctly detected as list
+        path = path[:-1]
+    return path
 
 
 # def _process_response_list(

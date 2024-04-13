@@ -101,6 +101,7 @@ class SchemaWrapper:
 
     enum_values: Optional[List[Any]] = None
     primary_key: Optional[str] = None
+    examples: List[Any] = field(default_factory=list)
 
     def __getitem__(self, item: str) -> "Property":
         try:
@@ -285,6 +286,7 @@ class SchemaWrapper:
         if isinstance(default, str):
             default = convert("str", default)
 
+        examples = ([schema.example] if schema.example else schema.examples) or []
         crawler = SchemaCrawler()
         result = cls(
             schema=schema,
@@ -304,6 +306,7 @@ class SchemaWrapper:
             type_format=schema.schema_format,
             maximum=schema.maximum,
             enum_values=schema.enum,
+            examples=examples,
         )
         result.primary_key = result._find_primary_key()
         crawler.crawl(result)

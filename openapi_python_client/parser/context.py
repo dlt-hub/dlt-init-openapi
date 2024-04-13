@@ -62,13 +62,16 @@ class OpenapiContext:
         registry = referencing.Registry().with_resource(resource=resource, uri="")
         self._resolver = registry.resolver()
 
-    def _component_from_reference(self, ref: osp.Reference) -> dict[str, Any]:
-        url = ref.ref
+    def _component_from_reference_url(self, url: str) -> dict[str, Any]:
         if url in self._component_cache:
             return self._component_cache[url]
         obj = self._resolver.lookup(url).contents
         self._component_cache[url] = obj
         return obj
+
+    def _component_from_reference(self, ref: osp.Reference) -> dict[str, Any]:
+        url = ref.ref
+        return self._component_from_reference_url(url)
 
     def schema_and_name_from_reference(self, ref: Union[osp.Reference, osp.Schema]) -> Tuple[str, osp.Schema]:
         name: Optional[str] = None

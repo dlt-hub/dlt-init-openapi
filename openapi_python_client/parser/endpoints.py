@@ -17,7 +17,7 @@ from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
 
-TMethod = Literal["get", "post", "put", "patch"]
+TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
 
 
@@ -425,7 +425,7 @@ class EndpointCollection:
                     continue
                 endpoints.append(
                     Endpoint.from_operation(
-                        cast(TMethod, op_name),
+                        cast(TMethod, op_name.upper()),
                         path,
                         operation,
                         path_table_names[path],

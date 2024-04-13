@@ -1,7 +1,9 @@
-from typing import Dict, Union, cast, Tuple, Optional
+from typing import Dict, Union, Tuple, Optional, Any
 from dataclasses import dataclass
 
 import openapi_schema_pydantic as osp
+import referencing
+import referencing.jsonschema
 
 from openapi_python_client.parser.config import Config
 from openapi_python_client.utils import ClassName
@@ -43,30 +45,40 @@ class SecurityScheme:
 
 class OpenapiContext:
     spec: osp.OpenAPI
+    spec_raw: dict[str, Any]
 
-    _component_cache: Dict[str, TComponentClass]
+    _component_cache: Dict[str, dict[str, Any]]
     security_schemes: Dict[str, SecurityScheme]
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: dict[str, Any]) -> None:
         self.config = config
+        self.spec = spec
+        self.spec_raw = spec_raw
         self._component_cache = {}
         self.security_schemes = {}
+        resource = referencing.Resource(  # type: ignore[var-annotated, call-arg]
+            contents=self.spec_raw, specification=referencing.jsonschema.DRAFT202012
+        )
+        registry = referencing.Registry().with_resource(resource=resource, uri="")
+        self._resolver = registry.resolver()
 
-    def _component_from_reference(self, ref: osp.Reference) -> TComponentClass:
+    def _component_from_reference(self, ref: osp.Reference) -> dict[str, Any]:
         url = ref.ref
         if url in self._component_cache:
             return self._component_cache[url]
-        if not url.startswith("#/components/"):
-            raise ValueError(f"Unsupported ref {url} Only #/components/... refs are supported")
-        section, name = url.split("/components/")[-1].split("/")
-        obj = getattr(self.spec.components, section)[name]
+        obj = self._resolver.lookup(url).contents
         self._component_cache[url] = obj
         return obj
 
     def schema_and_name_from_reference(self, ref: Union[osp.Reference, osp.Schema]) -> Tuple[str, osp.Schema]:
         name: Optional[str] = None
         if isinstance(ref, osp.Reference):
-            name = ref.ref.split("/components/")[-1].split("/")[-1]
+            if ref.ref.startswith("#/components/"):
+                # Refs to random places in the spec, e.g. #/paths/some~path/responses/.../schema
+                # don't generate useful names, so only take names from #/components/schemas/SchemaName refs
+                name = ref.ref.split("/components/")[-1].split("/")[-1]
+            else:
+                name = ""
         schema = self.schema_from_reference(ref)
         name = name or schema.title
         return name, schema
@@ -74,17 +86,20 @@ class OpenapiContext:
     def response_from_reference(self, ref: osp.Reference | osp.Response) -> osp.Response:
         if isinstance(ref, osp.Response):
             return ref
-        return cast(osp.Response, self._component_from_reference(ref))
+        return osp.Response.parse_obj(self._component_from_reference(ref))
+        # return cast(osp.Response, self._component_from_reference(ref))
 
     def schema_from_reference(self, ref: osp.Reference | osp.Schema) -> osp.Schema:
         if isinstance(ref, osp.Schema):
             return ref
-        return cast(osp.Schema, self._component_from_reference(ref))
+        return osp.Schema.parse_obj(self._component_from_reference(ref))
+        # return cast(osp.Schema, self._component_from_reference(ref))
 
     def parameter_from_reference(self, ref: Union[osp.Reference, osp.Parameter]) -> osp.Parameter:
         if isinstance(ref, osp.Parameter):
             return ref
-        return cast(osp.Parameter, self._component_from_reference(ref))
+        return osp.Parameter.parse_obj(self._component_from_reference(ref))
+        # return cast(osp.Parameter, self._component_from_reference(ref))
 
     def get_security_scheme(self, name: str) -> SecurityScheme:
         # TODO: The security scheme might be a Reference

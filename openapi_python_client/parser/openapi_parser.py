@@ -25,10 +25,12 @@ class OpenapiParser:
     spec_raw: Dict[str, Any]
     info: OpenApiInfo
     credentials: Optional[CredentialsProperty] = None
+    context: OpenapiContext
 
     def __init__(self, spec_file: Union[Path, str], config: Config = Config()) -> None:
         self.spec_file = spec_file
-        self.context = OpenapiContext(config=config)
+        # self.context = OpenapiContext(config=config)
+        self.config = config
 
     def load_spec_raw(self) -> Dict[str, Any]:
         p = self.spec_file
@@ -58,8 +60,9 @@ class OpenapiParser:
 
     def parse(self) -> None:
         self.spec_raw = self.load_spec_raw()
-        self.context.spec = osp.OpenAPI.parse_obj(self.spec_raw)
-        log.info("Pydantic parse")
+        # log.info("Pydantic parse")
+        spec = osp.OpenAPI.parse_obj(self.spec_raw)
+        self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)
         log.info("Parse endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)

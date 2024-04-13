@@ -36,9 +36,6 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
     schema = response.payload.prop
     root_path = response.payload.path
 
-    # response_props = set(response.content_schema.crawlepd_properties.all_properties)
-    # response_props = set(schema.crawled_properties.all_properties)
-    # payload_props = set(response_props)
     response_props = set(schema.crawled_properties.paths_with_types())
     payload_props = set(response_props)
 
@@ -103,33 +100,3 @@ def _unnest_array(path: Tuple[str, ...]) -> Tuple[str, ...]:
         # so that payload is correctly detected as list
         path = path[:-1]
     return path
-
-
-# def _process_response_list(
-#     response: Response,
-#     endpoint: Endpoint,
-#     endpoints: EndpointCollection,
-# ) -> None:
-#     if not response.list_properties:
-#         return
-#     if () in response.list_properties:  # Response is a top level list
-#         response.list_property = DataPropertyPath((), response.list_properties[()])
-#         return
-
-#     level_counts = count_by_length(response.list_properties.keys())
-
-#     # Get list properties max 2 levels down
-#     props_first_levels = [
-#         (path, prop) for path, prop in sorted(response.list_properties.items(), key=lambda k: len(k)) if len(path) <= 2
-#     ]
-
-#     # If there is only one list property 1 or 2 levels down, this is the list
-#     for path, prop in props_first_levels:
-#         if not prop.is_object:  # Only looking for object lists
-#             continue
-#         levels = len(path)
-#         if level_counts[levels] == 1:
-#             response.list_property = DataPropertyPath(path, prop)
-#     parent = endpoints.find_immediate_parent(endpoint.path)
-#     if parent and not parent.required_parameters:
-#         response.list_property = None

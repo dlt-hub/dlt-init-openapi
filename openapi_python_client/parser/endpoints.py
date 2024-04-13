@@ -10,12 +10,11 @@ import openapi_schema_pydantic as osp
 
 from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.paths import table_names_from_paths
-from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath, TSchemaType
+from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 from openapi_python_client.utils import PythonIdentifier
 from openapi_python_client.parser.responses import process_responses
 from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
-from openapi_python_client.parser.types import DataType
 from openapi_python_client.parser.parameters import Parameter
 
 TMethod = Literal["get", "post", "put", "patch"]
@@ -335,13 +334,16 @@ class Endpoint:
         all_params.update(
             {p.name: p for p in (Parameter.from_reference(param, context) for param in operation.parameters or [])}
         )
-        responses = {
-            resp.status_code: resp
-            for resp in [
-                Response.from_reference(status_code, response_ref, context)
-                for status_code, response_ref in operation.responses.items()
-            ]
-        }
+
+        parsed_responses = (
+            Response.from_reference(status_code, response_ref, context)
+            for status_code, response_ref in operation.responses.items()
+        )
+        responses = {}
+        for parsed_response in parsed_responses:
+            if parsed_response.status_code in responses:
+                continue
+            responses[parsed_response.status_code] = parsed_response
 
         operation_id = operation.operationId or f"{method}_{path}"
 
@@ -385,8 +387,8 @@ class EndpointCollection:
             key=lambda e: e.table_name,
         )
         groups = groupby(to_render, key=lambda e: e.table_name)
-        groups = [(name, list(group)) for name, group in groups]
-        groups = sorted(groups, key=lambda g: max(e.rank for e in g[1]), reverse=True)
+        groups = [(name, list(group)) for name, group in groups]  # type: ignore[assignment]
+        groups = sorted(groups, key=lambda g: max(e.rank for e in g[1]), reverse=True)  # type: ignore[assignment]
         return [e for _, group in groups for e in group]
 
     @property

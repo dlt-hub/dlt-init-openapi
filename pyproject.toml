@@ -32,13 +32,14 @@ python-dateutil = "^2.8.1"
 httpx = ">=0.15.4,<0.25.0"
 autoflake = "^1.4 || ^2.0.0"
 PyYAML = "^6.0"
-dlt = {git = "https://github.com/dlt-hub/dlt.git", branch="sthor/remove-rest-client-cyclic-import", extras = ["duckdb"]}
+dlt = {extras = ["duckdb"], version = "^0.4.8"}
 requests = "^2.30.0"
 questionary = "^1.10.0"
 enlighten = "^1.11.2"
 openapi-schema-pydantic = "^1.2.4"
 pyjwt = "^2.8.0"
 cryptography = "^42.0.5"
+referencing = "^0.34.0"
 
 [tool.poetry.scripts]
 dlt-init = "openapi_python_client.cli:app"
@@ -57,7 +58,6 @@ types-python-dateutil = "^2.0.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
-types-jsonschema = "^4.17.0.8"
 
 [tool.taskipy.tasks]
 check = """

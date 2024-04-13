@@ -1,6 +1,4 @@
-from collections import defaultdict
-
-from typing import Iterable, Dict, Tuple, Sequence
+from typing import Iterable, Dict, Tuple
 
 import os.path
 

@@ -14,7 +14,7 @@ include = ["CHANGELOG.md", "{{ package_name }}/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-dlt = {git = "https://github.com/dlt-hub/dlt.git", branch = "sthor/remove-rest-client-cyclic-import"}
+dlt = {extras = ["duckdb"], version = "^0.4.8"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

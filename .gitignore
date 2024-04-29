@@ -31,3 +31,4 @@ custom-e2e/
 
 client/
 *-pipeline/
+tests/_local/

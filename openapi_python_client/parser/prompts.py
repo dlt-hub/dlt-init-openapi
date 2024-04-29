@@ -114,7 +114,6 @@ def create_endpoint_info(endpoint: Endpoint) -> EndpointInfo:
     params and properties include their names, descriptions, and types.
     """
     response_schema = endpoint.data_response.content_schema
-    params = endpoint.parameters
 
     prop_infos: list[PropInfo] = []
 

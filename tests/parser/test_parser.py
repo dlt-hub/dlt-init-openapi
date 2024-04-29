@@ -1,7 +1,6 @@
 import pytest
 
 from openapi_python_client.parser.openapi_parser import OpenapiParser
-from openapi_schema_pydantic import Reference
 from openapi_python_client.parser.models import SchemaWrapper
 import openapi_schema_pydantic as osp
 

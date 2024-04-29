@@ -1,7 +1,6 @@
 import codecs
 import pathlib
 from typing import Optional
-import logging
 
 import typer
 
@@ -62,12 +61,10 @@ def init(
     source: str = typer.Argument(None, help="A name of data source for which to generate a pipeline"),
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
     path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
-    custom_template_path: Optional[pathlib.Path] = typer.Option(None, **custom_template_path_options),  # type: ignore
     meta: MetaType = _meta_option,
     file_encoding: str = typer.Option("utf-8", help="Encoding used when writing generated"),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
-    fail_on_warning: bool = False,
-    interactive: bool = True,
+    interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
     from . import create_new_client
@@ -92,7 +89,7 @@ def init(
         url=url,
         path=path,
         meta=meta,
-        custom_template_path=custom_template_path,
+        custom_template_path=None,
         file_encoding=file_encoding,
         config=config,
         endpoint_filter=questionary_endpoint_selection if interactive else None,

@@ -30,3 +30,4 @@ my-test-api-client/
 custom-e2e/
 
 client/
+*-pipeline/

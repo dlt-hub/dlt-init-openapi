@@ -5,7 +5,6 @@ if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import EndpointCollection, Endpoint, Response
 
 from openapi_python_client.parser.models import DataPropertyPath
-from openapi_python_client.utils import count_by_length
 from openapi_python_client.parser.paths import find_longest_common_prefix
 
 

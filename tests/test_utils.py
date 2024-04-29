@@ -1,3 +1,5 @@
+# type: ignore
+
 import pytest
 
 from openapi_python_client import utils

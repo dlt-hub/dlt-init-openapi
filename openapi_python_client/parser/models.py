@@ -450,7 +450,8 @@ class SchemaCrawler:
     #         fallback: Optional fallback property to get when `name` is not found
 
     #     Returns:
-    #         If property is found, `DataPropertyPath` object containing the corresponding schema and path tuple/json path
+    #         If property is found, `DataPropertyPath` o
+    #    bject containing the corresponding schema and path tuple/json path
     #     """
     #     named = []
     #     fallbacks = []

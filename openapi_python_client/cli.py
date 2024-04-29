@@ -1,7 +1,7 @@
 import codecs
 import pathlib
 from typing import Optional
-
+from distutils.dir_util import copy_tree
 import typer
 
 from openapi_python_client import MetaType
@@ -53,7 +53,7 @@ _meta_option = typer.Option(
 )
 
 CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
-
+REST_API_SOURCE_LOCATION = "./verified-sources/sources/rest_api"
 
 # pylint: disable=too-many-arguments
 @app.command()
@@ -85,7 +85,7 @@ def init(
     config = _process_config(config_path)
     config.project_name_override = source
     config.package_name_override = source
-    create_new_client(
+    project = create_new_client(
         url=url,
         path=path,
         meta=meta,
@@ -94,3 +94,5 @@ def init(
         config=config,
         endpoint_filter=questionary_endpoint_selection if interactive else None,
     )
+    # copy rest api source into project dir
+    copy_tree(REST_API_SOURCE_LOCATION, str(project.project_dir / "rest_api"))

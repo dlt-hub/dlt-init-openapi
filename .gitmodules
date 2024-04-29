@@ -1,3 +1,0 @@
-[submodule "openapi_python_client/verified-sources"]
-	path = openapi_python_client/verified-sources
-	url = git@github.com:dlt-hub/verified-sources.git

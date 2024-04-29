@@ -44,7 +44,8 @@ referencing = "^0.34.0"
 [tool.poetry.scripts]
 dlt-init = "openapi_python_client.cli:app"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
 pytest = "*"
 pytest-mock = "*"
 mypy = "*"
@@ -55,9 +56,6 @@ python-multipart = "*"
 types-PyYAML = "^6.0.3"
 types-certifi = "^2020.0.0"
 types-python-dateutil = "^2.0.0"
-
-[tool.poetry.group.dev.dependencies]
-flake8 = "^6.0.0"
 
 [tool.taskipy.tasks]
 check = """

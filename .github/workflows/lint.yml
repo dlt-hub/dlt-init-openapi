@@ -52,7 +52,7 @@ jobs:
           key: venv-${{ matrix.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install dependencies
-        run: poetry install --all-extras with dev
+        run: poetry install --no-interaction --with dev
 
       - name: Run make lint
         run: make lint

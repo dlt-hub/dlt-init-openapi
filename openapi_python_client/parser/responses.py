@@ -86,10 +86,6 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
                 break
 
     ret = DataPropertyPath(root_path + payload_path, payload_schema)
-    print(endpoint.path)
-    print(ret.path)
-    print(ret.prop.name)
-    print("---")
     response.payload = ret
 
 

@@ -31,6 +31,8 @@ jobs:
 
       - name: Check out
         uses: actions/checkout@master
+        with:
+          submodules: 'true'
 
       - name: Setup Python
         uses: actions/setup-python@v4

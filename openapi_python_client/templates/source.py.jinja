@@ -19,9 +19,32 @@ def {{ source_name }}(
         "client": {
             "base_url": base_url,
         },
-        "resources": [
-        {% for endpoint in endpoint_collection.all_endpoints_to_render %}
-            "{{ endpoint.path }}",
+        "resources": 
+        [
+        # root endpoints
+        {% for r_endpoint in endpoint_collection.root_endpoints %}
+        {
+            "name": "{{ r_endpoint.python_name }}",
+            "endpoint": "{{ r_endpoint.path }}"
+        },
+        {% endfor %}
+        # child endpoints
+        {% for t_endpoint in endpoint_collection.transformer_endpoints %}
+        {
+            "name": "{{ t_endpoint.python_name }}",
+            "endpoint": {
+                "path": "{{t_endpoint.path }}",
+                "params": {
+                    {% for key, value in t_endpoint.transformer.path_params_mapping.items() %}
+                    "{{key}}": {
+                        "type": "resolve",
+                        "resource": "{{t_endpoint.parent.python_name }}",
+                        "field": "{{value}}",
+                    },
+                    {% endfor %}
+                },
+            },
+        },
         {% endfor %}
         ]
     }

@@ -3,16 +3,16 @@
 
 # lint
 lint:
-	flake8 openapi_python_client tests
-	mypy openapi_python_client tests
-	black . --check
+	poetry run flake8 openapi_python_client tests
+	poetry run mypy openapi_python_client tests
+	poetry run black . --check
 
 # format the whole project
 format: 
-	black .
+	poetry run black .
 
 test:
-	pytest tests
+	poetry run pytest tests
 
 # dev helpers
 create-pokemon-pipeline:

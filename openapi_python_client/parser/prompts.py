@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Union
 
 from openapi_python_client.parser.endpoints import Endpoint
 
@@ -9,11 +9,11 @@ class PropInfo:
     json_path: str
     is_optional: bool
     types: list[str]
-    type_format: str | None
-    description: str | None
+    type_format: Union[str, None]
+    description: Union[str, None]
     examples: list[Any]
-    maximum: float | None
-    default: Any | None
+    maximum: Union[float, None]
+    default: Union[Any, None]
 
     def __str__(self) -> str:
         ret = ""
@@ -37,8 +37,8 @@ class PropInfo:
 @dataclass
 class ResponseInfo:
     status_code: str
-    description: str | None
-    schema_description: str | None
+    description: Union[str, None]
+    schema_description: Union[str, None]
     properties: list[PropInfo]
 
     def __str__(self) -> str:
@@ -60,11 +60,11 @@ class ParamInfo:
     name: str
     required: bool
     types: list[str]
-    type_format: str | None
-    description: str | None
+    type_format: Union[str, None]
+    description: Union[str, None]
     examples: list[Any]
-    maximum: float | None
-    default: Any | None
+    maximum: Union[float, None]
+    default: Union[Any, None]
     location: str
 
     def __str__(self) -> str:
@@ -91,7 +91,7 @@ class ParamInfo:
 class EndpointInfo:
     path: str
     method: str
-    description: str | None
+    description: Union[str, None]
     response: ResponseInfo
     parameters: list[ParamInfo]
 

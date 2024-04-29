@@ -1,5 +1,6 @@
 # type: ignore
 
+
 def test_main(mocker):
     app = mocker.patch("openapi_python_client.cli.app")
 

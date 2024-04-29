@@ -45,12 +45,12 @@ class SecurityScheme:
 
 class OpenapiContext:
     spec: osp.OpenAPI
-    spec_raw: dict[str, Any]
+    spec_raw: Dict[str, Any]
 
-    _component_cache: Dict[str, dict[str, Any]]
+    _component_cache: Dict[str, Dict[str, Any]]
     security_schemes: Dict[str, SecurityScheme]
 
-    def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: dict[str, Any]) -> None:
+    def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any]) -> None:
         self.config = config
         self.spec = spec
         self.spec_raw = spec_raw
@@ -62,14 +62,14 @@ class OpenapiContext:
         registry = referencing.Registry().with_resource(resource=resource, uri="")
         self._resolver = registry.resolver()
 
-    def _component_from_reference_url(self, url: str) -> dict[str, Any]:
+    def _component_from_reference_url(self, url: str) -> Dict[str, Any]:
         if url in self._component_cache:
             return self._component_cache[url]
         obj = self._resolver.lookup(url).contents
         self._component_cache[url] = obj
         return obj
 
-    def _component_from_reference(self, ref: osp.Reference) -> dict[str, Any]:
+    def _component_from_reference(self, ref: osp.Reference) -> Dict[str, Any]:
         url = ref.ref
         return self._component_from_reference_url(url)
 
@@ -86,13 +86,13 @@ class OpenapiContext:
         name = name or schema.title
         return name, schema
 
-    def response_from_reference(self, ref: osp.Reference | osp.Response) -> osp.Response:
+    def response_from_reference(self, ref: Union[osp.Reference, osp.Response]) -> osp.Response:
         if isinstance(ref, osp.Response):
             return ref
         return osp.Response.parse_obj(self._component_from_reference(ref))
         # return cast(osp.Response, self._component_from_reference(ref))
 
-    def schema_from_reference(self, ref: osp.Reference | osp.Schema) -> osp.Schema:
+    def schema_from_reference(self, ref: Union[osp.Reference, osp.Schema]) -> osp.Schema:
         if isinstance(ref, osp.Schema):
             return ref
         return osp.Schema.parse_obj(self._component_from_reference(ref))

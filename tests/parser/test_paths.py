@@ -1,5 +1,6 @@
 import pytest
 
+from typing import List, Tuple
 from openapi_python_client.parser.paths import table_names_from_paths, find_longest_common_prefix
 
 
@@ -68,6 +69,6 @@ def test_table_names_from_paths_no_prefix() -> None:
         ),
     ],
 )
-def test_find_longest_common_prefix(paths: list[tuple[str, ...]], expected: tuple[str, ...]) -> None:
+def test_find_longest_common_prefix(paths: List[Tuple[str, ...]], expected: Tuple[str, ...]) -> None:
     result = find_longest_common_prefix(paths)
     assert result == expected

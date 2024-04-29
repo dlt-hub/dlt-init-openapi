@@ -101,10 +101,10 @@ class Response:
         )
 
 
-@dataclass(kw_only=True)
+@dataclass()
 class Endpoint:
     method: TMethod
-    responses: dict[str, Response]
+    responses: Dict[str, Response]
     path: str
     parameters: Dict[str, Parameter]
     path_table_name: str

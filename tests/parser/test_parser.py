@@ -1,5 +1,5 @@
 import pytest
-
+from typing import Tuple
 from openapi_python_client.parser.openapi_parser import OpenapiParser
 from openapi_python_client.parser.models import SchemaWrapper
 import openapi_schema_pydantic as osp
@@ -62,7 +62,7 @@ def test_new_releases_list_property(spotify_parser: OpenapiParser) -> None:
     ],
 )
 def test_extract_payload_spotify(
-    endpoint_path: str, payload_path: tuple[str], payload_name: str, spotify_parser: OpenapiParser
+    endpoint_path: str, payload_path: Tuple[str], payload_name: str, spotify_parser: OpenapiParser
 ) -> None:
     endpoints = spotify_parser.endpoints
 
@@ -81,7 +81,7 @@ def test_extract_payload_spotify(
     ],
 )
 def test_extract_payload_pokeapi(
-    endpoint_path: str, payload_path: tuple[str], payload_name: str, pokemon_parser: OpenapiParser
+    endpoint_path: str, payload_path: Tuple[str], payload_name: str, pokemon_parser: OpenapiParser
 ) -> None:
     endpoints = pokemon_parser.endpoints
 

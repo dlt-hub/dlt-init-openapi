@@ -11,6 +11,9 @@ lint:
 format: 
 	black .
 
+test:
+	pytest tests
+
 # dev helpers
 create-pokemon-pipeline:
 	rm -rf pokemon-pipeline

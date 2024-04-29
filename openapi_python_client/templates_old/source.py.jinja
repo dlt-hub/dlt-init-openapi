@@ -1,0 +1,50 @@
+{% from "endpoint_module.py.jinja" import generate_resource %}
+from typing import List
+
+from dlt.extract.source import DltResource
+from dlt.sources.helpers.rest_client import RESTClient
+from dlt.common.jsonpath import TJsonPath
+
+{% for import_string  in imports %}
+{{ import_string }}
+{% endfor %}
+
+import dlt
+
+__source_name__ = "{{ source_name }}"
+
+@dlt.source(name="{{package_name}}", max_table_nesting=2)
+def {{ source_name }}(
+        {% if credentials %}
+        credentials: {{ credentials.type_hint }} = dlt.secrets.value,
+        {% endif %}
+        base_url: str = dlt.config.value,
+) -> List[DltResource]:
+    rest_client = RESTClient(base_url=base_url)
+    # Root list endpoints
+    resources = {}
+    {% for endpoint in endpoint_collection.root_endpoints %}
+    resources["{{ endpoint.python_name }}"] = {{ endpoint.python_name }}(
+        rest_client=rest_client,
+        {% if credentials and endpoint.credentials %}
+        credentials = credentials,
+        {% endif %}
+    )
+    {% endfor %}
+
+    # Transformer endpoints which depend on list endpoints
+    {% for endpoint in endpoint_collection.transformer_endpoints %}
+    resources["{{ endpoint.python_name }}"] = resources["{{ endpoint.parent.python_name }}"] | {{ endpoint.python_name }}(
+        rest_client=rest_client,
+        {% if credentials and endpoint.credentials %}
+        credentials = credentials,
+        {% endif %}
+    )
+    {% endfor %}
+
+    return list(resources.values())
+
+
+{% for endpoint in endpoint_collection.all_endpoints_to_render %}
+{{ generate_resource(endpoint) }}
+{% endfor %}

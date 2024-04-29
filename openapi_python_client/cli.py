@@ -53,7 +53,8 @@ _meta_option = typer.Option(
 )
 
 CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
-REST_API_SOURCE_LOCATION = "./verified-sources/sources/rest_api"
+REST_API_SOURCE_LOCATION = "./sources/sources/rest_api"
+
 
 # pylint: disable=too-many-arguments
 @app.command()

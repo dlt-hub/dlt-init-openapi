@@ -5,11 +5,11 @@
 lint:
 	poetry run flake8 openapi_python_client tests
 	poetry run mypy openapi_python_client tests
-	poetry run black . --check
+	poetry run black tests openapi_python_client --check
 
 # format the whole project
 format: 
-	poetry run black .
+	poetry run black tests openapi_python_client
 
 test:
 	poetry run pytest tests

@@ -249,15 +249,18 @@ class Project:  # pylint: disable=too-many-instance-attributes
     def _build_source(self) -> None:
         module_path = self.package_dir / "__init__.py"
 
-        template = self.env.get_template("source.py.jinja")
         module_path.write_text(
-            template.render(
-                source_name=self.source_name,
-                endpoint_collection=self.openapi.endpoints,
-                imports=self.openapi.credentials.get_imports() if self.openapi.credentials else [],
-                credentials=self.openapi.credentials,
-            ),
+            self._render_source(),
             encoding=self.file_encoding,
+        )
+
+    def _render_source(self) -> str:
+        template = self.env.get_template("source.py.jinja")
+        return template.render(
+            source_name=self.source_name,
+            endpoint_collection=self.openapi.endpoints,
+            imports=self.openapi.credentials.get_imports() if self.openapi.credentials else [],
+            credentials=self.openapi.credentials,
         )
 
     def _build_pipeline(self) -> None:
@@ -275,8 +278,8 @@ class Project:  # pylint: disable=too-many-instance-attributes
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     url: Optional[str],
     path: Optional[Path],
-    meta: MetaType,
-    config: Config,
+    meta: MetaType = MetaType.POETRY,
+    config: Config = Config(),
     custom_template_path: Optional[Path] = None,
     file_encoding: str = "utf-8",
     endpoint_filter: Optional[TEndpointFilter] = None,

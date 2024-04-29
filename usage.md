@@ -5,7 +5,9 @@ Generate a Python client from an OpenAPI JSON document
 **Usage**:
 
 ```console
-$ openapi-python-client [OPTIONS] COMMAND [ARGS]...
+$ dlt-init [OPTIONS] COMMAND [ARGS]...
+# e.g.: dlt-init init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+
 ```
 
 **Options**:

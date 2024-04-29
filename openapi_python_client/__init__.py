@@ -153,8 +153,8 @@ class Project:  # pylint: disable=too-many-instance-attributes
             pytyped = self.package_dir / "py.typed"
             pytyped.write_text("# Marker file for PEP 561", encoding=self.file_encoding)
 
-        types_template = self.env.get_template("types.py.jinja")
-        types_path = self.package_dir / "types.py"
+        types_template = self.env.get_template("pipeline_types.py.jinja")
+        types_path = self.package_dir / "pipeline_types.py"
         types_path.write_text(types_template.render(), encoding=self.file_encoding)
 
         utils_template = self.env.get_template("utils.py.jinja")

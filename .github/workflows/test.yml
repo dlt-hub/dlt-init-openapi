@@ -54,8 +54,12 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --with dev
 
-      - name: Run make lint
+      - name: Run make test
         run: make test
+
+      - name: Create example pipeline
+        run: make create-pokemon-pipeline
+        
 
   matrix_job_required_check:
     name: lint | code & tests

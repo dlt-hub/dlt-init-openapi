@@ -1,15 +1,18 @@
-from typing import Dict, Any
+from typing import Dict, Any, cast
 
 import os
 import pytest
 import importlib
 from distutils.dir_util import copy_tree, remove_tree
 
-from tests.cases import all_cases
 from openapi_python_client.config import Config
 from openapi_python_client.cli import REST_API_SOURCE_LOCATION
-
 from openapi_python_client import _get_project_for_url_or_path
+
+from dlt.extract.source import DltSource
+
+from tests.cases import all_cases
+
 
 LOCAL_DIR = "tests/_local/"
 
@@ -21,7 +24,7 @@ Oauth20Credentials = Any
 """
 
 
-def get_rendered_dict_for_openapi(case: str) -> Dict[Any, Any]:
+def get_rendered_dict_for_openapi(case: str) -> DltSource:
     """
     This function renders the source into a string and returns the extracted
     dict for further inspection
@@ -48,7 +51,7 @@ def get_rendered_dict_for_openapi(case: str) -> Dict[Any, Any]:
 
     module = importlib.import_module(local.replace("/", "."))
     remove_tree(LOCAL_DIR + "rest_api")
-    return module.test_source()
+    return cast(DltSource, module.test_source())
 
 
 @pytest.mark.parametrize(
@@ -57,4 +60,4 @@ def get_rendered_dict_for_openapi(case: str) -> Dict[Any, Any]:
 )
 def test_renderer_output_validity(case: str) -> None:
     source = get_rendered_dict_for_openapi(case)
-    print(source)
+    assert len(source.resources) >= 2

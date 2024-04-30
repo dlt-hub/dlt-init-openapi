@@ -18,6 +18,7 @@ def process_responses(endpoint_collection: "EndpointCollection") -> None:
         # _process_response_list(endpoint.data_response, endpoint, endpoint_collection)
         payload = endpoint.payload
         if not payload:
+            table_ranks[endpoint.table_name] = 0
             continue
         unique_models = set(t.name for t in payload.prop.crawled_properties.object_properties.values())
         # unique_models = set(t.name for t in response.content_schema.crawled_properties.object_properties.values())
@@ -32,6 +33,7 @@ def find_payload(response: Response, endpoint: Endpoint, endpoints: EndpointColl
     schema = response.content_schema
     if not response.payload:
         return None  # TODO: response has no schema, is endpoint ignored?
+
     schema = response.payload.prop
     root_path = response.payload.path
 

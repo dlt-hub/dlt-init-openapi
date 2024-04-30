@@ -1,0 +1,100 @@
+# Fixed simple poke api spec to test resolution of child tables
+openapi: 3.0.0
+info:
+  description: ''
+  title: 'pokeapi'
+  version: '20220523'
+servers:
+- url: 'https://pokeapi.co/'
+paths:
+
+  /api/v2/pokemon/:
+    get:
+      operationId: pokemon_list
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          description: Number of results to return per page.
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          description: The initial index from which to return the results.
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: The total number of pokemons.
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    description: URL to retrieve the next page of pokemons.
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                    description: URL to retrieve the previous page of pokemons.
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pokemon'
+      tags:
+      - pokemon
+
+
+  /api/v2/pokemon/{name}/:
+    get:
+      operationId: pokemon_read
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          description: A unique integer value identifying this pokemon.
+          title: ID
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+      tags:
+      - pokemon
+ 
+components:
+  schemas:
+    Pokemon:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        base_experience:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+        is_default:
+          type: boolean
+        order:
+          type: integer
+          format: int32
+        weight:
+          type: integer
+          format: int32

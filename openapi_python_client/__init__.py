@@ -108,7 +108,6 @@ class Project:  # pylint: disable=too-many-instance-attributes
             openapi=self.openapi,
             endpoints=self.openapi.endpoints,
         )
-        # self.errors: List[GeneratorError] = []
         self.endpoint_filter = endpoint_filter
 
     def build(self) -> None:
@@ -124,7 +123,6 @@ class Project:  # pylint: disable=too-many-instance-attributes
         self._create_package()
         self._build_metadata()
         self._build_dlt_config()
-        self._build_security()
         self._build_source()
         self._build_pipeline()
         self._run_post_hooks()
@@ -152,22 +150,6 @@ class Project:  # pylint: disable=too-many-instance-attributes
         if self.meta != MetaType.NONE:
             pytyped = self.package_dir / "py.typed"
             pytyped.write_text("# Marker file for PEP 561", encoding=self.file_encoding)
-
-        # types_template = self.env.get_template("pipeline_types.py.jinja")
-        # types_path = self.package_dir / "pipeline_types.py"
-        # types_path.write_text(types_template.render(), encoding=self.file_encoding)
-
-        # utils_template = self.env.get_template("utils.py.jinja")
-        # utils_path = self.package_dir / "utils.py"
-        # utils_path.write_text(utils_template.render(), encoding=self.file_encoding)
-
-        # api_helpers_template = self.env.get_template("api_helpers.py.jinja")
-        # api_helpers_path = self.package_dir / "api_helpers.py"
-        # api_helpers_path.write_text(api_helpers_template.render(), encoding=self.file_encoding)
-
-        # # For now just copy the rest_api source into the package
-        # rest_api_dir = Path(__file__).parent / "sources" / "rest_api"
-        # shutil.copytree(rest_api_dir, self.package_dir / "rest_api")
 
     def _build_dlt_config(self) -> None:
         config_dir = self.project_dir / ".dlt"
@@ -232,23 +214,8 @@ class Project:  # pylint: disable=too-many-instance-attributes
             encoding=self.file_encoding,
         )
 
-    def _build_security(self) -> None:
-        pass
-        # schemes_base = self.package_dir / "_base.py"
-
-        # scheme_template = self.env.get_template("security_schemes.py.jinja")
-        # module_path = self.package_dir / "credentials.py"
-        # module_path.write_text(
-        #     scheme_template.render(security_schemes=self.openapi.context.security_schemes.values()),
-        #     encoding=self.file_encoding,
-        # )
-
-        # schemes_base_template = self.env.get_template("security_schemes_base.py.jinja")
-        # schemes_base.write_text(schemes_base_template.render(), encoding=self.file_encoding)
-
     def _build_source(self) -> None:
         module_path = self.package_dir / "__init__.py"
-
         module_path.write_text(
             self._render_source(),
             encoding=self.file_encoding,

@@ -1,4 +1,4 @@
-from typing import Iterable, Dict, Tuple
+from typing import Iterable, Dict, Tuple, List
 
 import os.path
 
@@ -92,3 +92,14 @@ def find_longest_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, .
         prefix = longer_prefix
 
     return prefix
+
+
+def get_path_parts(path: str) -> List[str]:
+    """convert path into parts"""
+    return path.strip("/").split("/")
+
+
+def is_var_part(part: str) -> bool:
+    """check if a part is path var"""
+    part = part.strip()
+    return part[0] == "{" and part[-1] == "}"

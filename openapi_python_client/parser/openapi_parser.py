@@ -62,11 +62,15 @@ class OpenapiParser:
         self.spec_raw = self.load_spec_raw()
         # log.info("Pydantic parse")
         spec = osp.OpenAPI.parse_obj(self.spec_raw)
+
+        log.info("Extracting metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)
-        log.info("Parse endpoints")
+
+        log.info("Parsing endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)
-        log.info("Parse credentials")
+
+        log.info("Parsing credentials")
         self.credentials = CredentialsProperty.from_context(self.context)
 
 

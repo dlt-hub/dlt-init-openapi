@@ -51,17 +51,6 @@ class Parameter:
     def type_hint(self) -> str:
         return DataType.from_schema(self.schema, required=self.required).type_hint
 
-    def to_string(self) -> str:
-        type_hint = self.type_hint
-        default = self.default
-        if default is None and not self.required:
-            default = "UNSET"
-
-        base_string = f"{self.python_name}: {type_hint}"
-        if default is not None:
-            base_string += f" = {default}"
-        return base_string
-
     def _matches_type(self, schema: SchemaWrapper) -> bool:
         return compare_openapi_types(self.types, self.type_format, schema.types, schema.type_format)
 

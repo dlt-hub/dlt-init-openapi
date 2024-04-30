@@ -20,15 +20,6 @@ class Pagination:
     paginator_class: str = None
     paginator_config: Dict[str, str] = None
 
-    def to_string(self) -> str:
-        assert self.paginator_class
-        assert self.paginator_config is not None
-        ret = self.paginator_class + "(\n"
-        for key, value in self.paginator_config.items():
-            ret += f"{key}={repr(value)},\n"
-        ret += ")"
-        return ret
-
     @property
     def param_names(self) -> List[str]:
         """All params used for pagination"""

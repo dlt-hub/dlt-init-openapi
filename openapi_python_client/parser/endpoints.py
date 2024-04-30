@@ -364,6 +364,11 @@ class EndpointCollection:
     def transformer_endpoints(self) -> List[Endpoint]:
         return [e for e in self.all_endpoints_to_render if e.transformer]
 
+    def discover_parents(self) -> None:
+        # discover parents
+        for endpoint in self.endpoints:
+            endpoint.parent = self.find_nearest_list_parent(endpoint.path)
+
     def set_names_to_render(self, names: Set[str]) -> None:
         self.names_to_render = names
 
@@ -391,12 +396,10 @@ class EndpointCollection:
                     )
                 )
         endpoint_tree = cls.build_endpoint_tree(endpoints)
-        result = cls(endpoints=endpoints, endpoint_tree=endpoint_tree)
+        inst = cls(endpoints=endpoints, endpoint_tree=endpoint_tree)
+        inst.discover_parents()
 
-        # discover parents
-        for endpoint in result.endpoints:
-            endpoint.parent = result.find_nearest_list_parent(endpoint.path)
-        return result
+        return inst
 
     def find_immediate_parent(self, path: str) -> Optional[Endpoint]:
         """Find the parent of the given endpoint.

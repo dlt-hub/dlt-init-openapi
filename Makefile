@@ -3,12 +3,14 @@
 
 # lint
 lint:
+	rm -rf tests/_local
 	poetry run flake8 openapi_python_client tests
 	poetry run mypy openapi_python_client tests
 	poetry run black tests openapi_python_client --check
 
 # format the whole project
 format: 
+	rm -rf tests/_local
 	poetry run black tests openapi_python_client
 
 test:

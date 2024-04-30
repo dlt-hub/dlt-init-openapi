@@ -58,7 +58,7 @@ paths:
       operationId: pokemon_read
       parameters:
       - in: path
-        name: id
+        name: name
         required: true
         schema:
           description: A unique integer value identifying this pokemon.

@@ -10,7 +10,6 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.paths import table_names_from_paths, get_path_parts, is_var_part
 from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 from openapi_python_client.utils import PythonIdentifier
-from openapi_python_client.parser.responses import process_responses
 from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
@@ -42,7 +41,6 @@ class Response:
     content_schema: Optional[SchemaWrapper]
     list_property: Optional[DataPropertyPath] = None
     payload: Optional[DataPropertyPath] = None
-    initial_payload: Optional[DataPropertyPath] = None
     """Payload set initially before comparing other endpoints"""
 
     @property
@@ -65,7 +63,7 @@ class Response:
         status_code: str,
         resp_ref: Union[osp.Reference, osp.Response],
         context: OpenapiContext,
-        expect_list: bool = False,
+        expect_list: bool = False,  # if we think there should be a list, behave a bit different
     ) -> "Response":
         if status_code == "default":
             status_code = "200"
@@ -82,15 +80,25 @@ class Response:
         payload_schema: Optional[SchemaWrapper] = content_schema
         payload: Optional[DataPropertyPath] = None
 
-        # try to discover path and schema
+        # try to discover payload path and schema
         if payload_schema:
             payload_path = []
 
-            while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
-                # Schema contains only a single object property. The payload is inside
-                prop_obj = payload_schema.properties[0]
-                payload_path.append(prop_obj.name)
-                payload_schema = prop_obj.schema
+            if expect_list:
+                # TODO: improve heuristics and move into some utility function for testing
+                if not payload_schema.is_list:
+                    for prop in payload_schema.properties:
+                        if prop.schema.is_list:
+                            payload_path.append(prop.name)
+                            payload_schema = prop.schema
+                            break
+            else:
+                # TODO: this needs improvement
+                while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
+                    # Schema contains only a single object property. The payload is inside
+                    prop = payload_schema.properties[0]
+                    payload_path.append(prop.name)
+                    payload_schema = prop.schema
 
             payload = DataPropertyPath(tuple(payload_path), payload_schema)
 
@@ -100,7 +108,6 @@ class Response:
             raw_schema=raw_schema,
             content_schema=content_schema,
             payload=payload,
-            initial_payload=payload,
         )
 
 
@@ -133,10 +140,6 @@ class Endpoint:
     pagination: Optional[Pagination] = None
 
     rank: int = 0
-
-    def to_docstring(self) -> str:
-        lines = [self.path_summary, self.summary, self.path_description, self.description]
-        return "\n".join(line for line in lines if line)
 
     @property
     def payload(self) -> Optional[DataPropertyPath]:
@@ -258,23 +261,22 @@ class Endpoint:
     @property
     def transformer(self) -> Optional[TransformerSetting]:
         # TODO: compute once when generating endpoints
-
         if not self.parent:
             return None
 
-        # if not self.parent.is_list:
-        #     return None
-        path_parameters = self.path_parameters
-        if not path_parameters:
+        if not self.path_parameters:
             return None
 
         # Must resolve all path parameters from the parent response
         # TODO: Consider multiple levels of transformers.
         # This would need to forward resolved ancestor params through meta arg
         parent_payload = self.parent.payload
-        assert parent_payload
+        # TODO: fallback to var of same name
+        if not self.parent.payload:
+            return None
+
         resolved_props = []
-        for param in path_parameters.values():
+        for param in self.path_parameters.values():
             prop = param.find_input_property(parent_payload.schema, fallback="id")
             if not prop:
                 return None
@@ -283,7 +285,7 @@ class Endpoint:
         return TransformerSetting(
             parent_endpoint=self.parent,
             parent_properties=resolved_props,
-            path_parameters=list(path_parameters.values()),
+            path_parameters=list(self.path_parameters.values()),
         )
 
     @classmethod
@@ -395,7 +397,7 @@ class EndpointCollection:
                 )
         endpoint_tree = cls.build_endpoint_tree(endpoints)
         result = cls(endpoints=endpoints, endpoint_tree=endpoint_tree)
-        process_responses(result)
+        # process_responses(result)
         for endpoint in result.endpoints:
             endpoint.parent = result.find_nearest_list_parent(endpoint.path)
         return result

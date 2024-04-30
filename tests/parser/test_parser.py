@@ -7,7 +7,7 @@ import openapi_schema_pydantic as osp
 from tests.cases import get_original_case_path
 
 
-pytest.mark.skip("skip for now")
+pytest.skip(allow_module_level=True)
 
 
 @pytest.fixture(scope="module")

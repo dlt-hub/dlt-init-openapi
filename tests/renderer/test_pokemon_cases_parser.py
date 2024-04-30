@@ -1,8 +1,6 @@
 #
 # Test different iterations of pokemon
 #
-import os
-
 from tests.renderer.utils import get_dict_from_open_api, get_source_from_open_api
 from tests.cases import get_test_case_path
 
@@ -15,11 +13,11 @@ def test_simple_poke_load() -> None:
     assert source["resources"][0] == {"name": "pokemon_list", "endpoint": "/api/v2/pokemon/"}
 
     # source should also work
-    source = get_source_from_open_api(simple_poke, base_url="https://pokeapi.co/")
+    dltsource = get_source_from_open_api(simple_poke, base_url="https://pokeapi.co/")
 
     # this will actually hit the pokeapi
-    source.resources["pokemon_list"].add_limit(15)
-    assert len(list(source.resources["pokemon_list"])) == 300
+    dltsource.resources["pokemon_list"].add_limit(15)
+    assert len(list(dltsource.resources["pokemon_list"])) == 300
 
 
 def test_paged_poke_load() -> None:

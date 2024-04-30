@@ -23,12 +23,6 @@ class Parameter:
     explode: bool
     style: Optional[str] = None
 
-    def get_imports(self) -> List[str]:
-        imports = []
-        if self.schema.is_union:
-            imports.append("from typing import Union")
-        return imports
-
     @property
     def types(self) -> List[TSchemaType]:
         return self.schema.types

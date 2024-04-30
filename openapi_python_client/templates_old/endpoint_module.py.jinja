@@ -9,10 +9,6 @@ from .pipeline_types import UNSET, Unset
 from .utils import extract_nested_data, extract_iterate_parent
 from .api_helpers import build_query_parameters, build_formatted_url, TParameterMap
 
-{% for imp_string in endpoint.get_imports() %}
-{{ imp_string }}
-{% endfor %}
-
 {% from "endpoint_macros.py.jinja" import header_params, cookie_params, query_params,
     arguments, resource_arguments, kwargs, transformer_kwargs, parse_response, docstring, paginator %}
 

@@ -1,4 +1,4 @@
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from dataclasses import dataclass
 import openapi_schema_pydantic as osp
@@ -17,14 +17,6 @@ class CredentialsProperty:
         else:
             tmpl = "{}"
         return tmpl.format(", ".join(scheme.class_name for scheme in self.schemes))
-
-    def get_imports(self) -> Set[str]:
-        ret: Set[str] = set()
-        if len(self.schemes) > 1:
-            ret.add("from typing import Union")
-        for item in self.schemes:
-            ret.add(f"from .credentials import {item.class_name}")
-        return ret
 
     @classmethod
     def from_requirements(

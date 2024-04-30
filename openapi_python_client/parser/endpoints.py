@@ -3,8 +3,6 @@ from __future__ import annotations
 from typing import Optional, Literal, cast, Union, List, Dict, Any, Iterable, Tuple, Set
 
 from dataclasses import dataclass, field
-from itertools import groupby
-
 
 import openapi_schema_pydantic as osp
 
@@ -135,10 +133,6 @@ class Endpoint:
     pagination: Optional[Pagination] = None
 
     rank: int = 0
-
-    def get_imports(self) -> List[str]:
-        """Get all import strings required to use this endpoint"""
-        return ""
 
     def to_docstring(self) -> str:
         lines = [self.path_summary, self.summary, self.path_description, self.description]

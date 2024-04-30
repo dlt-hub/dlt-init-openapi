@@ -226,7 +226,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
         return template.render(
             source_name=self.source_name,
             endpoint_collection=self.openapi.endpoints,
-            imports=self.openapi.credentials.get_imports() if self.openapi.credentials else [],
+            imports=[],
             credentials=self.openapi.credentials,
         )
 

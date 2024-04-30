@@ -17,7 +17,6 @@ RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)")
 @dataclass
 class Pagination:
     pagination_params: List["Parameter"] = field(default_factory=list)
-    paginator_class: str = None
     paginator_config: Dict[str, str] = None
 
     @property
@@ -34,20 +33,15 @@ class Pagination:
         offset_params: List["Parameter"] = []
         cursor_params: List["Parameter"] = []
         limit_params: List["Parameter"] = []
+
         # Find params matching regexes
         for param_name, param in endpoint.parameters.items():
             if RE_OFFSET_PARAM.match(param_name):
-                # Offset is a number type
-                if "integer" in param.types:
-                    offset_params.append(param)
+                offset_params.append(param)
             if RE_LIMIT_PARAM.match(param_name):
-                # Limit should be a number type
-                if "integer" in param.types:
-                    limit_params.append(param)
+                limit_params.append(param)
             if RE_CURSOR_PARAM.match(param_name):
-                # Cursor should be a string or integer type
-                if "string" in param.types or "integer" in param.types:
-                    cursor_params.append(param)
+                cursor_params.append(param)
 
         cursor_props: List[Tuple["Parameter", DataPropertyPath]] = []
         for cursor_param in cursor_params:
@@ -62,20 +56,19 @@ class Pagination:
             cursor_props.sort(key=lambda x: len(x[1].path))
             cursor_param, cursor_prop = cursor_props[0]
             pagination_config = {
+                "type": "cursor",
                 "cursor_path": cursor_prop.json_path,
                 "cursor_param": cursor_param.name,
             }
             return cls(
-                paginator_class="JSONResponseCursorPaginator",
                 paginator_config=pagination_config,
                 pagination_params=[cursor_param],
             )
 
         offset_props: List[Tuple["Parameter", DataPropertyPath]] = []
-        offset_prop: Optional[DataPropertyPath] = None
         offset_param: Optional["Parameter"] = None
         limit_param: Optional["Parameter"] = None
-        limit_initial: Optional[int] = None
+        limit_initial: Optional[int] = 20
         for offset_param in offset_params:
             # Try to response property to feed into the offset param
             prop = offset_param.find_input_property(resp.content_schema, fallback=None)
@@ -91,17 +84,15 @@ class Pagination:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
-        total_prop = resp.content_schema.crawled_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
-        if offset_param and limit_param and limit_initial and total_prop:
+        if offset_param and limit_param and limit_initial:
             pagination_config = {
+                "type": "offset",
                 "initial_limit": limit_initial,
                 "offset_param": offset_param.name,
                 "limit_param": limit_param.name,
-                "total_path": total_prop.json_path,
             }
             return cls(
-                paginator_class="OffsetPaginator",
                 paginator_config=pagination_config,
                 pagination_params=[offset_param, limit_param],
             )

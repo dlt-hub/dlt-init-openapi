@@ -31,7 +31,12 @@ def test_paged_poke_load() -> None:
     # TODO: needs to have paginator later
     assert source["resources"][0] == {
         "name": "pokemon_list",
-        "endpoint": {"path": "/api/v2/pokemon/", "data_selector": "results"},
+        "endpoint": {
+            "path": "/api/v2/pokemon/",
+            "data_selector": "results",
+            "paginator": {"initial_limit": "20", "limit_param": "limit", "offset_param": "offset", "type": "offset"},
+            "path": "/api/v2/pokemon/",
+        },
     }
 
     # source should also work
@@ -46,7 +51,11 @@ def test_simple_child_table_poke_load() -> None:
     # root resource
     assert source["resources"][0] == {
         "name": "pokemon_list",
-        "endpoint": {"path": "/api/v2/pokemon/", "data_selector": "results"},
+        "endpoint": {
+            "path": "/api/v2/pokemon/",
+            "data_selector": "results",
+            "paginator": {"initial_limit": "20", "limit_param": "limit", "offset_param": "offset", "type": "offset"},
+        },
     }
 
     # resolve transformer

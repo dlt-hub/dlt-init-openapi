@@ -210,6 +210,12 @@ class Endpoint:
             ret = (p for p in ret if p.name not in self.pagination.param_names)
         return list(ret)
 
+    @property
+    def pagination_args(self) -> Optional[Dict[str, str]]:
+        if not self.pagination:
+            return None
+        return self.pagination.paginator_config
+
     def all_arguments(self) -> List[Parameter]:
         return self.positional_arguments() + self.keyword_arguments()
 

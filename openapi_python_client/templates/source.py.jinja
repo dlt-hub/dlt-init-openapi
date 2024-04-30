@@ -21,33 +21,33 @@ def {{ source_name }}(
         },
         "resources": 
         [
-        # root endpoints
-        {% for r_endpoint in endpoint_collection.root_endpoints %}
+        
+        {% for endpoint in endpoint_collection.all_endpoints_to_render %}
         {
-            "name": "{{ r_endpoint.python_name }}",
+            "name": "{{ endpoint.python_name }}",
             "endpoint": {
-                "data_selector": "{{ r_endpoint.data_json_path }}",
-                "path": "{{r_endpoint.path }}",
-            }
-        },
-        {% endfor %}
-        # child endpoints
-        {% for t_endpoint in endpoint_collection.transformer_endpoints %}
-        {
-            "name": "{{ t_endpoint.python_name }}",
-            "endpoint": {
-                "data_selector": "{{ t_endpoint.data_json_path }}",
-                "path": "{{t_endpoint.path }}",
+                "data_selector": "{{ endpoint.data_json_path }}",
+                "path": "{{endpoint.path }}",
+                {% if endpoint.transformer %}
                 "params": {
-                    {% for key, value in t_endpoint.transformer.path_params_mapping.items() %}
+                    {% for key, value in endpoint.transformer.path_params_mapping.items() %}
                     "{{key}}": {
                         "type": "resolve",
-                        "resource": "{{t_endpoint.parent.python_name }}",
+                        "resource": "{{endpoint.parent.python_name }}",
                         "field": "{{value}}",
                     },
                     {% endfor %}
                 },
-            },
+                {% endif %}
+                {% if endpoint.pagination_args %}
+                "paginator": {
+                    {% for key, value in endpoint.pagination_args.items() %}
+                    "{{key}}": "{{value}}",
+                    {% endfor %}
+                },
+                {% endif %}
+
+            }
         },
         {% endfor %}
         ]

@@ -42,7 +42,12 @@ def {{ source_name }}(
                 {% if endpoint.pagination_args %}
                 "paginator": {
                     {% for key, value in endpoint.pagination_args.items() %}
-                    "{{key}}": "{{value}}",
+                    "{{key}}":
+                        {% if value is integer %}
+                        {{value}},
+                        {% else %}
+                        "{{value}}",
+                        {% endif %}
                     {% endfor %}
                 },
                 {% endif %}

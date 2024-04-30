@@ -84,13 +84,15 @@ class Pagination:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
+        total_prop = resp.content_schema.crawled_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
-        if offset_param and limit_param and limit_initial:
+        if offset_param and limit_param and limit_initial and total_prop:
             pagination_config = {
                 "type": "offset",
                 "initial_limit": limit_initial,
                 "offset_param": offset_param.name,
                 "limit_param": limit_param.name,
+                "total_path": total_prop.json_path,
             }
             return cls(
                 paginator_config=pagination_config,

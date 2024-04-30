@@ -34,7 +34,13 @@ def test_paged_poke_load() -> None:
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
-            "paginator": {"initial_limit": "20", "limit_param": "limit", "offset_param": "offset", "type": "offset"},
+            "paginator": {
+                "initial_limit": 20,
+                "limit_param": "limit",
+                "offset_param": "offset",
+                "type": "offset",
+                "total_path": "count",
+            },
             "path": "/api/v2/pokemon/",
         },
     }
@@ -54,7 +60,13 @@ def test_simple_child_table_poke_load() -> None:
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
-            "paginator": {"initial_limit": "20", "limit_param": "limit", "offset_param": "offset", "type": "offset"},
+            "paginator": {
+                "initial_limit": 20,
+                "limit_param": "limit",
+                "offset_param": "offset",
+                "type": "offset",
+                "total_path": "count",
+            },
         },
     }
 

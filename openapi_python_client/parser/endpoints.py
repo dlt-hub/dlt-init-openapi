@@ -351,11 +351,6 @@ class EndpointCollection:
         return self.endpoints
 
     @property
-    def endpoints_by_id(self) -> Dict[str, Endpoint]:
-        """Endpoints by operation ID"""
-        return {ep.operation_id: ep for ep in self.endpoints}
-
-    @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
         """Endpoints by path"""
         return {ep.path: ep for ep in self.endpoints}
@@ -397,7 +392,8 @@ class EndpointCollection:
                 )
         endpoint_tree = cls.build_endpoint_tree(endpoints)
         result = cls(endpoints=endpoints, endpoint_tree=endpoint_tree)
-        # process_responses(result)
+
+        # discover parents
         for endpoint in result.endpoints:
             endpoint.parent = result.find_nearest_list_parent(endpoint.path)
         return result

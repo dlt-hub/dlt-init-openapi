@@ -7,6 +7,7 @@ from distutils.dir_util import copy_tree, remove_tree
 from openapi_python_client.config import Config
 from openapi_python_client.cli import REST_API_SOURCE_LOCATION
 from openapi_python_client import _get_project_for_url_or_path
+from dlt.common.validation import validate_dict
 
 from dlt.extract.source import DltSource
 from sources.sources.rest_api.typing import RESTAPIConfig
@@ -66,5 +67,9 @@ def get_source_from_open_api(case: str, base_url: str = "base_url") -> DltSource
     return cast(DltSource, get_source_or_dict_from_open_api(case, "source", base_url))
 
 
-def get_dict_from_open_api(case: str) -> RESTAPIConfig:
-    return cast(RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict"))
+def get_dict_from_open_api(case: str, validate: bool = True) -> RESTAPIConfig:
+    api_dict = cast(RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict"))
+    api_dict["client"]["base_url"] = "something"
+    if validate:
+        validate_dict(RESTAPIConfig, api_dict, path=".")
+    return api_dict

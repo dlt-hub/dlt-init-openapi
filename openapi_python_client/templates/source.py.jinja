@@ -25,7 +25,10 @@ def {{ source_name }}(
         {% for r_endpoint in endpoint_collection.root_endpoints %}
         {
             "name": "{{ r_endpoint.python_name }}",
-            "endpoint": "{{ r_endpoint.path }}"
+            "endpoint": {
+                "data_selector": "{{ r_endpoint.data_json_path }}",
+                "path": "{{r_endpoint.path }}",
+            }
         },
         {% endfor %}
         # child endpoints
@@ -33,6 +36,7 @@ def {{ source_name }}(
         {
             "name": "{{ t_endpoint.python_name }}",
             "endpoint": {
+                "data_selector": "{{ t_endpoint.data_json_path }}",
                 "path": "{{t_endpoint.path }}",
                 "params": {
                     {% for key, value in t_endpoint.transformer.path_params_mapping.items() %}

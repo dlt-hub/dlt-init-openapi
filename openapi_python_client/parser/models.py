@@ -28,10 +28,9 @@ from openapi_python_client.utils import unique_list
 if TYPE_CHECKING:
     from openapi_python_client.parser.context import OpenapiContext
 
+from .const import MAX_RECURSION_DEPTH, RE_UNIQUE_KEY
 
 TSchemaType = Literal["boolean", "object", "array", "number", "string", "integer"]
-
-MAX_RECURSION_DEPTH = 6
 
 
 @dataclass
@@ -117,9 +116,6 @@ class SchemaWrapper:
 
     def _find_primary_key(self) -> Optional[str]:
         """Attempt to find the name of primary key field in the schema"""
-        # Regex pattern finding the words "unique", "id" or "identifier" in description
-        # Use word boundaries
-        desc_pattern = re.compile(r"\b(unique|id|identifier)\b", re.IGNORECASE)
 
         description_paths = []
         uuid_paths = []
@@ -129,7 +125,7 @@ class SchemaWrapper:
                 continue
             if prop.name.lower() == "id":
                 return prop.name
-            elif prop.schema.description and desc_pattern.search(prop.schema.description):
+            elif prop.schema.description and RE_UNIQUE_KEY.search(prop.schema.description):
                 description_paths.append(prop.name)
             elif prop.schema.type_format == "uuid":
                 uuid_paths.append(prop.name)
@@ -162,18 +158,6 @@ class SchemaWrapper:
     @property
     def is_list(self) -> bool:
         return "array" in self.types
-
-    @property
-    def property_template(self) -> str:
-        if self.is_union:
-            return "union_property.py.jinja"
-        elif self.types == ["integer"]:
-            return "int_property.py.jinja"
-        elif self.types == ["float"]:
-            return "float_property.py.jinja"
-        elif self.types == ["boolean"]:
-            return "boolean_property.py.jinja"
-        return "any_property.py.jinja"
 
     @property
     def union_schemas(self) -> List["SchemaWrapper"]:
@@ -222,8 +206,7 @@ class SchemaWrapper:
 
         if not name:
             for sub in all_of:
-                name = sub.name
-                if name:
+                if name := sub.name:
                     break
 
         # Properties from all_of child schemas should be merged
@@ -387,11 +370,6 @@ class SchemaCrawler:
         yields a tuple of (path, ( (types, ...), "format")) for each property in the schema
         """
         for path, schema in self.all_properties.items():
-            # if schema.is_list and schema.array_item:
-            #     # Include the array item type for full comparison
-            #     yield path, tuple(schema.types + schema.array_item.types])
-            # else:
-            # yield path, (tuple(schema.types), schema.type_format, tuple(schema.enum_values or []))
             yield path, (tuple(schema.types), schema.type_format, tuple(schema.enum_values or []))
 
     def is_optional(self, path: Tuple[str, ...]) -> bool:
@@ -411,9 +389,7 @@ class SchemaCrawler:
         candidates = []
         unknown_type_candidates = []
         for path, schema in self.items():
-            if not path:
-                continue
-            if not pattern.match(path[-1]):
+            if not path or not pattern.match(path[-1]):
                 continue
             if require_type:
                 if require_type in schema.types:

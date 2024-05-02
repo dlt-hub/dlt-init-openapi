@@ -32,10 +32,6 @@ class Parameter:
         return self.schema.type_format
 
     @property
-    def template(self) -> str:
-        return self.schema.property_template
-
-    @property
     def default(self) -> Optional[Any]:
         return self.schema.default
 

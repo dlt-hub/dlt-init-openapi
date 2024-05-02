@@ -90,19 +90,16 @@ class OpenapiContext:
         if isinstance(ref, osp.Response):
             return ref
         return osp.Response.parse_obj(self._component_from_reference(ref))
-        # return cast(osp.Response, self._component_from_reference(ref))
 
     def schema_from_reference(self, ref: Union[osp.Reference, osp.Schema]) -> osp.Schema:
         if isinstance(ref, osp.Schema):
             return ref
         return osp.Schema.parse_obj(self._component_from_reference(ref))
-        # return cast(osp.Schema, self._component_from_reference(ref))
 
     def parameter_from_reference(self, ref: Union[osp.Reference, osp.Parameter]) -> osp.Parameter:
         if isinstance(ref, osp.Parameter):
             return ref
         return osp.Parameter.parse_obj(self._component_from_reference(ref))
-        # return cast(osp.Parameter, self._component_from_reference(ref))
 
     def get_security_scheme(self, name: str) -> SecurityScheme:
         if name in self.security_schemes:

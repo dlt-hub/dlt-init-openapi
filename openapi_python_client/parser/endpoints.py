@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Literal, cast, Union, List, Dict, Any, Iterable, Tuple, Set
+from typing import Optional, Literal, cast, Union, List, Dict, Iterable, Tuple, Set
 
 from dataclasses import dataclass, field
 
@@ -186,18 +186,6 @@ class Endpoint:
         return {p.name: p for p in self.parameters.values() if p.location == "path"}
 
     @property
-    def query_parameters(self) -> Dict[str, Parameter]:
-        return {p.name: p for p in self.parameters.values() if p.location == "query"}
-
-    @property
-    def header_parameters(self) -> Dict[str, Parameter]:
-        return {p.name: p for p in self.parameters.values() if p.location == "header"}
-
-    @property
-    def cookie_parameters(self) -> Dict[str, Parameter]:
-        return {p.name: p for p in self.parameters.values() if p.location == "cookie"}
-
-    @property
     def list_all_parameters(self) -> List[Parameter]:
         return list(self.parameters.values())
 
@@ -220,30 +208,10 @@ class Endpoint:
 
     @property
     def pagination_args(self) -> Optional[Dict[str, str]]:
-        if not self.pagination:
-            return None
-        return self.pagination.paginator_config
+        return self.pagination.paginator_config if self.pagination else None
 
     def all_arguments(self) -> List[Parameter]:
         return self.positional_arguments() + self.keyword_arguments()
-
-    @property
-    def request_args_meta(self) -> Dict[str, Dict[str, Dict[str, str]]]:
-        """Mapping of how to translate python arguments to request parameters"""
-        result: Dict[str, Any] = {}
-        for param in self.parameters.values():
-            items = result.setdefault(param.location, {})
-            items[param.python_name] = {
-                "name": param.name,
-                "types": param.types,
-                "explode": param.explode,
-                "style": param.style,
-            }
-        return result
-
-    @property
-    def request_args_meta_str(self) -> str:
-        return repr(self.request_args_meta)
 
     @property
     def data_response(self) -> Optional[Response]:
@@ -260,38 +228,21 @@ class Endpoint:
 
     @property
     def table_name(self) -> str:
-        name: Optional[str] = None
-        if self.payload:
-            name = self.payload.name
-        if name:
-            return name
-        return self.path_table_name
+        return self.payload.name if (self.payload and self.payload.name) else self.path_table_name
 
     @property
     def data_json_path(self) -> str:
-        payload = self.payload
-        return (payload.json_path if payload else "") or "$"
+        return (self.payload.json_path if self.payload else "") or "$"
 
     @property
     def transformer(self) -> Optional[TransformerSetting]:
-        # TODO: compute once when generating endpoints
-        if not self.parent:
-            return None
-
-        if not self.path_parameters:
-            return None
-
-        # Must resolve all path parameters from the parent response
-        # TODO: Consider multiple levels of transformers.
-        # This would need to forward resolved ancestor params through meta arg
-        parent_payload = self.parent.payload
-        # TODO: fallback to var of same name
-        if not self.parent.payload:
+        # meet a couple of conditions to be a transformer
+        if not self.parent or not self.path_parameters or not self.parent.payload:
             return None
 
         resolved_props = []
         for param in self.path_parameters.values():
-            prop = param.find_input_property(parent_payload.schema, fallback="id")
+            prop = param.find_input_property(self.parent.payload.schema, fallback="id")
             if not prop:
                 return None
             resolved_props.append(prop)
@@ -329,8 +280,7 @@ class Endpoint:
         )
 
         operation_id = operation.operationId or f"{method}_{path}"
-        # credentials = CredentialsProperty.from_requirements(operation.security, context)
-        # if operation.security else None
+        python_name = PythonIdentifier(operation_id)
 
         endpoint = cls(
             method=method,
@@ -340,7 +290,7 @@ class Endpoint:
             parameters=all_params,
             path_table_name=path_table_name,
             operation_id=operation.operationId or f"{method}_{path}",
-            python_name=PythonIdentifier(operation_id),
+            python_name=python_name,
             summary=operation.summary,
             description=operation.description,
             path_summary=path_summary,

@@ -1,5 +1,3 @@
-import re
-
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional, List, Dict, Tuple, Any
 
@@ -8,10 +6,7 @@ from openapi_python_client.parser.models import DataPropertyPath
 if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import Endpoint, Parameter
 
-RE_OFFSET_PARAM = re.compile(r"(?i)(page|start|offset)")
-RE_LIMIT_PARAM = re.compile(r"(?i)(limit|per_page|page_size|size)")
-RE_TOTAL_PROPERTY = re.compile(r"(?i)(total|count)")
-RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)")
+from .const import RE_OFFSET_PARAM, RE_LIMIT_PARAM, RE_TOTAL_PROPERTY, RE_CURSOR_PARAM
 
 
 @dataclass

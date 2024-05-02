@@ -1,7 +1,6 @@
-# Fixed simple poke api spec to test single endpoint
 openapi: 3.0.0
 info:
-  description: ''
+  description: 'Fixed simple poke api spec to test single endpoint'
   title: 'pokeapi'
   version: '20220523'
 servers:

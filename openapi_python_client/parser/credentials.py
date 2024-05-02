@@ -61,19 +61,6 @@ class CredentialsProperty:
         }"""
         return ""
 
-    # @classmethod
-    # def from_requirements(
-    #     cls, requirements: List[osp.SecurityRequirement], context: OpenapiContext
-    # ) -> "CredentialsProperty":
-    #     """Build property from endpoint security requirements"""
-    #     schemes: List[SecurityScheme] = []
-    #     for item in requirements:
-    #         key = next(iter(item.keys()))
-    #         scheme = context.get_security_scheme(key)
-    #         schemes.append(scheme)
-
-    #     return cls(schemes)
-
     @classmethod
     def from_context(cls, context: OpenapiContext) -> Optional["CredentialsProperty"]:
         """Create property from global definition"""

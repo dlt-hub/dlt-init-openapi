@@ -146,8 +146,6 @@ class SchemaWrapper:
         props = {p.name: p for p in self.properties}
         for child in self.any_of + self.one_of:
             for prop in child.all_properties:
-                if prop.name in props:
-                    continue
                 props[prop.name] = prop
         return list(props.values())
 
@@ -249,17 +247,15 @@ class SchemaWrapper:
         # Single type in OAI 3.0, list of types in 3.1
         # Nullable does not exist in 3.1, instead types: ["string", "null"]
         nullable = False
+        schema_types = []
         if schema.type:
-            if not isinstance(schema.type, list):
-                schema_types = [schema.type]
-            else:
-                schema_types = schema.type.copy()
-        else:
-            schema_types = []  # No types, they may be taken from all_of/one_of/any_of
+            schema_types = [schema.type] if not isinstance(schema.type, list) else schema.type.copy()
+
         for obj in all_of + one_of + any_of:
             schema_types.extend(obj.types)
             if obj.nullable:
                 nullable = True
+
         if "null" in schema_types:
             nullable = True
             schema_types.remove("null")

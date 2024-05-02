@@ -1,7 +1,7 @@
 #
 # Test different iterations of pokemon
 #
-from tests.renderer.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 from tests.cases import get_test_case_path
 
 
@@ -28,7 +28,6 @@ def test_paged_poke_load() -> None:
     source = get_dict_from_open_api(simple_poke)
     assert len(source["resources"]) == 1
 
-    # TODO: needs to have paginator later
     assert source["resources"][0] == {
         "name": "pokemon_list",
         "endpoint": {

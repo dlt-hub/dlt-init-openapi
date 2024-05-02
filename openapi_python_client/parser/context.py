@@ -105,7 +105,6 @@ class OpenapiContext:
         # return cast(osp.Parameter, self._component_from_reference(ref))
 
     def get_security_scheme(self, name: str) -> SecurityScheme:
-        # TODO: The security scheme might be a Reference
         if name in self.security_schemes:
             return self.security_schemes[name]
         scheme: osp.SecurityScheme = self.spec.components.securitySchemes[name]  # type: ignore[assignment]

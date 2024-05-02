@@ -1,40 +1,88 @@
-from typing import List, Optional
+from typing import Optional
 
 from dataclasses import dataclass
-import openapi_schema_pydantic as osp
 
 from openapi_python_client.parser.context import OpenapiContext, SecurityScheme
 
 
 @dataclass
 class CredentialsProperty:
-    schemes: List[SecurityScheme]
+    scheme: SecurityScheme
 
     @property
-    def type_hint(self) -> str:
-        if len(self.schemes) > 1:
-            tmpl = "Union[{}]"
-        else:
-            tmpl = "{}"
-        return tmpl.format(", ".join(scheme.class_name for scheme in self.schemes))
+    def supported(self) -> bool:
+        if self.scheme.type == "apiKey":
+            return True
+        elif self.scheme.type == "http" and self.scheme.scheme == "basic":
+            return True
+        elif self.scheme.type == "http" and self.scheme.scheme == "bearer":
+            return True
+        return False
 
-    @classmethod
-    def from_requirements(
-        cls, requirements: List[osp.SecurityRequirement], context: OpenapiContext
-    ) -> "CredentialsProperty":
-        """Build property from endpoint security requirements"""
-        schemes: List[SecurityScheme] = []
-        for item in requirements:
-            key = next(iter(item.keys()))
-            scheme = context.get_security_scheme(key)
-            schemes.append(scheme)
+    @property
+    def credentials_string(self) -> str:
+        key = "password"
+        """We assume one scheme for now"""
+        if self.scheme.type == "apiKey":
+            key = "api_key"
+        elif self.scheme.type == "http" and self.scheme.scheme == "basic":
+            key = "password"
+        elif self.scheme.type == "http" and self.scheme.scheme == "bearer":
+            key = "token"
+        if key:
+            return f"{key}: str = dlt.secrets.value"
+        return ""
 
-        return cls(schemes)
+    @property
+    def auth_statement(self) -> str:
+        if self.scheme.type == "apiKey":
+            result = f"""
+        {{
+            "type": "apiKey",
+            "api_key": api_key,
+            "name": "{self.scheme.name}",
+            "location": "header"
+        }}"""
+            return result
+        elif self.scheme.type == "http" and self.scheme.scheme == "basic":
+            return """
+        {
+            "type": "http",
+            "scheme": "basic",
+            "username": "",
+            "password": password,
+        }"""
+        elif self.scheme.type == "http" and self.scheme.scheme == "bearer":
+            return """
+        {
+            "type": "http",
+            "scheme": "bearer",
+            "token": token,
+        }"""
+        return ""
+
+    # @classmethod
+    # def from_requirements(
+    #     cls, requirements: List[osp.SecurityRequirement], context: OpenapiContext
+    # ) -> "CredentialsProperty":
+    #     """Build property from endpoint security requirements"""
+    #     schemes: List[SecurityScheme] = []
+    #     for item in requirements:
+    #         key = next(iter(item.keys()))
+    #         scheme = context.get_security_scheme(key)
+    #         schemes.append(scheme)
+
+    #     return cls(schemes)
 
     @classmethod
     def from_context(cls, context: OpenapiContext) -> Optional["CredentialsProperty"]:
-        """Create property from all credentials. To be used in source"""
-        schemes = list(context.security_schemes.values())
-        if not schemes:
+        """Create property from global definition"""
+        """TODO: make nested defs work"""
+
+        if not context.spec.components or not context.spec.components.securitySchemes:
             return None
-        return cls(schemes)
+        scheme = list(context.spec.components.securitySchemes.values())[0]
+        instance = cls(scheme)  # type: ignore
+        if not instance.supported:
+            return None
+        return instance

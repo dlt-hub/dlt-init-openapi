@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  title: 'bearer'
+  version: 1.0.0
+servers:
+- url: 'https://pokeapi.co/'
+components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+# 2) Apply the security globally to all operations
+security:
+  - bearerAuth: []         # use the same name as above
+paths:
+  /api/v2/pokemon/:
+    get:
+      operationId: pokemon_list
+      responses:
+        '200':
+          description: OK

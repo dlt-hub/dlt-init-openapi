@@ -32,6 +32,14 @@ class TransformerSetting:
     def path_params_mapping(self) -> Dict[str, str]:
         return {param.name: prop.json_path for param, prop in zip(self.path_parameters, self.parent_properties)}
 
+    @property
+    def path_params_mapping_first_item(self) -> Dict[str, str]:
+        items = self.path_params_mapping
+        if items:
+            key = list(items.keys())[0]
+            return {key: items[key]}
+        return items
+
 
 @dataclass
 class Response:
@@ -321,7 +329,8 @@ class Endpoint:
         )
 
         operation_id = operation.operationId or f"{method}_{path}"
-        credentials = CredentialsProperty.from_requirements(operation.security, context) if operation.security else None
+        # credentials = CredentialsProperty.from_requirements(operation.security, context)
+        # if operation.security else None
 
         endpoint = cls(
             method=method,
@@ -336,7 +345,7 @@ class Endpoint:
             description=operation.description,
             path_summary=path_summary,
             path_description=path_description,
-            credentials=credentials,
+            credentials=None,
         )
         endpoint.pagination = Pagination.from_endpoint(endpoint)
 
@@ -383,7 +392,6 @@ class EndpointCollection:
         endpoints: list[Endpoint] = []
         all_paths = list(context.spec.paths)
         path_table_names = table_names_from_paths(all_paths)
-
         for path, path_item in context.spec.paths.items():
             for op_name in context.config.include_methods:
                 operation = getattr(path_item, op_name)

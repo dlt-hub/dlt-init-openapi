@@ -8,7 +8,7 @@ import logging
 
 import httpx
 import openapi_schema_pydantic as osp
-from yaml import CSafeLoader
+from yaml import BaseLoader
 import yaml
 
 from openapi_python_client.parser.context import OpenapiContext
@@ -78,7 +78,7 @@ def _load_yaml_or_json(data: bytes, content_type: Optional[str]) -> Dict[str, An
     if content_type == "application/json":
         return json.loads(data.decode())
     else:
-        return yaml.load(data, CSafeLoader)
+        return yaml.load(data, Loader=BaseLoader)
 
 
 def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, timeout: int = 60) -> Dict[str, Any]:

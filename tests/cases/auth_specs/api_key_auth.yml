@@ -1,0 +1,21 @@
+openapi: 3.0.0
+info:
+  title: 'api_key'
+  version: 1.0.0
+servers:
+- url: 'https://pokeapi.co/'
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: header       # can be "header", "query" or "cookie"
+      name: X-API-KEY  # name of the header, query parameter or cookie
+security:
+  - ApiKeyAuth: []  # <-- use the same name here
+paths:
+  /api/v2/pokemon/:
+    get:
+      operationId: pokemon_list
+      responses:
+        '200':
+          description: OK

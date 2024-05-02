@@ -55,6 +55,9 @@ Oauth20Credentials = Any
     # set some env vars
     os.environ["BASE_URL"] = base_url
     os.environ["CREDENTIALS"] = "1234"
+    os.environ["TOKEN"] = "some token"
+    os.environ["PASSWORD"] = "some password"
+    os.environ["API_KEY"] = "some api key"
 
     module = importlib.import_module(local.replace("/", "."))
 

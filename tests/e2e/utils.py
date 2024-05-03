@@ -42,6 +42,7 @@ Oauth20Credentials = Any
     if rt == "dict":
         source = source.replace('@dlt.source(name="test_source", max_table_nesting=2)', "")
         source = source.replace("rest_api_source(source_config)", "source_config")
+        source = source.replace("dlt.secrets.value", '"SECRET_VALUE"')
 
     source = source.replace("from rest_api", "from .rest_api")
     basename = os.path.basename(case).split(".")[0] + "_" + rt

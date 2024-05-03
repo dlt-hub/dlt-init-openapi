@@ -5,6 +5,7 @@ from tests.e2e.utils import get_source_from_open_api
 from tests.cases import all_local_original_specs, all_repo_original_specs
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "case",
     all_local_original_specs(),
@@ -14,6 +15,7 @@ def test_local_original_specs(case: str) -> None:
     assert len(source.resources) >= 2
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "case",
     all_repo_original_specs(),

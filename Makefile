@@ -14,7 +14,11 @@ format:
 	poetry run black tests openapi_python_client
 
 test:
-	poetry run pytest tests
+	poetry run pytest tests 
+
+# test without running all the original specs
+test-fast:
+	poetry run pytest tests -m "not slow"
 
 # dev helpers
 create-pokemon-pipeline:

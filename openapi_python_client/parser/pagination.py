@@ -1,18 +1,18 @@
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Optional, List, Dict, Tuple, Any
+from typing import TYPE_CHECKING, Optional, List, Dict, Tuple, Union
 
 from openapi_python_client.parser.models import DataPropertyPath
 
 if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import Endpoint, Parameter
 
-from .const import RE_OFFSET_PARAM, RE_LIMIT_PARAM, RE_TOTAL_PROPERTY, RE_CURSOR_PARAM
+from .const import RE_OFFSET_PARAM, RE_LIMIT_PARAM, RE_TOTAL_PROPERTY, RE_CURSOR_PARAM, RE_NEXT_PROPERTY
 
 
 @dataclass
 class Pagination:
     pagination_params: List["Parameter"] = field(default_factory=list)
-    paginator_config: Dict[str, str] = None
+    paginator_config: Dict[str, Union[str, int]] = None
 
     @property
     def param_names(self) -> List[str]:
@@ -38,28 +38,31 @@ class Pagination:
             if RE_CURSOR_PARAM.match(param_name):
                 cursor_params.append(param)
 
+        #
+        # Detect cursor
+        #
         cursor_props: List[Tuple["Parameter", DataPropertyPath]] = []
         for cursor_param in cursor_params:
             # Try to response property to feed into the cursor param
-            prop = cursor_param.find_input_property(resp.content_schema, fallback=None)
-            if prop:
+            if prop := cursor_param.find_input_property(resp.content_schema, fallback=None):
                 cursor_props.append((cursor_param, prop))
 
-        pagination_config: Optional[Dict[str, Any]] = None
         # Prefer the least nested cursor prop
         if cursor_props:
             cursor_props.sort(key=lambda x: len(x[1].path))
             cursor_param, cursor_prop = cursor_props[0]
-            pagination_config = {
-                "type": "cursor",
-                "cursor_path": cursor_prop.json_path,
-                "cursor_param": cursor_param.name,
-            }
             return cls(
-                paginator_config=pagination_config,
+                paginator_config={
+                    "type": "cursor",
+                    "cursor_path": cursor_prop.json_path,
+                    "cursor_param": cursor_param.name,
+                },
                 pagination_params=[cursor_param],
             )
 
+        #
+        # Detect offset - limit
+        #
         offset_props: List[Tuple["Parameter", DataPropertyPath]] = []
         offset_param: Optional["Parameter"] = None
         limit_param: Optional["Parameter"] = None
@@ -82,17 +85,28 @@ class Pagination:
         total_prop = resp.content_schema.crawled_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
         if offset_param and limit_param and limit_initial and total_prop:
-            pagination_config = {
-                "type": "offset",
-                "initial_limit": limit_initial,
-                "offset_param": offset_param.name,
-                "limit_param": limit_param.name,
-                "total_path": total_prop.json_path,
-            }
             return cls(
-                paginator_config=pagination_config,
+                paginator_config={
+                    "type": "offset",
+                    "initial_limit": limit_initial,
+                    "offset_param": offset_param.name,
+                    "limit_param": limit_param.name,
+                    "total_path": total_prop.json_path,
+                },
                 pagination_params=[offset_param, limit_param],
             )
 
-        # No pagination detected
+        #
+        # Detect json_links
+        #
+        next_prop = resp.content_schema.crawled_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
+        if next_prop:
+            return cls(
+                paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},
+                pagination_params=[offset_param, limit_param],
+            )
+
+        #
+        # Nothing found :(
+        #
         return None

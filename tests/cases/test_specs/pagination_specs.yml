@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  title: 'pagination'
+  version: 1.0.0
+  description: 'different pagination examples'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+  /offset_limit_pagination_1/:
+    get:
+      operationId: offset_limit_pagination_1
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          description: Number of results to return per page.
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          description: The initial index from which to return the results.
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                  results:
+                    type: array
+
+  /cursor_pagination_1/:
+    get:
+      operationId: cursor_pagination_1
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          description: Put cursor here
+          title: Cursor
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cursor:
+                    type: string
+                  results:
+                    type: array
+
+
+  /json_links_pagination_1/:
+    get:
+      operationId: json_links_pagination_1
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                  results:
+                    type: array

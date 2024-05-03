@@ -207,7 +207,7 @@ class Endpoint:
         return list(ret)
 
     @property
-    def pagination_args(self) -> Optional[Dict[str, str]]:
+    def pagination_args(self) -> Optional[Dict[str, Union[str, int]]]:
         return self.pagination.paginator_config if self.pagination else None
 
     def all_arguments(self) -> List[Parameter]:

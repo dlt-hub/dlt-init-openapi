@@ -1,0 +1,92 @@
+openapi: 3.1.0
+info:
+  title: Redocly Museum API
+  description: An imaginary, but delightful Museum API for interacting with museum services and information. Built with love by Redocly.
+  version: 1.0.0
+servers:
+  - url: 'https://api.fake-museum-example.com/v1'
+paths:
+  /museum-hours:
+    get:
+      summary: Get museum hours
+      description: Get upcoming museum operating hours
+      operationId: getMuseumHours
+      tags:
+        - Operations
+      parameters:
+        - $ref: '#/components/parameters/PaginationPage'
+        - $ref: '#/components/parameters/PaginationLimit'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMuseumHoursResponse'
+components:
+  schemas:
+    SpecialEvent:
+      description: Request payload for creating new special events at the museum.
+      properties:
+        name:
+          description: Name of the special event
+          type: string
+          example: Fossil lecture
+        location:
+          description: Location where the special event is held
+          type: string
+          example: Lecture theatre
+    Date:
+      type: string
+      format: date
+      example: 2023-10-29
+    GetMuseumHoursResponse:
+      description: List of museum operating hours for consecutive days.
+      type: array
+      items:
+        $ref: '#/components/schemas/MuseumDailyHours'
+    MuseumDailyHours:
+      description: Daily operating hours for the museum.
+      type: object
+      properties:
+        date:
+          description: Date the operating hours apply to.
+          $ref: '#/components/schemas/Date'
+        timeOpen:
+          type: string
+          pattern: '^([01]\d|2[0-3]):?([0-5]\d)$'
+          description: Time the museum opens on a specific date. Uses 24 hour time format (`HH:mm`).
+        timeClose:
+          description: Time the museum closes on a specific date. Uses 24 hour time format (`HH:mm`).
+          type: string
+          pattern: '^([01]\d|2[0-3]):?([0-5]\d)$'
+      required:
+        - date
+        - timeOpen
+        - timeClose
+  securitySchemes:
+    MuseumPlaceholderAuth:
+      type: http
+      scheme: basic
+  parameters:
+    PaginationPage:
+      name: page
+      in: query
+      description: The page number to retrieve.
+      schema:
+        type: integer
+        default: 1
+        example: 2
+    PaginationLimit:
+      name: limit
+      in: query
+      description: The number of days per page.
+      schema:
+        type: integer
+        default: 10
+        maximum: 30
+        example: 15
+
+security:
+  - MuseumPlaceholderAuth: []
+  

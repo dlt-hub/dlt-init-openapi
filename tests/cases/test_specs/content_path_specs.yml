@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: 'pagination'
+  version: 1.0.0
+  description: 'different content path'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+
+  /unnested_collection_result/:
+    get:
+      operationId: unnested_collection_result
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 3
+              
+  /results_collection_json_path/:
+    get:
+      operationId: results_collection_json_path
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                  results:
+                    type: array
+
+  /nested_results_collection_json_path/:
+    get:
+      operationId: nested_results_collection_json_path
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                  content:
+                    type: object
+                    properties:
+                      count:
+                        type: integer
+                        example: 3
+                      results:
+                        type: array
+
+
+  /single_object_unnested/:
+    get:
+      operationId: single_object_unnested
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 3
+                  name:
+                    type: string
+                    nullable: true
+                  address:
+                    type: string
+                    nullable: true
+
+
+
+  /single_object_nested/:
+    get:
+      operationId: single_object_nested
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result_object:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 3
+                      name:
+                        type: string
+                        nullable: true
+                      address:
+                        type: string
+                        nullable: true

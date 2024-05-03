@@ -13,6 +13,7 @@ from openapi_python_client.utils import PythonIdentifier
 from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
+from .const import RE_MATCH_ALL
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
@@ -90,25 +91,24 @@ class Response:
 
         # try to discover payload path and schema
         if payload_schema:
-            payload_path = []
+            payload_path: List[str] = []
 
             if expect_list:
                 # TODO: improve heuristics and move into some utility function for testing
-                if not payload_schema.is_list:
-                    for prop in payload_schema.properties:
-                        if prop.schema.is_list:
-                            payload_path.append(prop.name)
-                            payload_schema = prop.schema
-                            break
-            else:
-                # TODO: this needs improvement
+                if payload_schema.is_list:
+                    payload = DataPropertyPath(tuple(payload_path), payload_schema)
+                else:
+                    payload = payload_schema.crawled_properties.find_property(RE_MATCH_ALL, "array")
+
+            # either no list expected or no list found..
+            if not payload:
                 while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
                     # Schema contains only a single object property. The payload is inside
                     prop = payload_schema.properties[0]
                     payload_path.append(prop.name)
                     payload_schema = prop.schema
 
-            payload = DataPropertyPath(tuple(payload_path), payload_schema)
+                payload = DataPropertyPath(tuple(payload_path), payload_schema)
 
         return cls(
             status_code=status_code,

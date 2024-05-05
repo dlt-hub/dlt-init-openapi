@@ -1,0 +1,83 @@
+openapi: 3.1.0
+info:
+  title: Redocly Museum API
+  version: 0.0.1
+servers:
+  - url: 'https://api.fake-museum-example.com/v1'
+paths:
+  /special-events:
+    get:
+      summary: List special events
+      description: Return a list of upcoming special events at the museum.
+      security: []
+      operationId: listSpecialEvents
+      tags:
+        - Events
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve.
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: The number of days per page.
+          schema:
+            type: integer
+            default: 10
+            maximum: 30
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListSpecialEventsResponse'
+components:
+  schemas:
+    SpecialEvent:
+      description: Request payload for creating new special events at the museum.
+      properties:
+        name:
+          description: Name of the special event
+          type: string
+        location:
+          description: Location where the special event is held
+          type: string
+        eventDescription:
+          description: Description of the special event
+          type: string
+        dates:
+          description: List of planned dates for the special event
+          type: array
+          items:
+            type: string
+            format: date
+        price:
+          description: Price of a ticket for the special event
+          type: number
+          format: float
+    ListSpecialEventsResponse:
+      description: A list of upcoming special events
+      type: array
+      items:
+        $ref: '#/components/schemas/SpecialEventResponse'
+    SpecialEventResponse:
+      description: Information about a special event.
+      properties:
+        eventId:
+          $ref: '#/components/schemas/EventId'
+      required:
+        - eventId
+    EventId:
+      description: Identifier for a special event.
+      type: string
+      format: uuid
+  securitySchemes:
+    MuseumPlaceholderAuth:
+      type: http
+      scheme: basic
+security:
+  - MuseumPlaceholderAuth: []
+  

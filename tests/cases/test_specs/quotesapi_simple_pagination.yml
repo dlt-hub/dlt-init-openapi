@@ -1,0 +1,106 @@
+openapi: 3.0.0
+info:
+  description: " They Said So Quotes API offers a complete feature rich REST API access to its quotes platform.  This is the documentation for the world famous [quotes API](https://theysaidso.com/api).  If you are a subscriber and you are trying this from a console you can use Bearer token with your api key as the token. You can test and play with the API right here on this web page. Please note recently we closed down public access without api key to prevent abuse. The public routes are still available to use free of charge but requires an api token. You can get one for free at our website. For using the private end points and subscribing to the API please visit [https://theysaidso.com/api](https://theysaidso.com/api)."
+  title: They Said So Quotes API
+  version: "5.1"
+servers:
+  - url: https://quotes.rest
+  - url: http://quotes.rest
+paths:
+  /quote/list:
+    get:
+      tags:
+        - Private Quotes
+      security:
+        - BearerAuth: []                
+      description: Get the list of quotes in your private collection.
+      parameters:
+        - description: Response is paged. This parameter controls where response starts the
+            listing at
+          in: query
+          name: start
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - description: Response is paged. This parameter controls how many is returned in the result.
+          in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: 200  response
+          content:
+            application/json:
+              examples:
+                response:
+                  value: >-
+                    {
+                        "success": {
+                            "total": "263",
+                            "range": {
+                                "start": 0,
+                                "end": 5
+                            }
+                        },
+                        "contents": {
+                            "quotes": [
+                                {
+                                    "quote": "I think you should defend to the death their right to march, and then go down and meet them with baseball bats.",
+                                    "length": "111",
+                                    "author": "Woody Allen",
+                                    "tags": [],
+                                    "id": "GkeLUydBfiAH0Tcs2w_gwAeF"
+                                },
+                                {
+                                    "quote": "We have come to dedicate a portion of that field, as a final resting place for those who here gave their lives that that nation might live. It is altogether fitting and proper that we should do this. ... The world will little note nor long remember what we say here, but it can never forget what they did here.",
+                                    "length": "310",
+                                    "author": "Abraham Lincoln",
+                                    "tags": [],
+                                    "id": "u6fD9eRFA2NFMHuEoeujaAeF"
+                                },
+                                {
+                                    "quote": "Eighty percent of success is showing up.",
+                                    "length": "40",
+                                    "author": "Woody Allen",
+                                    "tags": [
+                                        "success",
+                                        "tso-top-100"
+                                    ],
+                                    "id": "nLvp0vLfofW06PILxmERHgeF"
+                                },
+                                {
+                                    "quote": "Great ambition is the passion of a great character.  Those endowed with it may perform very good or very bad acts.  All depends on the principals which direct them.",
+                                    "length": "164",
+                                    "author": "Napoleon Bonaparte",
+                                    "tags": [
+                                        "ambition",
+                                        "inspire",
+                                        "passion"
+                                    ],
+                                    "id": "X8juAoTtvxSEdgA0sGbYeQeF"
+                                },
+                                {
+                                    "quote": "I have had dreams, and I have had nightmares. I overcame the nightmares because of my dreams.",
+                                    "length": "93",
+                                    "author": "Dr. Jonas Salk",
+                                    "tags": [
+                                        "dream",
+                                        "nightmare"
+                                    ],
+                                    "id": "m_6Fj8QcXlVsQiiW7SAMLAeF"
+                                }
+                            ]
+                        }
+                    }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: bearer token    

@@ -33,12 +33,17 @@ poetry install
 poetry shell
 ```
 
-2. Create new `dlt` pipeline from [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/main/specification/pokeapi.yml) and place it in the `pokemon-pipeline` 
+2. Init git submodules
+```sh
+git submodule update --recursive --remote
+```
+
+3. Create new `dlt` pipeline from [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/main/specification/pokeapi.yml) and place it in the `pokemon-pipeline` 
 ```
 dlt-init init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 ```
 
-3. After executing of the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure how many other tables, the given table links to):
+4. After executing of the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure how many other tables, the given table links to):
 ```
 ? Which resources would you like to generate? (Use arrow keys to move, <space> to select, <a> to toggle, <i> to invert)
  
@@ -68,15 +73,15 @@ Pokemon endpoints:
    ○ pokemon_read /api/v2/pokemon/{id}/
 ```
 
-4. Pick your endpoints and press **ENTER** to generate pipeline. Now you are ready to load data.
+5. Pick your endpoints and press **ENTER** to generate pipeline. Now you are ready to load data.
 
-5. Enter the `pokemon-pipeline` folder and execute the `pipeline.py` script. This will load your endpoints to local `duckdb`. Below we use `enlighten` to show fancy progress bars:
+6. Enter the `pokemon-pipeline` folder and execute the `pipeline.py` script. This will load your endpoints to local `duckdb`. Below we use `enlighten` to show fancy progress bars:
 ```
 cd pokemon-pipeline
 PROGRESS=enlighten python pipeline.py
 ```
 
-6. Inspect the pipeline to see what got loaded
+7. Inspect the pipeline to see what got loaded
 ```
 $ dlt pipeline pokemon_pipeline info
 Found pipeline pokemon_pipeline in /home/rudolfix/.dlt/pipelines
@@ -102,7 +107,7 @@ Has 1 completed load packages with following load ids:
 
 Pipeline has last run trace. Use 'dlt pipeline pokemon_pipeline trace' to inspect
 ```
-7. Launch the streamlit app to preview the data (we copy a streamlit config to make it work on codespaces)
+8. Launch the streamlit app to preview the data (we copy a streamlit config to make it work on codespaces)
 ```
 cp -r ../.streamlit .
 pip install pandas streamlit

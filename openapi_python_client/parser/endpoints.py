@@ -313,7 +313,9 @@ class EndpointCollection:
         """get all endpoints we want to render
         TODO: respect "names to render"
         """
-        return self.endpoints
+        if not self.names_to_render:
+            return self.endpoints
+        return [e for e in self.endpoints if e.python_name in self.names_to_render]
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:

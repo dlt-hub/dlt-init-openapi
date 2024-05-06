@@ -21,7 +21,6 @@ def transformers() -> Dict[str, str]:
 
 
 def test_simple_transformer(transformers: Dict[str, Any]) -> None:
-    print(transformers)
     assert transformers["collections"] == {
         "name": "collections",
         "endpoint": {"data_selector": "$", "path": "/collection/"},

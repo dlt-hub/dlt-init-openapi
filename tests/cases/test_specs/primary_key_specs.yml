@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  description: 'Tests for detecing primary key'
+  title: 'pokeapi'
+  version: '20220523'
+servers:
+- url: 'https://pokeapi.co/'
+paths:
+
+  /primary_key_no_reference/:
+    get:
+      operationId: primary_key_no_reference
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name: 
+                    type: string
+
+  /primary_key_no_type/:
+    get:
+      operationId: primary_key_no_type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                  name: 
+
+  /primary_key_reference/:
+    get:
+      operationId: primary_key_reference
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+
+ 
+components:
+  schemas:
+    Pokemon:
+      type: object
+      properties:
+        id:
+          type: integer
+        name: 
+          type: string
+

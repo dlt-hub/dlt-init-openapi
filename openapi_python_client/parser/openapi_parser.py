@@ -66,13 +66,11 @@ class OpenapiParser:
 
         from openapi_python_client.detectors.default import DefaultDetector
 
-        self.detector = DefaultDetector()
-
         log.info("Extracting metadata")
+        self.detector = DefaultDetector()
         self.context = OpenapiContext(self.config, spec, self.spec_raw, self.detector)
-        self.info = OpenApiInfo.from_context(self.context)
-
         self.detector.context = self.context
+        self.info = OpenApiInfo.from_context(self.context)
 
         log.info("Parsing endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)

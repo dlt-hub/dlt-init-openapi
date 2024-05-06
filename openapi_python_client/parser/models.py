@@ -3,21 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterable,
-    Iterator,
-    List,
-    Literal,
-    Optional,
-    Sequence,
-    Tuple,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Literal, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 import openapi_schema_pydantic as osp
 from dlt.common.utils import digest128
@@ -85,7 +71,7 @@ class SchemaWrapper:
     default: Optional[Any]
     """Default value of the schema (optional)"""
 
-    crawled_properties: SchemaCrawler
+    nested_properties: NestedProperties
     hash_key: str
 
     type_format: Optional[str] = None
@@ -240,7 +226,6 @@ class SchemaWrapper:
 
         description = schema_ref.description or schema.description
 
-        # TODO: may want to handle prefix items (tuple)
         array_item: Optional["SchemaWrapper"] = None
         if schema.items:
             array_item = cls.from_reference_guarded(schema.items, context, level=level)
@@ -261,14 +246,7 @@ class SchemaWrapper:
             nullable = True
             schema_types.remove("null")
 
-        default = schema.default
-        # Only do string escaping, other types can go as-is
-        if isinstance(default, str):
-            default = convert("str", default)
-
-        examples = ([schema.example] if schema.example else schema.examples) or []
-        crawler = SchemaCrawler()
-        result = cls(
+        wrapper = cls(
             schema=schema,
             name=name,
             description=description,
@@ -280,17 +258,17 @@ class SchemaWrapper:
             types=cast(List[TSchemaType], unique_list(schema_types)),
             nullable=nullable,
             array_item=array_item,
-            default=default,
-            crawled_properties=crawler,
+            default=convert("str", schema.default) if isinstance(schema.default, str) else schema.default,
+            nested_properties=NestedProperties(),
             hash_key=digest128(schema.json(sort_keys=True)),
             type_format=schema.schema_format,
             maximum=schema.maximum,
             enum_values=schema.enum,
-            examples=examples,
+            examples=([schema.example] if schema.example else schema.examples) or [],
         )
-        result.primary_key = result._find_primary_key()
-        crawler.crawl(result)
-        return result
+        wrapper.primary_key = wrapper._find_primary_key()
+        wrapper.nested_properties.discover_nested_properties(wrapper)
+        return wrapper
 
 
 @dataclass
@@ -333,7 +311,7 @@ def _remove_nones(seq: Iterable[Optional[T]]) -> List[T]:
     return [x for x in seq if x is not None]
 
 
-class SchemaCrawler:
+class NestedProperties:
     """Creates flattened path: schema mappings of all properties within a schema"""
 
     def __init__(self) -> None:
@@ -359,15 +337,6 @@ class SchemaCrawler:
 
     def items(self) -> Iterable[Tuple[Tuple[str, ...], SchemaWrapper]]:
         return self.all_properties.items()
-
-    def paths_with_types(
-        self,
-    ) -> Iterator[tuple[tuple[str, ...], tuple[tuple[TSchemaType, ...], Optional[str], tuple[Any, ...]]]]:
-        """
-        yields a tuple of (path, ( (types, ...), "format")) for each property in the schema
-        """
-        for path, schema in self.all_properties.items():
-            yield path, (tuple(schema.types), schema.type_format, tuple(schema.enum_values or []))
 
     def is_optional(self, path: Tuple[str, ...]) -> bool:
         """Check whether the property itself or any of its parents is nullable"""
@@ -406,7 +375,7 @@ class SchemaCrawler:
             return DataPropertyPath(*unknown_type_candidates[0])
         return None
 
-    def crawl(self, schema: SchemaWrapper, path: Tuple[str, ...] = ()) -> None:
+    def discover_nested_properties(self, schema: SchemaWrapper, path: Tuple[str, ...] = ()) -> None:
         self.all_properties[path] = schema
         if schema.is_object:
             self.object_properties[path] = schema
@@ -416,8 +385,8 @@ class SchemaCrawler:
                 if prop.required:
                     self.required_properties.append(prop_path)
                 if prop.is_list or prop.is_object:
-                    self.crawl(prop.schema, prop_path)
+                    self.discover_nested_properties(prop.schema, prop_path)
         elif schema.is_list and schema.array_item is not None:
             array_item = schema.array_item
             self.list_properties[path] = array_item
-            self.crawl(array_item, path + ("[*]",))
+            self.discover_nested_properties(array_item, path + ("[*]",))

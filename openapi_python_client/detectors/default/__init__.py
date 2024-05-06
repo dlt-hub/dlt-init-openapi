@@ -40,6 +40,7 @@ class DefaultDetector(BaseDetector):
         for content_type, media_type in (response_schema.content or {}).items():
             if content_type.endswith("json") and media_type.media_type_schema:
                 content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, self.context)
+                break
 
         # build basic response, detect payload path later
         response = Response(response_schema=response_schema, content_schema=content_schema)
@@ -47,7 +48,7 @@ class DefaultDetector(BaseDetector):
         # detect pagination
         pagination = self._detect_pagination(content_schema, parameters)
 
-        # detect response payload path, we can give a hint wether we expect a list or not
+        # detect response payload path, we can now give a hint wether we expect a list or not
         path_suggests_list = not is_var_part(get_path_parts(path)[-1])
         expect_list = (pagination is not None) or path_suggests_list
         response.payload = self.detect_payload(content_schema=content_schema, expect_list=expect_list)
@@ -72,20 +73,19 @@ class DefaultDetector(BaseDetector):
 
         # try to discover payload path and schema
         if content_schema:
-            payload_path: List[str] = []
-
             if expect_list:
                 if content_schema.is_list:
-                    payload = DataPropertyPath(tuple(payload_path), content_schema)
+                    payload = DataPropertyPath((), content_schema)
                 else:
-                    payload = content_schema.crawled_properties.find_property(
+                    payload = content_schema.nested_properties.find_property(
                         RE_MATCH_ALL, "array", allow_unknown_types=False
                     )
 
             # either no list expected or no list found..
             if not payload:
+                payload_path: List[str] = []
                 while len(content_schema.properties) == 1 and content_schema.properties[0].is_object:
-                    # Schema contains only a single object property. The payload is inside
+                    # Schema contains only a single object property. The payload may be inside.
                     prop = content_schema.properties[0]
                     payload_path.append(prop.name)
                     content_schema = prop.schema
@@ -158,7 +158,7 @@ class DefaultDetector(BaseDetector):
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
-        total_prop = content_schema.crawled_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+        total_prop = content_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
         if offset_param and limit_param and limit_initial and total_prop:
             return Pagination(
@@ -175,7 +175,7 @@ class DefaultDetector(BaseDetector):
         #
         # Detect json_links
         #
-        next_prop = content_schema.crawled_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
+        next_prop = content_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
         if next_prop:
             return Pagination(
                 paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},

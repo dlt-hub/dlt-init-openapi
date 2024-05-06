@@ -1,28 +1,29 @@
 from __future__ import annotations
-from typing import (
-    Literal,
-    TYPE_CHECKING,
-    Optional,
-    Union,
-    List,
-    TypeVar,
-    Any,
-    Iterable,
-    Sequence,
-    cast,
-    Tuple,
-    Dict,
-    Iterator,
-)
-from itertools import chain
-from dataclasses import dataclass, field
-import re
 
-from dlt.common.utils import digest128
+import re
+from dataclasses import dataclass, field
+from itertools import chain
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import openapi_schema_pydantic as osp
-from openapi_python_client.parser.types import DataType, TOpenApiType
+from dlt.common.utils import digest128
+
 from openapi_python_client.parser.properties.converter import convert
+from openapi_python_client.parser.types import DataType, TOpenApiType
 from openapi_python_client.utils import unique_list
 
 if TYPE_CHECKING:

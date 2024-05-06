@@ -2,7 +2,7 @@ import builtins
 import re
 from email.message import Message
 from keyword import iskeyword
-from typing import Any, List, Sequence, Dict, Iterable, TypeVar
+from typing import Any, Dict, Iterable, List, Sequence, TypeVar
 
 DELIMITERS = r"\. _-"
 

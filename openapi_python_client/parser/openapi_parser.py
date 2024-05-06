@@ -1,22 +1,22 @@
 import json
+import logging
 import mimetypes
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Union
-import httpcore
 from urllib.parse import urlparse
-import logging
 
+import httpcore
 import httpx
 import openapi_schema_pydantic as osp
-from yaml import BaseLoader
 import yaml
+from yaml import BaseLoader
 
-from openapi_python_client.parser.context import OpenapiContext
-from openapi_python_client.parser.endpoints import EndpointCollection
-from openapi_python_client.parser.config import Config
-from openapi_python_client.parser.info import OpenApiInfo
-from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.detectors.base_detector import BaseDetector
+from openapi_python_client.parser.config import Config
+from openapi_python_client.parser.context import OpenapiContext
+from openapi_python_client.parser.credentials import CredentialsProperty
+from openapi_python_client.parser.endpoints import EndpointCollection
+from openapi_python_client.parser.info import OpenApiInfo
 
 log = logging.getLogger(__name__)
 

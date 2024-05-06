@@ -1,6 +1,5 @@
-from typing import Optional
-
 from dataclasses import dataclass
+from typing import Optional
 
 from openapi_python_client.parser.context import OpenapiContext, SecurityScheme
 

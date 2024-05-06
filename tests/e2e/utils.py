@@ -1,15 +1,14 @@
 import importlib
 import os
-from typing import cast, Literal, Union
-
 from distutils.dir_util import copy_tree, remove_tree
+from typing import Literal, Union, cast
 
-from openapi_python_client.config import Config
-from openapi_python_client.cli import REST_API_SOURCE_LOCATION
-from openapi_python_client import _get_project_for_url_or_path
 from dlt.common.validation import validate_dict
-
 from dlt.extract.source import DltSource
+
+from openapi_python_client import _get_project_for_url_or_path
+from openapi_python_client.cli import REST_API_SOURCE_LOCATION
+from openapi_python_client.config import Config
 from sources.sources.rest_api.typing import RESTAPIConfig
 
 LOCAL_DIR = "tests/_local/"

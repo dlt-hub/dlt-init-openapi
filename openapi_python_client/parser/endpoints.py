@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-from typing import Optional, Literal, cast, Union, List, Dict, Iterable, Set
-
 from dataclasses import dataclass, field
+from typing import Dict, Iterable, List, Literal, Optional, Set, Union, cast
 
 import openapi_schema_pydantic as osp
 
 from openapi_python_client.parser.context import OpenapiContext
-from openapi_python_client.parser.paths import table_names_from_paths, get_path_parts, is_var_part
-from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
-from openapi_python_client.utils import PythonIdentifier
+from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
+from openapi_python_client.parser.paths import get_path_parts, is_var_part, table_names_from_paths
+from openapi_python_client.utils import PythonIdentifier
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
@@ -97,8 +96,7 @@ class Endpoint:
 
     @property
     def primary_key(self) -> Optional[str]:
-        payload = self.payload
-        return payload.schema.primary_key if payload else None
+        return self.payload.schema.primary_key if self.payload else None
 
     @property
     def path_parts(self) -> List[str]:
@@ -142,7 +140,7 @@ class Endpoint:
 
     @property
     def data_json_path(self) -> str:
-        return (self.payload.json_path if self.payload else "") or "$"
+        return self.payload.json_path if (self.payload and self.payload.json_path) else "$"
 
     @property
     def transformer(self) -> Optional[TransformerSetting]:

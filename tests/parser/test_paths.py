@@ -1,7 +1,8 @@
+from typing import List, Tuple
+
 import pytest
 
-from typing import List, Tuple
-from openapi_python_client.parser.paths import table_names_from_paths, find_longest_common_prefix
+from openapi_python_client.parser.paths import find_longest_common_prefix, table_names_from_paths
 
 
 def test_table_names_from_paths_prefixed() -> None:

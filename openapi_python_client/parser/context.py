@@ -1,13 +1,13 @@
-from typing import Dict, Union, Tuple, Optional, Any
 from dataclasses import dataclass
+from typing import Any, Dict, Optional, Tuple, Union
 
 import openapi_schema_pydantic as osp
 import referencing
 import referencing.jsonschema
 
+from openapi_python_client.detectors.base_detector import BaseDetector
 from openapi_python_client.parser.config import Config
 from openapi_python_client.utils import ClassName
-from openapi_python_client.detectors.base_detector import BaseDetector
 
 TComponentClass = Union[
     osp.Schema,

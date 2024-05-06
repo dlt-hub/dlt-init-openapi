@@ -1,17 +1,18 @@
 """
 Default open source detector
 """
-from typing import Tuple, Union, Optional, Dict, List
+from typing import Dict, List, Optional, Tuple, Union
+
+import openapi_schema_pydantic as osp
 
 from openapi_python_client.detectors.base_detector import BaseDetector
-import openapi_schema_pydantic as osp
-from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.endpoints import Response
-from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
+from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
+from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
 from openapi_python_client.parser.paths import get_path_parts, is_var_part
 
-from .const import RE_MATCH_ALL, RE_OFFSET_PARAM, RE_LIMIT_PARAM, RE_TOTAL_PROPERTY, RE_CURSOR_PARAM, RE_NEXT_PROPERTY
+from .const import RE_CURSOR_PARAM, RE_LIMIT_PARAM, RE_MATCH_ALL, RE_NEXT_PROPERTY, RE_OFFSET_PARAM, RE_TOTAL_PROPERTY
 
 
 class DefaultDetector(BaseDetector):

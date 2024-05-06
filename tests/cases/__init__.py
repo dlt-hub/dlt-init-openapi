@@ -1,7 +1,6 @@
 import os
 from typing import Iterable
 
-
 ORIGINAL_SPECS_FOLDERS = "./tests/cases/original_specs"
 TEST_SPECS_FOLDER = "./tests/cases/test_specs"
 REPO_SPECS_FOLDER = "./tests/cases/specs_repo/Open-api-spec"

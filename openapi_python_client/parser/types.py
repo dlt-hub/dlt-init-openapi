@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal, TYPE_CHECKING, Dict, Optional, List
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.models import SchemaWrapper, Property
+    from openapi_python_client.parser.models import Property, SchemaWrapper
 
 
 TOpenApiType = Literal["boolean", "object", "array", "number", "string", "integer"]

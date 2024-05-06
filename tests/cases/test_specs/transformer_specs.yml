@@ -35,12 +35,6 @@ paths:
         - name: collection_id
           in: path
           required: true
-          schema:
-            anyOf:
-              - type: string
-                format: uuid
-              - type: 'null'
-            title: Organization Id
       responses:
         '200':
           description: "OK"

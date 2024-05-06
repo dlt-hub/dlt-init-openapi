@@ -1,16 +1,17 @@
 """
 Basic detector class
 """
-from typing import Tuple, TYPE_CHECKING, Dict, Optional
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING, Dict, Optional, Tuple
+
 import openapi_schema_pydantic as osp
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.pagination import Pagination
-    from openapi_python_client.parser.endpoints import Response
     from openapi_python_client.parser.context import OpenapiContext
+    from openapi_python_client.parser.endpoints import Response
+    from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
+    from openapi_python_client.parser.pagination import Pagination
     from openapi_python_client.parser.parameters import Parameter
-    from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 
 
 class BaseDetector(ABC):

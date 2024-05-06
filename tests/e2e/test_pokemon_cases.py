@@ -1,8 +1,8 @@
 #
 # Test different iterations of pokemon
 #
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 from tests.cases import get_test_case_path
+from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 
 
 def test_simple_poke_load() -> None:

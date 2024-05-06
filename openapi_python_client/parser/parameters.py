@@ -3,10 +3,10 @@ from typing import Any, List, Literal, Optional, Union, cast
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.utils import PythonIdentifier
-from openapi_python_client.parser.models import SchemaWrapper, TSchemaType, DataPropertyPath
-from openapi_python_client.parser.types import DataType, compare_openapi_types
 from openapi_python_client.parser.context import OpenapiContext
+from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper, TSchemaType
+from openapi_python_client.parser.types import compare_openapi_types
+from openapi_python_client.utils import PythonIdentifier
 
 TParamIn = Literal["query", "header", "path", "cookie"]
 
@@ -43,10 +43,6 @@ class Parameter:
     def maximum(self) -> Optional[float]:
         return self.schema.maximum
 
-    @property
-    def type_hint(self) -> str:
-        return DataType.from_schema(self.schema, required=self.required).type_hint
-
     def _matches_type(self, schema: SchemaWrapper) -> bool:
         return compare_openapi_types(self.types, self.type_format, schema.types, schema.type_format)
 
@@ -68,6 +64,11 @@ class Parameter:
     @classmethod
     def from_reference(cls, param_ref: Union[osp.Reference, osp.Parameter], context: OpenapiContext) -> "Parameter":
         osp_param = context.parameter_from_reference(param_ref)
+
+        # if there is no schema attached, fall back to string
+        if not osp_param.param_schema:
+            osp_param.param_schema = osp.Schema(type="string")
+
         schema = SchemaWrapper.from_reference(osp_param.param_schema, context)
         description = param_ref.description or osp_param.description or schema.description
         location = osp_param.param_in

@@ -12,10 +12,10 @@ from typing import Optional
 from jinja2 import BaseLoader, ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 
 from openapi_python_client import utils
+
 from .config import Config
 from .parser.openapi_parser import OpenapiParser
 from .typing import TEndpointFilter
-
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,7 @@
 import pytest
 
-
-from tests.e2e.utils import get_source_from_open_api
 from tests.cases import all_local_original_specs, all_repo_original_specs
+from tests.e2e.utils import get_source_from_open_api
 
 
 @pytest.mark.slow
@@ -21,8 +20,6 @@ def test_local_original_specs(case: str) -> None:
     all_repo_original_specs(),
 )
 def test_repo_original_specs(case: str) -> None:
-    if "airport_web" in case:
-        pytest.skip("Fix later")
     if "amazon_kenisis" in case:
         pytest.skip("Fix later")
     source = get_source_from_open_api(case)

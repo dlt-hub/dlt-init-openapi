@@ -1,13 +1,13 @@
 import codecs
 import pathlib
-from typing import Optional
 from distutils.dir_util import copy_tree
+from typing import Optional
+
 import typer
 
 from openapi_python_client import MetaType
-from openapi_python_client.config import Config
-
 from openapi_python_client.cli_endpoint_selection import questionary_endpoint_selection
+from openapi_python_client.config import Config
 
 app = typer.Typer()
 

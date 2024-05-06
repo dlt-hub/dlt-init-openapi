@@ -1,6 +1,5 @@
-from typing import Iterable, Dict, Tuple, List
-
 import os.path
+from typing import Dict, Iterable, List, Tuple
 
 
 def table_names_from_paths(paths: Iterable[str]) -> Dict[str, str]:

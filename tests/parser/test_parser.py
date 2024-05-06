@@ -1,11 +1,11 @@
-import pytest
 from typing import Tuple
-from openapi_python_client.parser.openapi_parser import OpenapiParser
-from openapi_python_client.parser.models import SchemaWrapper
+
 import openapi_schema_pydantic as osp
+import pytest
 
+from openapi_python_client.parser.models import SchemaWrapper
+from openapi_python_client.parser.openapi_parser import OpenapiParser
 from tests.cases import get_original_case_path
-
 
 pytest.skip(allow_module_level=True)
 

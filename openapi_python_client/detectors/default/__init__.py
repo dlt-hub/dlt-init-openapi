@@ -1,29 +1,95 @@
 """
 Default open source detector
 """
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, cast
 
 import openapi_schema_pydantic as osp
 
 from openapi_python_client.detectors.base_detector import BaseDetector
-from openapi_python_client.parser.endpoints import Response
+from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
+from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
 from openapi_python_client.parser.paths import get_path_parts, is_var_part
 
-from .const import RE_CURSOR_PARAM, RE_LIMIT_PARAM, RE_MATCH_ALL, RE_NEXT_PROPERTY, RE_OFFSET_PARAM, RE_TOTAL_PROPERTY
+from .const import (
+    RE_CURSOR_PARAM,
+    RE_LIMIT_PARAM,
+    RE_MATCH_ALL,
+    RE_NEXT_PROPERTY,
+    RE_OFFSET_PARAM,
+    RE_TOTAL_PROPERTY,
+    RE_UNIQUE_KEY,
+)
+
+Tree = Dict[str, Union["Endpoint", "Tree"]]
 
 
 class DefaultDetector(BaseDetector):
-    def detect_response_and_pagination(
-        self, path: str, operation: osp.Operation, parameters: Dict[str, Parameter]
-    ) -> Tuple[Optional[Pagination], Optional[Response]]:
-        """Get main response and pagination from osp.operation"""
+    context: OpenapiContext
+
+    def run(self, open_api: OpenapiParser) -> None:
+        """Run the detector"""
+        self.context = open_api.context
+
+        # discover stuff from responses
+        self.detect_paginators_and_responses(open_api.endpoints)
+
+        # discover parent child relationship
+        self.detect_parent_child_relationships(open_api.endpoints)
+
+    def detect_paginators_and_responses(self, endpoints: EndpointCollection) -> None:
+        # iterate over endpoints and detect response and pagination settings
+        # order is important here, as some detections need the result of other
+        # detections
+        for endpoint in endpoints.endpoints:
+            # first detect response
+            endpoint.detected_response = self.detect_response_and_pagination(endpoint)
+
+            # then detect pagination
+            endpoint.detected_pagination = self.detect_pagination(endpoint)
+
+            # with this info we can more safely detect the response payload
+            if endpoint.detected_response:
+                path_suggests_list = not is_var_part(get_path_parts(endpoint.path)[-1])
+                expect_list = (endpoint.detected_pagination is not None) or path_suggests_list
+                endpoint.detected_response.detected_payload = self.detect_response_payload(
+                    endpoint.detected_response, expect_list=expect_list
+                )
+                self.detect_primary_key(endpoint.detected_response)
+
+    def detect_primary_key(self, response: Response) -> None:
+        """detect the primary key from the payload
+        TODO: we need way more primary key detection based on schema name etc."""
+        if not response.detected_payload:
+            return
+
+        description_paths = []
+        uuid_paths = []
+
+        for prop in response.detected_payload.schema.all_properties:
+            if prop.schema.types and (not set(prop.schema.types) & {"string", "integer"}):
+                continue
+            if prop.name.lower() == "id":
+                response.detected_primary_key = prop.name
+                return
+            elif prop.schema.description and RE_UNIQUE_KEY.search(prop.schema.description):
+                description_paths.append(prop.name)
+            elif prop.schema.type_format == "uuid":
+                uuid_paths.append(prop.name)
+
+        if description_paths:
+            response.detected_primary_key = description_paths[0]
+        elif uuid_paths:
+            response.detected_primary_key = uuid_paths[0]
+
+    def detect_response_and_pagination(self, endpoint: Endpoint) -> Optional[Response]:
+        """Get main response and pagination for endpoint"""
 
         # find main response in list of responses
         main_ref: Union[osp.Reference, osp.Response]
-        for status_code, response_ref in operation.responses.items() or []:
+        for status_code, response_ref in endpoint.operation_schema.responses.items() or []:
             if status_code in ["200", "default"]:
                 main_ref = response_ref
                 break
@@ -32,7 +98,7 @@ class DefaultDetector(BaseDetector):
 
         # nothing found, return None
         if not main_ref:
-            return None, None
+            return None
 
         # find json content schema
         response_schema = self.context.response_from_reference(main_ref)
@@ -43,33 +109,12 @@ class DefaultDetector(BaseDetector):
                 break
 
         # build basic response, detect payload path later
-        response = Response(response_schema=response_schema, content_schema=content_schema)
+        return Response(response_schema=response_schema, content_schema=content_schema)
 
-        # detect pagination
-        pagination = self._detect_pagination(content_schema, parameters)
-
-        # detect response payload path, we can now give a hint wether we expect a list or not
-        path_suggests_list = not is_var_part(get_path_parts(path)[-1])
-        expect_list = (pagination is not None) or path_suggests_list
-        response.payload = self.detect_payload(content_schema=content_schema, expect_list=expect_list)
-
-        return pagination, response
-
-    def detect_authentication(self) -> None:
-        ...
-
-    def detect_primary_key(self) -> None:
-        ...
-
-    def detect_parent_endpoint(self) -> None:
-        ...
-
-    def detect_transformer_mapping(self) -> None:
-        ...
-
-    def detect_payload(self, content_schema: SchemaWrapper, expect_list: bool) -> Optional[DataPropertyPath]:
+    def detect_response_payload(self, response: Response, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
         payload: Optional[DataPropertyPath] = None
+        content_schema = response.content_schema
 
         # try to discover payload path and schema
         if content_schema:
@@ -93,12 +138,11 @@ class DefaultDetector(BaseDetector):
 
         return payload
 
-    def _detect_pagination(
-        self, content_schema: SchemaWrapper, parameters: Dict[str, Parameter]
-    ) -> Optional[Pagination]:
+    def detect_pagination(self, endpoint: Endpoint) -> Optional[Pagination]:
         """Detect pagination from discovered main response and params of an endpoint"""
 
-        if not content_schema:
+        response_schema = endpoint.detected_response.content_schema if endpoint.detected_response else None
+        if not response_schema:
             return None
 
         offset_params: List["Parameter"] = []
@@ -106,7 +150,7 @@ class DefaultDetector(BaseDetector):
         limit_params: List["Parameter"] = []
 
         # Find params matching regexes
-        for param_name, param in parameters.items():
+        for param_name, param in endpoint.parameters.items():
             if RE_OFFSET_PARAM.match(param_name):
                 offset_params.append(param)
             if RE_LIMIT_PARAM.match(param_name):
@@ -120,7 +164,7 @@ class DefaultDetector(BaseDetector):
         cursor_props: List[Tuple["Parameter", DataPropertyPath]] = []
         for cursor_param in cursor_params:
             # Try to response property to feed into the cursor param
-            if prop := cursor_param.find_input_property(content_schema, fallback=None):
+            if prop := cursor_param.find_input_property(response_schema, fallback=None):
                 cursor_props.append((cursor_param, prop))
 
         # Prefer the least nested cursor prop
@@ -145,7 +189,7 @@ class DefaultDetector(BaseDetector):
         limit_initial: Optional[int] = 20
         for offset_param in offset_params:
             # Try to response property to feed into the offset param
-            prop = offset_param.find_input_property(content_schema, fallback=None)
+            prop = offset_param.find_input_property(response_schema, fallback=None)
             if prop:
                 offset_props.append((offset_param, prop))
         # Prefer least nested offset prop
@@ -158,7 +202,7 @@ class DefaultDetector(BaseDetector):
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
             limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
-        total_prop = content_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+        total_prop = response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
         if offset_param and limit_param and limit_initial and total_prop:
             return Pagination(
@@ -175,7 +219,7 @@ class DefaultDetector(BaseDetector):
         #
         # Detect json_links
         #
-        next_prop = content_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
+        next_prop = response_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
         if next_prop:
             return Pagination(
                 paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},
@@ -186,3 +230,43 @@ class DefaultDetector(BaseDetector):
         # Nothing found :(
         #
         return None
+
+    def detect_parent_child_relationships(self, endpoints: EndpointCollection) -> None:
+        """detect parent child relationships based on path
+        TODO: also discover /pokemons -> /pokemon/{id}
+        """
+        ENDPOINT_MARKER = "<endpoint>"
+
+        # build endpoint tree
+        tree: Tree = {}
+        for endpoint in endpoints.endpoints:
+            current_node = tree
+            for part in endpoint.path_parts:
+                if part not in current_node:
+                    current_node[part] = {}
+                current_node = current_node[part]  # type: ignore
+            current_node[ENDPOINT_MARKER] = endpoint
+
+        def find_nearest_list_parent(path: str) -> Optional[Endpoint]:
+            parts = get_path_parts(path)
+            while parts:
+                current_node = tree
+                parts.pop()
+                for part in parts:
+                    current_node = current_node[part]  # type: ignore[assignment]
+                if parent_endpoint := current_node.get(ENDPOINT_MARKER):
+                    if cast(Endpoint, parent_endpoint).is_list:
+                        return cast(Endpoint, parent_endpoint)
+            return None
+
+        # link endpoints
+        for endpoint in endpoints.endpoints:
+            endpoint.detected_parent = find_nearest_list_parent(endpoint.path)
+            if endpoint.detected_parent:
+                endpoint.detected_parent.detected_children.append(endpoint)
+
+    def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
+        pass
+
+    def detect_primary_keys(self, endpoints: EndpointCollection) -> None:
+        pass

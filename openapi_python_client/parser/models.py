@@ -15,7 +15,7 @@ from openapi_python_client.utils import unique_list
 if TYPE_CHECKING:
     from openapi_python_client.parser.context import OpenapiContext
 
-from .const import MAX_RECURSION_DEPTH, RE_UNIQUE_KEY
+from .const import MAX_RECURSION_DEPTH
 
 TSchemaType = Literal["boolean", "object", "array", "number", "string", "integer"]
 
@@ -35,7 +35,7 @@ class DataPropertyPath:
 
     @property
     def json_path(self) -> str:
-        return ".".join(self.path)
+        return ".".join(self.path) if self.path else "$"
 
     @property
     def is_list(self) -> bool:
@@ -86,7 +86,6 @@ class SchemaWrapper:
     one_of: List["SchemaWrapper"] = field(default_factory=list)
 
     enum_values: Optional[List[Any]] = None
-    primary_key: Optional[str] = None
     examples: List[Any] = field(default_factory=list)
 
     def __getitem__(self, item: str) -> "Property":
@@ -100,28 +99,6 @@ class SchemaWrapper:
 
     def __iter__(self) -> Iterable["str"]:
         return (prop.name for prop in self.properties)
-
-    def _find_primary_key(self) -> Optional[str]:
-        """Attempt to find the name of primary key field in the schema"""
-
-        description_paths = []
-        uuid_paths = []
-
-        for prop in self.all_properties:
-            if prop.schema.types and (not set(prop.schema.types) & {"string", "integer"}):
-                continue
-            if prop.name.lower() == "id":
-                return prop.name
-            elif prop.schema.description and RE_UNIQUE_KEY.search(prop.schema.description):
-                description_paths.append(prop.name)
-            elif prop.schema.type_format == "uuid":
-                uuid_paths.append(prop.name)
-
-        if description_paths:
-            return description_paths[0]
-        elif uuid_paths:
-            return uuid_paths[0]
-        return None
 
     @property
     def has_properties(self) -> bool:
@@ -224,8 +201,6 @@ class SchemaWrapper:
             ]
         )
 
-        description = schema_ref.description or schema.description
-
         array_item: Optional["SchemaWrapper"] = None
         if schema.items:
             array_item = cls.from_reference_guarded(schema.items, context, level=level)
@@ -249,7 +224,7 @@ class SchemaWrapper:
         wrapper = cls(
             schema=schema,
             name=name,
-            description=description,
+            description=schema_ref.description or schema.description,
             ref=schema_ref if isinstance(schema_ref, osp.Reference) else None,
             properties=properties,
             all_of=all_of,
@@ -266,7 +241,6 @@ class SchemaWrapper:
             enum_values=schema.enum,
             examples=([schema.example] if schema.example else schema.examples) or [],
         )
-        wrapper.primary_key = wrapper._find_primary_key()
         wrapper.nested_properties.discover_nested_properties(wrapper)
         return wrapper
 

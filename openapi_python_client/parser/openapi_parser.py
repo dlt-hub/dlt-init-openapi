@@ -11,7 +11,6 @@ import openapi_schema_pydantic as osp
 import yaml
 from yaml import BaseLoader
 
-from openapi_python_client.detectors.base_detector import BaseDetector
 from openapi_python_client.parser.config import Config
 from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.credentials import CredentialsProperty
@@ -26,7 +25,6 @@ class OpenapiParser:
     info: OpenApiInfo
     credentials: Optional[CredentialsProperty] = None
     context: OpenapiContext
-    detector: BaseDetector
 
     def __init__(self, spec_file: Union[Path, str], config: Config = Config()) -> None:
         self.spec_file = spec_file
@@ -64,12 +62,8 @@ class OpenapiParser:
         # log.info("Pydantic parse")
         spec = osp.OpenAPI.parse_obj(self.spec_raw)
 
-        from openapi_python_client.detectors.default import DefaultDetector
-
         log.info("Extracting metadata")
-        self.detector = DefaultDetector()
-        self.context = OpenapiContext(self.config, spec, self.spec_raw, self.detector)
-        self.detector.context = self.context
+        self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)
 
         log.info("Parsing endpoints")

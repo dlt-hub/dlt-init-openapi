@@ -49,6 +49,39 @@ paths:
                   results:
                     type: array
 
+
+  /test_results_collection_with_inner_list_json_path/:
+    get:
+      operationId: test_results_collection_with_inner_list_json_path
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 3
+                        tags:
+                          type: array
+
   /nested_results_collection_json_path/:
     get:
       operationId: nested_results_collection_json_path
@@ -126,3 +159,121 @@ paths:
                       address:
                         type: string
                         nullable: true
+
+  '/workspace/{workspace_id}/run/{transaction_id}':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Run
+      description: Gets all pipeline runs for a pipeline
+      operationId: get_workspace_run_workspace__workspace_id__run__transaction_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Transaction Id
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunSchema'
+
+
+components:
+  schemas:
+    TraceSchema:
+      properties:
+        transaction_id:
+          type: string
+          title: Transaction Id
+        pipeline_name:
+          type: string
+          title: Pipeline Name
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        engine_version:
+          type: integer
+          title: Engine Version
+        steps:
+          type: array
+          title: Steps
+          default: []
+      type: object
+      required:
+        - transaction_id
+        - pipeline_name
+        - started_at
+        - engine_version
+        - resolved_config_values
+      title: TraceSchema
+
+
+    RunSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        pipeline_id:
+          type: string
+          format: uuid
+          title: Pipeline Id
+        transaction_id:
+          type: string
+          title: Transaction Id
+        date_started:
+          type: string
+          format: date-time
+          title: Date Started
+        state:
+          type: string
+          title: State
+        trace:
+          $ref: '#/components/schemas/TraceSchema'
+        migrations_count:
+          type: integer
+          title: Migrations Count
+        failed_jobs:
+          type: integer
+          title: Failed Jobs
+      type: object
+      required:
+        - id
+        - pipeline_id
+        - transaction_id
+        - date_started
+        - state
+        - trace
+        - migrations_count
+        - failed_jobs
+      title: RunSchema

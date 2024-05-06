@@ -7,7 +7,7 @@ from tests.cases import get_test_case_path
 
 
 @pytest.fixture(scope="module")
-def paginators() -> Dict[str, str]:
+def data_selectors() -> Dict[str, str]:
     case_path = get_test_case_path("content_path_specs.yml")
     # validate that source will work
     get_source_from_open_api(case_path)
@@ -20,21 +20,29 @@ def paginators() -> Dict[str, str]:
     }
 
 
-def test_unnested_collection_result(paginators: Dict[str, Any]) -> None:
-    assert paginators["unnested_collection_result"] == "$"
+def test_unnested_collection_result(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["unnested_collection_result"] == "$"
 
 
-def test_results_collection_json_path(paginators: Dict[str, Any]) -> None:
-    assert paginators["results_collection_json_path"] == "results"
+def test_results_collection_json_path(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["results_collection_json_path"] == "results"
 
 
-def test_nested_results_collection_json_path(paginators: Dict[str, Any]) -> None:
-    assert paginators["nested_results_collection_json_path"] == "content.results"
+def test_results_collection_with_inner_list_json_path(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["test_results_collection_with_inner_list_json_path"] == "results"
 
 
-def test_single_object_unneested(paginators: Dict[str, Any]) -> None:
-    assert paginators["single_object_unnested"] == "$"
+def test_nested_results_collection_json_path(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["nested_results_collection_json_path"] == "content.results"
 
 
-def test_single_object_nested(paginators: Dict[str, Any]) -> None:
-    assert paginators["single_object_nested"] == "result_object"
+def test_single_object_unneested(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["single_object_unnested"] == "$"
+
+
+def test_single_object_nested(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["single_object_nested"] == "result_object"
+
+
+def test_platform_nested(data_selectors: Dict[str, Any]) -> None:
+    assert data_selectors["get_workspace_run_workspace_workspace_id_run_transaction_id_get"] == "$"

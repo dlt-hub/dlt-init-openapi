@@ -271,9 +271,10 @@ class Endpoint:
             {p.name: p for p in (Parameter.from_reference(param, context) for param in operation.parameters or [])}
         )
 
-        # if there are no params in path, we expect a list for now, later we should probably see wether
-        # there is a path param at the end of the path
-        expect_list = len(path_level_parameters) == 0
+        # we expect a list if the last part of the path is not a param
+        # we may need to finetune this
+        parts = get_path_parts(path)
+        expect_list = not is_var_part(parts[-1])
         parsed_responses = (
             Response.from_reference(status_code, response_ref, context, expect_list=expect_list)
             for status_code, response_ref in operation.responses.items()

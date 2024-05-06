@@ -221,7 +221,6 @@ class Endpoint:
     @property
     def transformer(self) -> Optional[TransformerSetting]:
         # meet a couple of conditions to be a transformer
-        print(self.parent.payload)
         if not self.parent or not self.path_parameters or not self.parent.payload:
             return None
 

@@ -102,4 +102,4 @@ def get_path_parts(path: str) -> List[str]:
 def is_var_part(part: str) -> bool:
     """check if a part is path var"""
     part = part.strip()
-    return part[0] == "{" and part[-1] == "}"
+    return len(part) > 1 and part[0] == "{" and part[-1] == "}"

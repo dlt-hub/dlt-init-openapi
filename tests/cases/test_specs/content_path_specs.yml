@@ -23,7 +23,6 @@ paths:
                   properties:
                     id:
                       type: integer
-                      example: 3
               
   /results_collection_json_path/:
     get:
@@ -38,14 +37,10 @@ paths:
                 properties:
                   count:
                     type: integer
-                    example: 3
                   next:
                     type: string
-                    nullable: true
-                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
                   previous:
                     type: string
-                    nullable: true
                   results:
                     type: array
 
@@ -63,14 +58,10 @@ paths:
                 properties:
                   count:
                     type: integer
-                    example: 3
                   next:
                     type: string
-                    nullable: true
-                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
                   previous:
                     type: string
-                    nullable: true
                   results:
                     type: array
                     items:
@@ -78,7 +69,6 @@ paths:
                       properties:
                         id:
                           type: integer
-                          example: 3
                         tags:
                           type: array
 
@@ -126,15 +116,10 @@ paths:
                 properties:
                   id:
                     type: integer
-                    example: 3
                   name:
                     type: string
-                    nullable: true
                   address:
                     type: string
-                    nullable: true
-
-
 
   /single_object_nested/:
     get:
@@ -152,13 +137,25 @@ paths:
                     properties:
                       id:
                         type: integer
-                        example: 3
                       name:
                         type: string
-                        nullable: true
                       address:
                         type: string
-                        nullable: true
+
+  /expect_list_but_no_list_and_no_types/:
+    get:
+      operationId: expect_list_but_no_list_and_no_types
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                  name:
+
 
   '/workspace/{workspace_id}/run/{transaction_id}':
     get:

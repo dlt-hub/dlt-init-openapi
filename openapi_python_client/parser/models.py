@@ -381,7 +381,7 @@ class SchemaCrawler:
         return False
 
     def find_property(
-        self, pattern: re.Pattern[str], require_type: Optional[TOpenApiType] = None
+        self, pattern: re.Pattern[str], require_type: Optional[TOpenApiType] = None, allow_unknown_types: bool = True
     ) -> Optional[DataPropertyPath]:
         candidates = []
         unknown_type_candidates = []
@@ -391,7 +391,7 @@ class SchemaCrawler:
             if require_type:
                 if require_type in schema.types:
                     candidates.append((path, schema))
-                elif not schema.types:
+                elif not schema.types and allow_unknown_types:
                     unknown_type_candidates.append((path, schema))
             else:
                 candidates.append((path, schema))

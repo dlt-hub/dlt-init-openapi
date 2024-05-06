@@ -79,7 +79,9 @@ class DefaultDetector(BaseDetector):
                 if payload_schema.is_list:
                     payload = DataPropertyPath(tuple(payload_path), payload_schema)
                 else:
-                    payload = payload_schema.crawled_properties.find_property(RE_MATCH_ALL, "array")
+                    payload = payload_schema.crawled_properties.find_property(
+                        RE_MATCH_ALL, "array", allow_unknown_types=False
+                    )
 
             # either no list expected or no list found..
             if not payload:

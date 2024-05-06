@@ -35,8 +35,8 @@ class TransformerSetting:
 
 @dataclass
 class Response:
-    response_schema: osp.Response
-    content_schema: Optional[SchemaWrapper]
+    osp_response: osp.Response
+    schema: Optional[SchemaWrapper]
     # detected values
     detected_payload: Optional[DataPropertyPath] = None
     detected_primary_key: Optional[str] = None
@@ -44,7 +44,7 @@ class Response:
 
 @dataclass()
 class Endpoint:
-    operation_schema: osp.Operation
+    osp_operation: osp.Operation
 
     # basic parser results
     method: TMethod
@@ -156,7 +156,7 @@ class Endpoint:
         cls,
         method: TMethod,
         path: str,
-        operation: osp.Operation,
+        osp_operation: osp.Operation,
         path_table_name: str,
         path_level_parameters: List[Parameter],
         path_summary: Optional[str],
@@ -166,18 +166,18 @@ class Endpoint:
         # Merge operation params with top level params from path definition
         all_params = {p.name: p for p in path_level_parameters}
         all_params.update(
-            {p.name: p for p in (Parameter.from_reference(param, context) for param in operation.parameters or [])}
+            {p.name: p for p in (Parameter.from_reference(param, context) for param in osp_operation.parameters or [])}
         )
 
         return cls(
             method=method,
             path=path,
-            operation_schema=operation,
+            osp_operation=osp_operation,
             parameters=all_params,
             path_table_name=path_table_name,
-            operation_id=operation.operationId or f"{method}_{path}",
-            summary=operation.summary,
-            description=operation.description,
+            operation_id=osp_operation.operationId or f"{method}_{path}",
+            summary=osp_operation.summary,
+            description=osp_operation.description,
             path_summary=path_summary,
             path_description=path_description,
         )

@@ -15,7 +15,7 @@ class Parameter:
     name: str
     description: Optional[str]
     schema: SchemaWrapper
-    raw_schema: osp.Parameter
+    osp_parameter: osp.Parameter
     required: bool
     location: TParamIn
     explode: bool
@@ -61,24 +61,24 @@ class Parameter:
 
     @classmethod
     def from_reference(cls, param_ref: Union[osp.Reference, osp.Parameter], context: OpenapiContext) -> "Parameter":
-        osp_param = context.parameter_from_reference(param_ref)
+        osp_parameter = context.parameter_from_reference(param_ref)
 
         # if there is no schema attached, fall back to string
-        if not osp_param.param_schema:
-            osp_param.param_schema = osp.Schema(type="string")
+        if not osp_parameter.param_schema:
+            osp_parameter.param_schema = osp.Schema(type="string")
 
-        schema = SchemaWrapper.from_reference(osp_param.param_schema, context)
-        description = param_ref.description or osp_param.description or schema.description
-        location = osp_param.param_in
-        required = osp_param.required
+        schema = SchemaWrapper.from_reference(osp_parameter.param_schema, context)
+        description = param_ref.description or osp_parameter.description or schema.description
+        location = osp_parameter.param_in
+        required = osp_parameter.required
 
         return cls(
-            name=osp_param.name,
+            name=osp_parameter.name,
             description=description,
-            raw_schema=osp_param,
+            osp_parameter=osp_parameter,
             schema=schema,
             location=cast(TParamIn, location),
             required=required,
-            explode=osp_param.explode or False,
-            style=osp_param.style,
+            explode=osp_parameter.explode or False,
+            style=osp_parameter.style,
         )

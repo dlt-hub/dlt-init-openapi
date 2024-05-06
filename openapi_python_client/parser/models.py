@@ -55,7 +55,7 @@ class DataPropertyPath:
 class SchemaWrapper:
     """Wraps an openapi Schema to add useful attributes and methods"""
 
-    schema: osp.Schema
+    osp_schema: osp.Schema
     ref: Optional[osp.Reference]
 
     name: str
@@ -222,7 +222,7 @@ class SchemaWrapper:
             schema_types.remove("null")
 
         wrapper = cls(
-            schema=schema,
+            osp_schema=schema,
             name=name,
             description=schema_ref.description or schema.description,
             ref=schema_ref if isinstance(schema_ref, osp.Reference) else None,

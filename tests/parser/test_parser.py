@@ -148,7 +148,7 @@ def test_schema_name(spotify_parser: OpenapiParser) -> None:
     path = "/me/albums"
     endpoint = spotify_parser.endpoints.endpoints_by_path[path]
 
-    schema = endpoint.detected_response.content_schema
+    schema = endpoint.detected_response.schema
 
     album_schema = schema["items"].schema.array_item["album"].schema
     # Name taken from nested schema in all_of

@@ -22,24 +22,24 @@ TComponentClass = Union[
 
 @dataclass
 class SecurityScheme:
-    data: osp.SecurityScheme
+    os_security_scheme: osp.SecurityScheme
     class_name: ClassName
 
     @property
     def type(self) -> str:
-        return self.data.type
+        return self.os_security_scheme.type
 
     @property
     def scheme(self) -> str:
-        return self.data.scheme
+        return self.os_security_scheme.scheme
 
     @property
     def name(self) -> str:
-        return self.data.name
+        return self.os_security_scheme.name
 
     @property
     def location(self) -> str:
-        return self.data.security_scheme_in
+        return self.os_security_scheme.security_scheme_in
 
 
 class OpenapiContext:

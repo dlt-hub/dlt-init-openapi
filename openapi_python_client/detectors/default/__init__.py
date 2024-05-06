@@ -89,7 +89,7 @@ class DefaultDetector(BaseDetector):
 
         # find main response in list of responses
         main_ref: Union[osp.Reference, osp.Response]
-        for status_code, response_ref in endpoint.operation_schema.responses.items() or []:
+        for status_code, response_ref in endpoint.osp_operation.responses.items() or []:
             if status_code in ["200", "default"]:
                 main_ref = response_ref
                 break
@@ -109,12 +109,12 @@ class DefaultDetector(BaseDetector):
                 break
 
         # build basic response, detect payload path later
-        return Response(response_schema=response_schema, content_schema=content_schema)
+        return Response(osp_response=response_schema, schema=content_schema)
 
     def detect_response_payload(self, response: Response, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
         payload: Optional[DataPropertyPath] = None
-        content_schema = response.content_schema
+        content_schema = response.schema
 
         # try to discover payload path and schema
         if content_schema:
@@ -141,7 +141,7 @@ class DefaultDetector(BaseDetector):
     def detect_pagination(self, endpoint: Endpoint) -> Optional[Pagination]:
         """Detect pagination from discovered main response and params of an endpoint"""
 
-        response_schema = endpoint.detected_response.content_schema if endpoint.detected_response else None
+        response_schema = endpoint.detected_response.schema if endpoint.detected_response else None
         if not response_schema:
             return None
 

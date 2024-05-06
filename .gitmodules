@@ -1,6 +1,3 @@
 [submodule "sources"]
 	path = sources
 	url = git@github.com:dlt-hub/verified-sources.git
-[submodule "tests/cases/original_specs_repo"]
-	path = tests/cases/original_specs_repo
-	url = git@github.com:dlt-hub/openapi-specs.git

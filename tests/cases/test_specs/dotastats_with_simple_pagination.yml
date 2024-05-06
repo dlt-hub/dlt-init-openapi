@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: OpenDota API
+  description: >-
+    # Introduction
+
+    The OpenDota API provides Dota 2 related data including advanced match data
+    extracted from match replays.
+
+
+    You can find data that can be used to convert hero and ability IDs and other
+    information provided by the API from the
+    [dotaconstants](https://github.com/odota/dotaconstants) repository.
+
+
+    Without a key, you can make 2,000 free calls per day at a rate limit of 60
+    requests/minute. We also offer a Premium Tier with unlimited API calls and
+    higher rate limits. Check out the [API
+    page](https://www.opendota.com/api-keys) to learn more.
+
+  version: 25.0.0
+servers:
+  - url: "https://api.opendota.com/api"
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      description: >-
+        Use an API key to remove monthly call limits and to receive higher rate
+        limits. [Learn more and get your API
+        key](https://www.opendota.com/api-keys).
+                Usage example: https://api.opendota.com/api/matches/271145478?api_key=YOUR-API-KEY
+                
+                API key can also be sent using the authorization header "Authorization: Bearer YOUR-API-KEY"
+
+      in: query
+  schemas:
+    TeamObjectResponse:
+      title: TeamObjectResponse
+      type: object
+      properties:
+        team_id:
+          description: Team's identifier
+          type: integer
+        rating:
+          description: The Elo rating of the team
+          type: number
+        wins:
+          description: The number of games won by this team
+          type: integer
+        losses:
+          description: The number of losses by this team
+          type: integer
+        last_match_time:
+          description: The Unix timestamp of the last match played by this team
+          type: integer
+        name:
+          description: Team name
+          type: string
+          example: Newbee
+          nullable: true
+        tag:
+          description: The team tag/abbreviation
+          type: string
+  parameters:
+    limitParam:
+      name: limit
+      in: query
+      description: Number of matches to limit to
+      required: false
+      schema:
+        type: integer
+    offsetParam:
+      name: offset
+      in: query
+      description: Number of matches to offset start by
+      required: false
+      schema:
+        type: integer
+    teamIdPathParam:
+      name: team_id
+      in: path
+      description: Team ID
+      required: true
+      schema:
+        type: integer
+paths:
+  /teams:
+    get:
+      operationId: get_teams
+      summary: GET /teams
+      description: Get team data
+      tags:
+        - teams
+      parameters:
+        - name: page
+          in: query
+          description: "Page number, zero indexed. Each page returns up to 1000 entries."
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json; charset=utf-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamObjectResponse"

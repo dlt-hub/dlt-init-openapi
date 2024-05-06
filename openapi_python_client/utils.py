@@ -9,20 +9,6 @@ DELIMITERS = r"\. _-"
 T = TypeVar("T")
 
 
-class PythonIdentifier(str):
-    """A snake_case string which has been validated / transformed into a valid identifier for Python"""
-
-    def __new__(cls, value: str, prefix: str = "") -> "PythonIdentifier":
-        new_value = fix_reserved_words(snake_case(sanitize(value)))
-
-        if not new_value.isidentifier() or value.startswith("_"):
-            new_value = f"{prefix}{new_value}"
-        return str.__new__(cls, new_value)
-
-    def __deepcopy__(self, _: Any) -> "PythonIdentifier":
-        return self
-
-
 class ClassName(str):
     """A PascalCase string which has been validated / transformed into a valid class name for Python"""
 

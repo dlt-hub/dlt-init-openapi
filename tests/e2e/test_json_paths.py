@@ -45,7 +45,7 @@ def test_single_object_nested(data_selectors: Dict[str, Any]) -> None:
 
 
 def test_platform_nested(data_selectors: Dict[str, Any]) -> None:
-    assert data_selectors["get_workspace_run_workspace_workspace_id_run_transaction_id_get"] == "$"
+    assert data_selectors["get_workspace_run_workspace__workspace_id__run__transaction_id__get"] == "$"
 
 
 def test_expect_list_but_no_list_and_no_types(data_selectors: Dict[str, Any]) -> None:

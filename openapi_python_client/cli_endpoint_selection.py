@@ -14,7 +14,7 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:
             choices.append(questionary.Separator(f"\n{endpoint.table_name} endpoints:\n"))
         prev_table_name = endpoint.table_name
         text = [
-            ("bold", str(endpoint.python_name)),
+            ("bold", str(endpoint.operation_id)),
             ("italic", f" {endpoint.path}"),
         ]
         choices.append(questionary.Choice(text, endpoint))
@@ -26,8 +26,8 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:
 
     selected_names = set()
     for ep in selected_endpoints:
-        selected_names.add(str(ep.python_name))
+        selected_names.add(str(ep.operation_id))
         if ep.transformer and ep.parent:
             # TODO: Generalize traversing ancestry chain
-            selected_names.add(str(ep.parent.python_name))
+            selected_names.add(str(ep.parent.operation_id))
     return selected_names

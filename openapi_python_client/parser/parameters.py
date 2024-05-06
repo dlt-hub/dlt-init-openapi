@@ -6,7 +6,6 @@ import openapi_schema_pydantic as osp
 from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper, TSchemaType
 from openapi_python_client.parser.types import compare_openapi_types
-from openapi_python_client.utils import PythonIdentifier
 
 TParamIn = Literal["query", "header", "path", "cookie"]
 
@@ -19,7 +18,6 @@ class Parameter:
     raw_schema: osp.Parameter
     required: bool
     location: TParamIn
-    python_name: PythonIdentifier
     explode: bool
     style: Optional[str] = None
 
@@ -81,7 +79,6 @@ class Parameter:
             schema=schema,
             location=cast(TParamIn, location),
             required=required,
-            python_name=PythonIdentifier(osp_param.name, prefix=context.config.field_prefix),
             explode=osp_param.explode or False,
             style=osp_param.style,
         )

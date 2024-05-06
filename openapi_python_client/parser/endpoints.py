@@ -10,7 +10,6 @@ from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
 from openapi_python_client.parser.paths import get_path_parts, is_var_part, table_names_from_paths
-from openapi_python_client.utils import PythonIdentifier
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
@@ -55,8 +54,6 @@ class Endpoint:
     raw_schema: osp.Operation
 
     operation_id: str
-
-    python_name: PythonIdentifier
 
     _parent: Optional["Endpoint"] = None
     children: List["Endpoint"] = field(default_factory=list)
@@ -179,10 +176,6 @@ class Endpoint:
             {p.name: p for p in (Parameter.from_reference(param, context) for param in operation.parameters or [])}
         )
 
-        #
-        operation_id = operation.operationId or f"{method}_{path}"
-        python_name = PythonIdentifier(operation_id)
-
         # get pagination and main data response from detector
         pagination, response = context.detector.detect_response_and_pagination(path, operation, all_params)
 
@@ -194,7 +187,6 @@ class Endpoint:
             parameters=all_params,
             path_table_name=path_table_name,
             operation_id=operation.operationId or f"{method}_{path}",
-            python_name=python_name,
             summary=operation.summary,
             description=operation.description,
             path_summary=path_summary,
@@ -216,7 +208,7 @@ class EndpointCollection:
         """
         if not self.names_to_render:
             return self.endpoints
-        return [e for e in self.endpoints if e.python_name in self.names_to_render]
+        return [e for e in self.endpoints if e.operation_id in self.names_to_render]
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:

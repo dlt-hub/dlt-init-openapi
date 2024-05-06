@@ -1,0 +1,105 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /items/:
+    get:
+      summary: Read Item Filtered
+      operationId: read_item_filtered_items__get
+      parameters:
+        - required: false
+          schema:
+            type: string
+            title: Q
+          name: q
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Max Price
+          name: max_price
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Min Price
+          name: min_price
+          in: query
+        - required: false
+          schema:
+            type: string
+            title: Gallery
+          name: gallery
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Skip
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Limit
+            default: 10
+          name: limit
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            title: Paged
+            default: true
+          name: paged
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /galleries/:
+    get:
+      summary: Read Galleries Public Data
+      operationId: read_galleries_public_data_galleries__get
+      parameters:
+        - required: false
+          schema:
+            type: string
+            title: Q
+          name: q
+          in: query
+        - required: false
+          schema:
+            title: Sort By
+            default: ''
+          name: sort_by
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Skip
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            type: integer
+            title: Limit
+            default: 10
+          name: limit
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            title: Paged
+            default: true
+          name: paged
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}

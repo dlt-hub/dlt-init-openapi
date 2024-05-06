@@ -1,13 +1,25 @@
 """
 Basic detector class
 """
-
+from typing import Tuple, TYPE_CHECKING, Dict, Optional
 from abc import ABC, abstractmethod
+import openapi_schema_pydantic as osp
+
+if TYPE_CHECKING:
+    from openapi_python_client.parser.pagination import Pagination
+    from openapi_python_client.parser.endpoints import Response
+    from openapi_python_client.parser.context import OpenapiContext
+    from openapi_python_client.parser.parameters import Parameter
 
 
 class BaseDetector(ABC):
+    context: "OpenapiContext"
+
     @abstractmethod
-    def detect_pagination(self) -> None:
+    def detect_response_and_pagination(
+        self, path: str, operation: osp.Operation, parameters: Dict[str, "Parameter"]
+    ) -> Tuple[Optional["Pagination"], Optional["Response"]]:
+        """Get response and pagination from osp.operation"""
         ...
 
     @abstractmethod

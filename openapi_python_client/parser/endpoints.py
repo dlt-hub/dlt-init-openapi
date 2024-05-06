@@ -12,7 +12,6 @@ from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 from openapi_python_client.utils import PythonIdentifier
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from .const import RE_MATCH_ALL
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 Tree = Dict[str, Union["Endpoint", "Tree"]]
@@ -23,8 +22,6 @@ ENDPOINT_MARKER = "<endpoint>"
 @dataclass
 class TransformerSetting:
     parent_endpoint: Endpoint
-    # parent_property: DataPropertyPath
-    # path_parameter: Parameter
     path_parameters: List[Parameter]
     parent_properties: List[DataPropertyPath]
 
@@ -43,71 +40,15 @@ class TransformerSetting:
 
 @dataclass
 class Response:
-    status_code: str
-    description: str
-    raw_schema: osp.Response
+    response_schema: osp.Response
     content_schema: Optional[SchemaWrapper]
-    list_property: Optional[DataPropertyPath] = None
     payload: Optional[DataPropertyPath] = None
-    """Payload set initially before comparing other endpoints"""
-
-    @classmethod
-    def from_reference(
-        cls,
-        status_code: str,
-        resp_ref: Union[osp.Reference, osp.Response],
-        context: OpenapiContext,
-        expect_list: bool = False,  # if we think there should be a list, behave a bit different
-    ) -> "Response":
-        if status_code == "default":
-            status_code = "200"
-
-        raw_schema = context.response_from_reference(resp_ref)
-        description = resp_ref.description or raw_schema.description
-
-        content_schema: Optional[SchemaWrapper] = None
-        for content_type, media_type in (raw_schema.content or {}).items():
-            # Look for json responses only
-            if (content_type == "application/json" or content_type.endswith("+json")) and media_type.media_type_schema:
-                content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
-
-        payload_schema: Optional[SchemaWrapper] = content_schema
-        payload: Optional[DataPropertyPath] = None
-
-        # try to discover payload path and schema
-        if payload_schema:
-            payload_path: List[str] = []
-
-            if expect_list:
-                # TODO: improve heuristics and move into some utility function for testing
-                if payload_schema.is_list:
-                    payload = DataPropertyPath(tuple(payload_path), payload_schema)
-                else:
-                    payload = payload_schema.crawled_properties.find_property(RE_MATCH_ALL, "array")
-
-            # either no list expected or no list found..
-            if not payload:
-                while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
-                    # Schema contains only a single object property. The payload is inside
-                    prop = payload_schema.properties[0]
-                    payload_path.append(prop.name)
-                    payload_schema = prop.schema
-
-                payload = DataPropertyPath(tuple(payload_path), payload_schema)
-
-        return cls(
-            status_code=status_code,
-            description=description,
-            raw_schema=raw_schema,
-            content_schema=content_schema,
-            payload=payload,
-        )
 
 
 @dataclass()
 class Endpoint:
     method: TMethod
-    responses: Dict[str, Response]
+    response: Optional[Response]
     path: str
     parameters: Dict[str, Parameter]
     path_table_name: str
@@ -135,9 +76,9 @@ class Endpoint:
 
     @property
     def payload(self) -> Optional[DataPropertyPath]:
-        if not self.data_response:
+        if not self.response:
             return None
-        return self.data_response.payload
+        return self.response.payload
 
     @property
     def is_list(self) -> bool:
@@ -198,19 +139,6 @@ class Endpoint:
         return self.positional_arguments() + self.keyword_arguments()
 
     @property
-    def data_response(self) -> Optional[Response]:
-        if not self.responses:
-            return None
-        keys = list(self.responses.keys())
-
-        if len(keys) == 1:
-            return self.responses[keys[0]]
-        success_codes = [k for k in keys if k.startswith("20")]
-        if success_codes:
-            return self.responses[success_codes[0]]
-        return self.responses[keys[0]]
-
-    @property
     def table_name(self) -> str:
         return self.payload.name if (self.payload and self.payload.name) else self.path_table_name
 
@@ -255,23 +183,18 @@ class Endpoint:
             {p.name: p for p in (Parameter.from_reference(param, context) for param in operation.parameters or [])}
         )
 
-        # we expect a list if the last part of the path is not a param
-        # we may need to finetune this
-        parts = get_path_parts(path)
-        expect_list = not is_var_part(parts[-1])
-        parsed_responses = (
-            Response.from_reference(status_code, response_ref, context, expect_list=expect_list)
-            for status_code, response_ref in operation.responses.items()
-        )
-
+        #
         operation_id = operation.operationId or f"{method}_{path}"
         python_name = PythonIdentifier(operation_id)
 
-        endpoint = cls(
+        # get pagination and main data response from detector
+        pagination, response = context.detector.detect_response_and_pagination(path, operation, all_params)
+
+        return cls(
             method=method,
             path=path,
             raw_schema=operation,
-            responses={pr.status_code: pr for pr in parsed_responses},
+            response=response,
             parameters=all_params,
             path_table_name=path_table_name,
             operation_id=operation.operationId or f"{method}_{path}",
@@ -280,10 +203,8 @@ class Endpoint:
             description=operation.description,
             path_summary=path_summary,
             path_description=path_description,
+            pagination=pagination,
         )
-        endpoint.pagination = Pagination.from_endpoint(endpoint)
-
-        return endpoint
 
 
 @dataclass

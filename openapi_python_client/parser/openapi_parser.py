@@ -72,6 +72,8 @@ class OpenapiParser:
         self.context = OpenapiContext(self.config, spec, self.spec_raw, self.detector)
         self.info = OpenApiInfo.from_context(self.context)
 
+        self.detector.context = self.context
+
         log.info("Parsing endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)
 

@@ -17,20 +17,12 @@ TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 @dataclass
 class TransformerSetting:
     parent_endpoint: Endpoint
-    path_parameters: List[Parameter]
-    parent_properties: List[DataPropertyPath]
+    path_parameter: Parameter
+    parent_property: DataPropertyPath
 
     @property
     def path_params_mapping(self) -> Dict[str, str]:
-        return {param.name: prop.json_path for param, prop in zip(self.path_parameters, self.parent_properties)}
-
-    @property
-    def path_params_mapping_first_item(self) -> Dict[str, str]:
-        items = self.path_params_mapping
-        if items:
-            key = list(items.keys())[0]
-            return {key: items[key]}
-        return items
+        return {self.path_parameter.name: self.parent_property.json_path}
 
 
 @dataclass
@@ -68,6 +60,7 @@ class Endpoint:
     detected_resource_name: Optional[str] = None  # TODO
     detected_parent: Optional["Endpoint"] = None
     detected_children: List["Endpoint"] = field(default_factory=list)
+    detected_transformer_settings: Optional[TransformerSetting] = None
 
     @property
     def payload(self) -> Optional[DataPropertyPath]:
@@ -106,7 +99,7 @@ class Endpoint:
         # exclude pagination params
         if self.detected_pagination:
             ret = (p for p in ret if p.name not in self.detected_pagination.param_names)
-        if not include_path_params:
+        if not include_path_params:  # TODO, we should render the ones that are not in the transformer
             ret = (p for p in ret if p.location != "path")
         return list(ret)
 
@@ -134,22 +127,7 @@ class Endpoint:
 
     @property
     def transformer(self) -> Optional[TransformerSetting]:
-        # meet a couple of conditions to be a transformer
-        if not self.parent or not self.path_parameters or not self.parent.payload:
-            return None
-
-        resolved_props = []
-        for param in self.path_parameters.values():
-            prop = param.find_input_property(self.parent.payload.schema, fallback="id")
-            if not prop:
-                return None
-            resolved_props.append(prop)
-
-        return TransformerSetting(
-            parent_endpoint=self.parent,
-            parent_properties=resolved_props,
-            path_parameters=list(self.path_parameters.values()),
-        )
+        return self.detected_transformer_settings
 
     @classmethod
     def from_operation(

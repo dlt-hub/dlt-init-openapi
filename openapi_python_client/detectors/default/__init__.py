@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 import openapi_schema_pydantic as osp
 
 from openapi_python_client.detectors.base_detector import BaseDetector
-from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response
+from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
@@ -38,6 +38,26 @@ class DefaultDetector(BaseDetector):
 
         # discover parent child relationship
         self.detect_parent_child_relationships(open_api.endpoints)
+
+        self.detect_transformer_settings(open_api.endpoints)
+
+    def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
+        for endpoint in endpoints.endpoints:
+            if not endpoint.parent or not endpoint.path_parameters or not endpoint.parent.payload:
+                continue
+
+            # TODO: figure out which one actually is the last path param
+            param = list(endpoint.path_parameters.values())[-1]
+            prop = param.find_input_property(endpoint.parent.payload.schema, fallback="id")
+
+            if not prop:
+                continue
+
+            endpoint.detected_transformer_settings = TransformerSetting(
+                parent_endpoint=endpoint.parent,
+                parent_property=prop,
+                path_parameter=param,
+            )
 
     def detect_paginators_and_responses(self, endpoints: EndpointCollection) -> None:
         # iterate over endpoints and detect response and pagination settings
@@ -264,9 +284,6 @@ class DefaultDetector(BaseDetector):
             endpoint.detected_parent = find_nearest_list_parent(endpoint.path)
             if endpoint.detected_parent:
                 endpoint.detected_parent.detected_children.append(endpoint)
-
-    def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
-        pass
 
     def detect_primary_keys(self, endpoints: EndpointCollection) -> None:
         pass

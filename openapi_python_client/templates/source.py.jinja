@@ -36,7 +36,7 @@ def {{ source_name }}(
                 "path": "{{endpoint.path }}",
                 {% if endpoint.transformer %}
                 "params": {
-                    {% for key, value in endpoint.transformer.path_params_mapping_first_item.items()%}
+                    {% for key, value in endpoint.transformer.path_params_mapping.items()%}
                     "{{key}}": {
                         "type": "resolve",
                         "resource": "{{endpoint.parent.operation_id }}",

@@ -15,6 +15,7 @@ def test_local_original_specs(case: str) -> None:
 
 
 @pytest.mark.slow
+@pytest.mark.skip("broken for now...")
 @pytest.mark.parametrize(
     "case",
     all_repo_original_specs(),

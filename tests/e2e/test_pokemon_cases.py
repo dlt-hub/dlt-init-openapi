@@ -30,6 +30,7 @@ def test_paged_poke_load() -> None:
 
     assert source["resources"][0] == {
         "name": "pokemon_list",
+        "primary_key": "id",
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
@@ -56,6 +57,7 @@ def test_simple_child_table_poke_load() -> None:
     # root resource
     assert source["resources"][0] == {
         "name": "pokemon_list",
+        "primary_key": "id",
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
@@ -72,6 +74,7 @@ def test_simple_child_table_poke_load() -> None:
     # resolve transformer
     assert source["resources"][1] == {
         "name": "pokemon_read",
+        "primary_key": "id",
         "endpoint": {
             "path": "/api/v2/pokemon/{name}/",
             "data_selector": "$",

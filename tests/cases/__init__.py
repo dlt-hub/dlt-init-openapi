@@ -1,5 +1,4 @@
 import os
-import pytest
 from typing import Iterable
 
 ORIGINAL_SPECS_FOLDERS = "./tests/cases/original_specs"

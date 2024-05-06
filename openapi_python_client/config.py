@@ -36,7 +36,7 @@ class Config(BaseModel):
     field_prefix: str = "field_"
     http_timeout: int = 5
     # include_methods: List[str] = ["get", "put", "post", "delete", "options", "head", "patch", "trace"]
-    include_methods: List[str] = ["get", "post"]
+    include_methods: List[str] = ["get"]
     default_openapi_title: str = "openapi"  # Fallback title when openapi info.title is missing or empty
     project_name_suffix: str = "-pipeline"
     dataset_name_suffix: str = "_data"

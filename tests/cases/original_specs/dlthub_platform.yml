@@ -1,0 +1,3505 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  '/organization/{organization_id}/user/me':
+    get:
+      tags:
+        - users
+      summary: Get User
+      description: Gets own user object for organization context
+      operationId: get_user_organization__organization_id__user_me_get
+      security:
+        - Auth: []
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithOrgSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/organization/{organization_id}/users':
+    get:
+      tags:
+        - users
+      summary: Get Users
+      description: Get all users for an org
+      operationId: get_users_organization__organization_id__users_get
+      security:
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserWithOrgSchema'
+                title: Response Get Users Organization  Organization Id  Users Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/organization/{organization_id}/user/{user_email}':
+    put:
+      tags:
+        - users
+      summary: Update User
+      description: Update role of user in org (will create user if does not exist)
+      operationId: update_user_organization__organization_id__user__user_email__put
+      security:
+        - Auth: []
+      parameters:
+        - name: user_email
+          in: path
+          required: true
+          schema:
+            type: string
+            title: User Email
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyRoleSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithOrgSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - users
+      summary: Delete User
+      description: Delete user in organization
+      operationId: delete_user_organization__organization_id__user__user_email__delete
+      security:
+        - Auth: []
+      parameters:
+        - name: user_email
+          in: path
+          required: true
+          schema:
+            type: string
+            title: User Email
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/organization/{organization_id}/workspaces':
+    get:
+      tags:
+        - workspaces
+      summary: Get Workspaces
+      description: >-
+        Gets a list of workspaces in the current workspace that the user has
+        access to
+      operationId: get_workspaces_organization__organization_id__workspaces_get
+      security:
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkspaceWithRoleSchema'
+                title: >-
+                  Response Get Workspaces Organization  Organization Id 
+                  Workspaces Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - workspaces
+      summary: Create Workspace
+      description: Creates a new workspace
+      operationId: create_workspace_organization__organization_id__workspaces_post
+      security:
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkspaceSchema'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}':
+    get:
+      tags:
+        - workspaces
+      summary: Get Workspace
+      description: Gets a workspace
+      operationId: get_workspace_workspace__workspace_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - workspaces
+      summary: Update Workspace
+      description: Updates a workspace
+      operationId: update_workspace_workspace__workspace_id__put
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkspaceSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/members':
+    get:
+      tags:
+        - workspaces
+      summary: Get Workspace Members
+      description: Gets a workspace
+      operationId: get_workspace_members_workspace__workspace_id__members_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserWithRoleSchema'
+                title: >-
+                  Response Get Workspace Members Workspace  Workspace Id 
+                  Members Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/members/{user_email}':
+    put:
+      tags:
+        - workspaces
+      summary: Update Workspace Member
+      description: Gets a workspace
+      operationId: >-
+        update_workspace_member_workspace__workspace_id__members__user_email__put
+      security:
+        - Auth: []
+      parameters:
+        - name: user_email
+          in: path
+          required: true
+          schema:
+            type: string
+            title: User Email
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberSchema'
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - workspaces
+      summary: Delete Workspace Member
+      description: Gets a workspace
+      operationId: >-
+        delete_workspace_member_workspace__workspace_id__members__user_email__delete
+      security:
+        - Auth: []
+      parameters:
+        - name: user_email
+          in: path
+          required: true
+          schema:
+            type: string
+            title: User Email
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/pipelines':
+    get:
+      tags:
+        - pipelines
+      summary: Get Pipelines
+      description: Gets all pipeline for a workspace
+      operationId: get_pipelines_workspace__workspace_id__pipelines_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: dataset_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Dataset Id
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizedPage_PipelineWithStatsSchema_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - pipelines
+      summary: Create Pipeline
+      description: Creates a new workspace
+      operationId: create_pipeline_workspace__workspace_id__pipelines_post
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePipelineSchema'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/pipeline/{pipeline_id}':
+    get:
+      tags:
+        - pipelines
+      summary: Get Pipeline
+      description: Gets a workspace
+      operationId: get_pipeline_workspace__workspace_id__pipeline__pipeline_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+        - name: pipeline_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Pipeline Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - pipelines
+      summary: Update Pipeline
+      description: Updates a workspace
+      operationId: update_pipeline_workspace__workspace_id__pipeline__pipeline_id__put
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+        - name: pipeline_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Pipeline Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePipelineSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/beacon/{beacon_token}/trace':
+    put:
+      tags:
+        - pipelines
+      summary: Trace
+      description: Records trace data for a pipeline run
+      operationId: trace_beacon__beacon_token__trace_put
+      parameters:
+        - name: beacon_token
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Beacon Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseTraceSchema'
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/beacon/{beacon_token}/state':
+    put:
+      tags:
+        - pipelines
+      summary: State
+      description: Records state data for a pipeline
+      operationId: state_beacon__beacon_token__state_put
+      parameters:
+        - name: beacon_token
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Beacon Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseStateSchema'
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/runs':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Runs
+      description: Gets all pipeline runs for a workspace
+      operationId: get_workspace_runs_workspace__workspace_id__runs_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: pipeline_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Pipeline Id
+        - name: dataset_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Dataset Id
+        - name: state
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: State
+        - name: has_migrations
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: 'null'
+            title: Has Migrations
+        - name: load_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Load Id
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizedPage_RunSchema_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/run/{transaction_id}':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Run
+      description: Gets all pipeline runs for a pipeline
+      operationId: get_workspace_run_workspace__workspace_id__run__transaction_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: transaction_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Transaction Id
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/load-packages':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Load Packages
+      description: Gets all migrations for a workspace
+      operationId: get_workspace_load_packages_workspace__workspace_id__load_packages_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: loaded
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: 'null'
+            title: Loaded
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizedPage_LoadPackageWrapperSchema_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/load-packages/{load_id}':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Load Package
+      description: Gets all migrations for a workspace
+      operationId: >-
+        get_workspace_load_package_workspace__workspace_id__load_packages__load_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: load_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Load Id
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadPackageWrapperSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/load-package-steps':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Load Package Steps
+      description: Gets all migrations for a workspace
+      operationId: >-
+        get_workspace_load_package_steps_workspace__workspace_id__load_package_steps_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: load_package_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Load Package Id
+        - name: run_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Run Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/CustomizedPage_LoadPackageStepWrapperSchema_
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/stats':
+    get:
+      tags:
+        - runs-load-packages
+      summary: Get Workspace Stats
+      description: Gets stats for workspace dashboard
+      operationId: get_workspace_stats_workspace__workspace_id__stats_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceStatsSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /organizations:
+    get:
+      tags:
+        - organizations
+      summary: Get Organizations
+      description: >-
+        Gets a list of organizations where this identity has a user, if there
+        are none,
+
+        create new organization, user and default workspace
+      operationId: get_organizations_organizations_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/OrganizationSchema'
+                type: array
+                title: Response Get Organizations Organizations Get
+      security:
+        - Auth: []
+    post:
+      tags:
+        - organizations
+      summary: Create Organization
+      description: Create a new orgaization with owner
+      operationId: create_organization_organizations_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationSchema'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+        - Auth: []
+  '/organization/{organization_id}':
+    get:
+      tags:
+        - organizations
+      summary: Get Organization
+      description: Gets the current organization
+      operationId: get_organization_organization__organization_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - organizations
+      summary: Update Organization
+      description: Updates an organization
+      operationId: update_organization_organization__organization_id__put
+      security:
+        - Auth: []
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: workspace_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Workspace Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationSchema'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganizationSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/datasets':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Datasets
+      description: Gets all schemas for a pippeline
+      operationId: get_workspace_datasets_workspace__workspace_id__datasets_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: pipeline_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Pipeline Id
+        - name: schema_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Schema Id
+        - name: run_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Run Id
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: >-
+                  #/components/schemas/CustomizedPage_DatasetWithDestinationSchema_
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/dataset/{dataset_id}':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Dataset
+      description: Gets all schemas for a pippeline
+      operationId: get_workspace_dataset_workspace__workspace_id__dataset__dataset_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: dataset_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Dataset Id
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetWithDestinationSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/schemas':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Schemas
+      description: Gets all schemas for a pippeline
+      operationId: get_workspace_schemas_workspace__workspace_id__schemas_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: dataset_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Dataset Id
+        - name: type
+          in: query
+          required: false
+          schema:
+            enum:
+              - active
+              - all
+            type: string
+            default: active
+            title: Type
+        - name: search
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: 'null'
+            title: Search
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizedPage_SchemaWrapperSchema_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/schema/{version_hash}':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Schema
+      description: Get schema with version hash
+      operationId: get_workspace_schema_workspace__workspace_id__schema__version_hash__get
+      security:
+        - Auth: []
+      parameters:
+        - name: version_hash
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Version Hash
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchemaWithPreviousVersionsSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/migrations':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Migrations
+      description: Gets all migrations for a workspace
+      operationId: get_workspace_migrations_workspace__workspace_id__migrations_get
+      security:
+        - Auth: []
+      parameters:
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: dataset_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Dataset Id
+        - name: run_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Run Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            description: Page number
+            default: 1
+            title: Page
+          description: Page number
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            default: 10
+            title: Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomizedPage_MigrationWrapperSchema_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/workspace/{workspace_id}/migrations/{migration_id}':
+    get:
+      tags:
+        - datasets-schemas
+      summary: Get Workspace Migration
+      description: Gets one migrations for a workspace
+      operationId: >-
+        get_workspace_migration_workspace__workspace_id__migrations__migration_id__get
+      security:
+        - Auth: []
+      parameters:
+        - name: migration_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Migration Id
+        - name: workspace_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            title: Workspace Id
+        - name: organization_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationWrapperSchema'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /:
+    get:
+      summary: Root
+      operationId: root__get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    BaseStateSchema:
+      properties:
+        pipeline_name:
+          type: string
+          title: Pipeline Name
+        destination_name:
+          type: string
+          title: Destination Name
+      additionalProperties: true
+      type: object
+      required:
+        - pipeline_name
+        - destination_name
+      title: BaseStateSchema
+    BaseTraceSchema:
+      properties:
+        transaction_id:
+          type: string
+          title: Transaction Id
+        pipeline_name:
+          type: string
+          title: Pipeline Name
+      additionalProperties: true
+      type: object
+      required:
+        - transaction_id
+        - pipeline_name
+      title: BaseTraceSchema
+    CreateOrganizationSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+      type: object
+      required:
+        - name
+        - description
+      title: CreateOrganizationSchema
+    CreatePipelineSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+      type: object
+      required:
+        - name
+        - description
+      title: CreatePipelineSchema
+    CreateWorkspaceSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+      type: object
+      required:
+        - name
+        - description
+      title: CreateWorkspaceSchema
+    CustomizedPage_DatasetWithDestinationSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/DatasetWithDestinationSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[DatasetWithDestinationSchema]'
+    CustomizedPage_LoadPackageStepWrapperSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/LoadPackageStepWrapperSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[LoadPackageStepWrapperSchema]'
+    CustomizedPage_LoadPackageWrapperSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/LoadPackageWrapperSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[LoadPackageWrapperSchema]'
+    CustomizedPage_MigrationWrapperSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/MigrationWrapperSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[MigrationWrapperSchema]'
+    CustomizedPage_PipelineWithStatsSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/PipelineWithStatsSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[PipelineWithStatsSchema]'
+    CustomizedPage_RunSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/RunSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[RunSchema]'
+    CustomizedPage_SchemaWrapperSchema_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/SchemaWrapperSchema'
+          type: array
+          title: Items
+        total:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Total
+        page:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Page
+        size:
+          anyOf:
+            - type: integer
+              minimum: 1
+            - type: 'null'
+          title: Size
+        pages:
+          anyOf:
+            - type: integer
+              minimum: 0
+            - type: 'null'
+          title: Pages
+      type: object
+      required:
+        - items
+        - total
+        - page
+        - size
+      title: 'CustomizedPage[SchemaWrapperSchema]'
+    DagSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        extract_idx:
+          type: integer
+          title: Extract Idx
+        parent_name:
+          type: string
+          title: Parent Name
+        resource_name:
+          type: string
+          title: Resource Name
+      type: object
+      required:
+        - load_id
+        - extract_idx
+        - parent_name
+        - resource_name
+      title: DagSchema
+    DatasetSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+        - id
+        - name
+      title: DatasetSchema
+    DatasetWithDestinationSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          type: string
+          title: Name
+        destination:
+          $ref: '#/components/schemas/DestinationSchema'
+        last_migration:
+          anyOf:
+            - $ref: '#/components/schemas/MigrationWrapperSchema'
+            - type: 'null'
+        last_run:
+          anyOf:
+            - $ref: '#/components/schemas/RunSchema'
+            - type: 'null'
+        schemas_count:
+          type: integer
+          title: Schemas Count
+      type: object
+      required:
+        - id
+        - name
+        - destination
+        - schemas_count
+      title: DatasetWithDestinationSchema
+    DestinationSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+        type:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Type
+        displayable_credentials:
+          type: string
+          title: Displayable Credentials
+        fingerprint:
+          type: string
+          title: Fingerprint
+        staging_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Staging Name
+        staging_displayable_credentials:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Staging Displayable Credentials
+      type: object
+      required:
+        - id
+        - displayable_credentials
+        - fingerprint
+      title: DestinationSchema
+    ExceptionTraceSchema:
+      properties:
+        message:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Message
+        stack_trace:
+          items:
+            type: string
+          type: array
+          title: Stack Trace
+        exception_type:
+          type: string
+          title: Exception Type
+      type: object
+      required:
+        - message
+        - stack_trace
+        - exception_type
+      title: ExceptionTraceSchema
+    ExecutionContextSchema:
+      properties:
+        ci_run:
+          type: boolean
+          title: Ci Run
+        python:
+          type: string
+          title: Python
+        cpu:
+          type: integer
+          title: Cpu
+        exec_info:
+          items:
+            type: string
+          type: array
+          title: Exec Info
+        os:
+          $ref: '#/components/schemas/SoftwareVersionSchema'
+        library:
+          $ref: '#/components/schemas/SoftwareVersionSchema'
+      type: object
+      required:
+        - ci_run
+        - python
+        - cpu
+        - exec_info
+        - os
+        - library
+      title: ExecutionContextSchema
+    ExtractInfoSchema:
+      properties:
+        dag:
+          items:
+            $ref: '#/components/schemas/DagSchema'
+          type: array
+          title: Dag
+        hints:
+          items:
+            $ref: '#/components/schemas/HintSchema'
+          type: array
+          title: Hints
+        job_metrics:
+          items:
+            $ref: '#/components/schemas/JobMetricSchema'
+          type: array
+          title: Job Metrics
+        resource_metrics:
+          items:
+            $ref: '#/components/schemas/ResourceMetricSchema'
+          type: array
+          title: Resource Metrics
+        table_metrics:
+          items:
+            $ref: '#/components/schemas/TableMetricSchema'
+          type: array
+          title: Table Metrics
+      type: object
+      required:
+        - dag
+        - hints
+        - job_metrics
+        - resource_metrics
+        - table_metrics
+      title: ExtractInfoSchema
+    ExtractStepSchema:
+      properties:
+        span_id:
+          type: string
+          title: Span Id
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        step_exception:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Step Exception
+        exception_traces:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ExceptionTraceSchema'
+              type: array
+            - type: 'null'
+          title: Exception Traces
+        step_info:
+          $ref: '#/components/schemas/StepInfoSchema'
+        step:
+          const: extract
+          title: Step
+        extract_info:
+          anyOf:
+            - $ref: '#/components/schemas/ExtractInfoSchema'
+            - type: 'null'
+      type: object
+      required:
+        - span_id
+        - started_at
+        - step_info
+        - step
+      title: ExtractStepSchema
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    HintSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        extract_idx:
+          type: integer
+          title: Extract Idx
+        resource_name:
+          type: string
+          title: Resource Name
+        write_disposition:
+          type: string
+          title: Write Disposition
+      type: object
+      required:
+        - load_id
+        - extract_idx
+        - resource_name
+        - write_disposition
+      title: HintSchema
+    JobMetricSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        extract_idx:
+          type: integer
+          title: Extract Idx
+        file_path:
+          type: string
+          title: File Path
+        file_size:
+          type: integer
+          title: File Size
+        items_count:
+          type: integer
+          title: Items Count
+        created:
+          type: number
+          title: Created
+        last_modified:
+          type: number
+          title: Last Modified
+        job_id:
+          type: string
+          title: Job Id
+      type: object
+      required:
+        - load_id
+        - extract_idx
+        - file_path
+        - file_size
+        - items_count
+        - created
+        - last_modified
+        - job_id
+      title: JobMetricSchema
+    LoadInfoSchema:
+      properties:
+        destination_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Destination Name
+        destination_displayable_credentials:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Destination Displayable Credentials
+        destination_fingerprint:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Destination Fingerprint
+        destination_type:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Destination Type
+        staging_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Staging Name
+        staging_displayable_credentials:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Staging Displayable Credentials
+        stating_type:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Stating Type
+        dataset_name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Dataset Name
+        environment:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Environment
+      type: object
+      title: LoadInfoSchema
+    LoadJobSchema:
+      properties:
+        file_format:
+          type: string
+          title: File Format
+        retry_count:
+          type: integer
+          title: Retry Count
+        file_id:
+          type: string
+          title: File Id
+        table_name:
+          type: string
+          title: Table Name
+        failed_message:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Failed Message
+        elapsed:
+          type: number
+          title: Elapsed
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        file_size:
+          type: integer
+          title: File Size
+        file_path:
+          type: string
+          title: File Path
+        state:
+          type: string
+          title: State
+      type: object
+      required:
+        - file_format
+        - retry_count
+        - file_id
+        - table_name
+        - elapsed
+        - created_at
+        - file_size
+        - file_path
+        - state
+      title: LoadJobSchema
+    LoadPackageSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        package_path:
+          type: string
+          title: Package Path
+        state:
+          type: string
+          title: State
+        schema_name:
+          type: string
+          title: Schema Name
+        schema_hash:
+          type: string
+          title: Schema Hash
+        completed_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Completed At
+        jobs:
+          items:
+            $ref: '#/components/schemas/LoadJobSchema'
+          type: array
+          title: Jobs
+        tables:
+          items:
+            $ref: '#/components/schemas/MigrationTableSchema'
+          type: array
+          title: Tables
+      type: object
+      required:
+        - load_id
+        - package_path
+        - state
+        - schema_name
+        - schema_hash
+        - jobs
+        - tables
+      title: LoadPackageSchema
+    LoadPackageStepWrapperSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        load_package_id:
+          type: string
+          format: uuid
+          title: Load Package Id
+        run_id:
+          type: string
+          format: uuid
+          title: Run Id
+        package:
+          $ref: '#/components/schemas/LoadPackageSchema'
+        state:
+          type: string
+          title: State
+        date_started:
+          type: string
+          format: date-time
+          title: Date Started
+        date_finished:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Date Finished
+        all_jobs:
+          type: integer
+          title: All Jobs
+        failed_jobs:
+          type: integer
+          title: Failed Jobs
+        step:
+          type: string
+          title: Step
+        load_package:
+          $ref: '#/components/schemas/LoadPackageWrapperSchema'
+      type: object
+      required:
+        - id
+        - load_package_id
+        - run_id
+        - package
+        - state
+        - date_started
+        - all_jobs
+        - failed_jobs
+        - step
+        - load_package
+      title: LoadPackageStepWrapperSchema
+    LoadPackageWrapperSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        load_id:
+          type: string
+          title: Load Id
+        date_started:
+          type: string
+          format: date-time
+          title: Date Started
+        state:
+          type: string
+          title: State
+        workspace_id:
+          type: string
+          format: uuid
+          title: Workspace Id
+      type: object
+      required:
+        - id
+        - load_id
+        - date_started
+        - state
+        - workspace_id
+      title: LoadPackageWrapperSchema
+    LoadStepSchema:
+      properties:
+        span_id:
+          type: string
+          title: Span Id
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        step_exception:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Step Exception
+        exception_traces:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ExceptionTraceSchema'
+              type: array
+            - type: 'null'
+          title: Exception Traces
+        step_info:
+          $ref: '#/components/schemas/StepInfoSchema'
+        step:
+          const: load
+          title: Step
+        load_info:
+          anyOf:
+            - $ref: '#/components/schemas/LoadInfoSchema'
+            - type: 'null'
+      type: object
+      required:
+        - span_id
+        - started_at
+        - step_info
+        - step
+      title: LoadStepSchema
+    MigrationSchema:
+      properties:
+        tables:
+          items:
+            $ref: '#/components/schemas/MigrationTableSchema'
+          type: array
+          title: Tables
+      type: object
+      required:
+        - tables
+      title: MigrationSchema
+    MigrationTableSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        write_disposition:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Write Disposition
+        resource:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Resource
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        parent:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Parent
+        columns:
+          items:
+            $ref: '#/components/schemas/SchemaTableColumnSchema'
+          type: array
+          title: Columns
+      type: object
+      required:
+        - name
+        - columns
+      title: MigrationTableSchema
+    MigrationWrapperSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        migration:
+          $ref: '#/components/schemas/MigrationSchema'
+        resulting_schema_hash:
+          type: string
+          title: Resulting Schema Hash
+        dataset:
+          $ref: '#/components/schemas/DatasetSchema'
+        run:
+          $ref: '#/components/schemas/RunSchema'
+        date_executed:
+          type: string
+          format: date-time
+          title: Date Executed
+      type: object
+      required:
+        - id
+        - migration
+        - resulting_schema_hash
+        - dataset
+        - run
+        - date_executed
+      title: MigrationWrapperSchema
+    NormalizeInfoSchema:
+      properties:
+        job_metrics:
+          items:
+            $ref: '#/components/schemas/JobMetricSchema'
+          type: array
+          title: Job Metrics
+        table_metrics:
+          items:
+            $ref: '#/components/schemas/TableMetricSchema'
+          type: array
+          title: Table Metrics
+      type: object
+      required:
+        - job_metrics
+        - table_metrics
+      title: NormalizeInfoSchema
+    NormalizeStepSchema:
+      properties:
+        span_id:
+          type: string
+          title: Span Id
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        step_exception:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Step Exception
+        exception_traces:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ExceptionTraceSchema'
+              type: array
+            - type: 'null'
+          title: Exception Traces
+        step_info:
+          $ref: '#/components/schemas/StepInfoSchema'
+        step:
+          const: normalize
+          title: Step
+        normalize_info:
+          anyOf:
+            - $ref: '#/components/schemas/NormalizeInfoSchema'
+            - type: 'null'
+      type: object
+      required:
+        - span_id
+        - started_at
+        - step_info
+        - step
+      title: NormalizeStepSchema
+    OrganizationSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        default_workspace:
+          $ref: '#/components/schemas/WorkspaceSchema'
+      type: object
+      required:
+        - name
+        - description
+        - id
+        - default_workspace
+      title: OrganizationSchema
+    PipelineSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        workspace_id:
+          type: string
+          format: uuid
+          title: Workspace Id
+        beacon_token:
+          type: string
+          title: Beacon Token
+      type: object
+      required:
+        - name
+        - description
+        - id
+        - workspace_id
+        - beacon_token
+      title: PipelineSchema
+    PipelineWithStatsSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        workspace_id:
+          type: string
+          format: uuid
+          title: Workspace Id
+        beacon_token:
+          type: string
+          title: Beacon Token
+        trace_stats:
+          items:
+            $ref: '#/components/schemas/RunStatsSchema'
+          type: array
+          title: Trace Stats
+      type: object
+      required:
+        - name
+        - description
+        - id
+        - workspace_id
+        - beacon_token
+        - trace_stats
+      title: PipelineWithStatsSchema
+    ResolvedConfigValue:
+      properties:
+        config_type_name:
+          type: string
+          title: Config Type Name
+        is_secret_hint:
+          type: boolean
+          title: Is Secret Hint
+        key:
+          type: string
+          title: Key
+        provider_name:
+          type: string
+          title: Provider Name
+        sections:
+          items:
+            type: string
+          type: array
+          title: Sections
+      type: object
+      required:
+        - config_type_name
+        - is_secret_hint
+        - key
+        - provider_name
+        - sections
+      title: ResolvedConfigValue
+    ResourceMetricSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        extract_idx:
+          type: integer
+          title: Extract Idx
+        file_path:
+          type: string
+          title: File Path
+        file_size:
+          type: integer
+          title: File Size
+        items_count:
+          type: integer
+          title: Items Count
+        created:
+          type: number
+          title: Created
+        last_modified:
+          type: number
+          title: Last Modified
+        resource_name:
+          type: string
+          title: Resource Name
+      type: object
+      required:
+        - load_id
+        - extract_idx
+        - file_path
+        - file_size
+        - items_count
+        - created
+        - last_modified
+        - resource_name
+      title: ResourceMetricSchema
+    RunSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        pipeline_id:
+          type: string
+          format: uuid
+          title: Pipeline Id
+        transaction_id:
+          type: string
+          title: Transaction Id
+        date_started:
+          type: string
+          format: date-time
+          title: Date Started
+        state:
+          type: string
+          title: State
+        trace:
+          $ref: '#/components/schemas/TraceSchema'
+        migrations_count:
+          type: integer
+          title: Migrations Count
+        failed_jobs:
+          type: integer
+          title: Failed Jobs
+      type: object
+      required:
+        - id
+        - pipeline_id
+        - transaction_id
+        - date_started
+        - state
+        - trace
+        - migrations_count
+        - failed_jobs
+      title: RunSchema
+    RunStatsSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        pipeline_id:
+          type: string
+          format: uuid
+          title: Pipeline Id
+        transaction_id:
+          type: string
+          title: Transaction Id
+        date_started:
+          type: string
+          format: date-time
+          title: Date Started
+        state:
+          type: string
+          title: State
+      type: object
+      required:
+        - id
+        - pipeline_id
+        - transaction_id
+        - date_started
+        - state
+      title: RunStatsSchema
+    RunStepSchema:
+      properties:
+        span_id:
+          type: string
+          title: Span Id
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        step_exception:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Step Exception
+        exception_traces:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ExceptionTraceSchema'
+              type: array
+            - type: 'null'
+          title: Exception Traces
+        step_info:
+          $ref: '#/components/schemas/StepInfoSchema'
+        step:
+          const: run
+          title: Step
+      type: object
+      required:
+        - span_id
+        - started_at
+        - step_info
+        - step
+      title: RunStepSchema
+    SchemaSchema:
+      properties:
+        version:
+          type: integer
+          title: Version
+        version_hash:
+          type: string
+          title: Version Hash
+        engine_version:
+          type: integer
+          title: Engine Version
+        name:
+          type: string
+          title: Name
+        settings:
+          type: object
+          title: Settings
+        tables:
+          additionalProperties:
+            $ref: '#/components/schemas/SchemaTableSchema'
+          type: object
+          title: Tables
+        previous_hashes:
+          items:
+            type: string
+          type: array
+          title: Previous Hashes
+      type: object
+      required:
+        - version
+        - version_hash
+        - engine_version
+        - name
+        - settings
+        - tables
+        - previous_hashes
+      title: SchemaSchema
+    SchemaTableColumnSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        data_type:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Data Type
+        nullable:
+          anyOf:
+            - type: boolean
+            - type: 'null'
+          title: Nullable
+          default: true
+      type: object
+      required:
+        - name
+      title: SchemaTableColumnSchema
+    SchemaTableSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        write_disposition:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Write Disposition
+        resource:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Resource
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        parent:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Parent
+        columns:
+          additionalProperties:
+            $ref: '#/components/schemas/SchemaTableColumnSchema'
+          type: object
+          title: Columns
+      type: object
+      required:
+        - name
+        - columns
+      title: SchemaTableSchema
+    SchemaWithPreviousVersionsSchema:
+      properties:
+        schema:
+          $ref: '#/components/schemas/SchemaSchema'
+        workspace_id:
+          type: string
+          format: uuid
+          title: Workspace Id
+        name:
+          type: string
+          title: Name
+        version_hash:
+          type: string
+          title: Version Hash
+        version:
+          type: integer
+          title: Version
+        id:
+          type: string
+          format: uuid
+          title: Id
+        datasets_count:
+          type: integer
+          title: Datasets Count
+        previous_versions:
+          items:
+            $ref: '#/components/schemas/SchemaWrapperSchema'
+          type: array
+          title: Previous Versions
+      type: object
+      required:
+        - workspace_id
+        - name
+        - version_hash
+        - version
+        - id
+        - datasets_count
+        - previous_versions
+      title: SchemaWithPreviousVersionsSchema
+    SchemaWrapperSchema:
+      properties:
+        schema:
+          $ref: '#/components/schemas/SchemaSchema'
+        workspace_id:
+          type: string
+          format: uuid
+          title: Workspace Id
+        name:
+          type: string
+          title: Name
+        version_hash:
+          type: string
+          title: Version Hash
+        version:
+          type: integer
+          title: Version
+        id:
+          type: string
+          format: uuid
+          title: Id
+        datasets_count:
+          type: integer
+          title: Datasets Count
+      type: object
+      required:
+        - workspace_id
+        - name
+        - version_hash
+        - version
+        - id
+        - datasets_count
+      title: SchemaWrapperSchema
+    SoftwareVersionSchema:
+      properties:
+        version:
+          type: string
+          title: Version
+        name:
+          type: string
+          title: Name
+      type: object
+      required:
+        - version
+        - name
+      title: SoftwareVersionSchema
+    StepInfoSchema:
+      properties:
+        load_packages:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/LoadPackageSchema'
+              type: array
+            - type: 'null'
+          title: Load Packages
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        started_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Started At
+        first_run:
+          type: boolean
+          title: First Run
+      type: object
+      required:
+        - first_run
+      title: StepInfoSchema
+    TableMetricSchema:
+      properties:
+        load_id:
+          type: string
+          title: Load Id
+        extract_idx:
+          type: integer
+          title: Extract Idx
+        file_path:
+          type: string
+          title: File Path
+        file_size:
+          type: integer
+          title: File Size
+        items_count:
+          type: integer
+          title: Items Count
+        created:
+          type: number
+          title: Created
+        last_modified:
+          type: number
+          title: Last Modified
+        table_name:
+          type: string
+          title: Table Name
+      type: object
+      required:
+        - load_id
+        - extract_idx
+        - file_path
+        - file_size
+        - items_count
+        - created
+        - last_modified
+        - table_name
+      title: TableMetricSchema
+    TraceSchema:
+      properties:
+        transaction_id:
+          type: string
+          title: Transaction Id
+        pipeline_name:
+          type: string
+          title: Pipeline Name
+        started_at:
+          type: string
+          format: date-time
+          title: Started At
+        finished_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          title: Finished At
+        engine_version:
+          type: integer
+          title: Engine Version
+        steps:
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/RunStepSchema'
+              - $ref: '#/components/schemas/ExtractStepSchema'
+              - $ref: '#/components/schemas/NormalizeStepSchema'
+              - $ref: '#/components/schemas/LoadStepSchema'
+          type: array
+          title: Steps
+          default: []
+        execution_context:
+          anyOf:
+            - $ref: '#/components/schemas/ExecutionContextSchema'
+            - type: 'null'
+        resolved_config_values:
+          items:
+            $ref: '#/components/schemas/ResolvedConfigValue'
+          type: array
+          title: Resolved Config Values
+      type: object
+      required:
+        - transaction_id
+        - pipeline_name
+        - started_at
+        - engine_version
+        - resolved_config_values
+      title: TraceSchema
+    UpdateCompanyRoleSchema:
+      properties:
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - member
+          title: Role
+      type: object
+      required:
+        - role
+      title: UpdateCompanyRoleSchema
+    UpdateMemberSchema:
+      properties:
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - read
+            - write
+          title: Role
+      type: object
+      required:
+        - role
+      title: UpdateMemberSchema
+    UserWithOrgSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        email:
+          type: string
+          title: Email
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+        image:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Image
+        organization:
+          $ref: '#/components/schemas/OrganizationSchema'
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - member
+          title: Role
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - image
+        - organization
+        - role
+      title: UserWithOrgSchema
+    UserWithRoleSchema:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        email:
+          type: string
+          title: Email
+        name:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Name
+        image:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Image
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - read
+            - write
+          title: Role
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - image
+        - role
+      title: UserWithRoleSchema
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
+    WorkspaceRunsSchema:
+      properties:
+        date:
+          type: string
+          format: date
+          title: Date
+        success:
+          type: integer
+          title: Success
+          default: 0
+        failed:
+          type: integer
+          title: Failed
+          default: 0
+      type: object
+      required:
+        - date
+      title: WorkspaceRunsSchema
+    WorkspaceSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        beacon_token:
+          type: string
+          title: Beacon Token
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+      type: object
+      required:
+        - name
+        - description
+        - id
+        - beacon_token
+        - organization_id
+      title: WorkspaceSchema
+    WorkspaceStatsSchema:
+      properties:
+        runs:
+          items:
+            $ref: '#/components/schemas/WorkspaceRunsSchema'
+          type: array
+          title: Runs
+      type: object
+      required:
+        - runs
+      title: WorkspaceStatsSchema
+    WorkspaceWithRoleSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+        description:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Description
+        id:
+          type: string
+          format: uuid
+          title: Id
+        beacon_token:
+          type: string
+          title: Beacon Token
+        organization_id:
+          type: string
+          format: uuid
+          title: Organization Id
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - read
+            - write
+          title: Role
+      type: object
+      required:
+        - name
+        - description
+        - id
+        - beacon_token
+        - organization_id
+        - role
+      title: WorkspaceWithRoleSchema
+  securitySchemes:
+    Auth:
+      type: http
+      scheme: bearer

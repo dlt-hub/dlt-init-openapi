@@ -29,4 +29,5 @@ def test_primary_key_reference(transformers: Dict[str, Any]) -> None:
 
 
 def test_primary_key_no_type(transformers: Dict[str, Any]) -> None:
+    print(transformers["primary_key_no_type"])
     assert transformers["primary_key_no_type"]["primary_key"] == "id"

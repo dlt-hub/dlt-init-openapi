@@ -23,7 +23,7 @@ paths:
                   name: 
                     type: string
 
-  /primary_key_no_type/:
+  /primary_key_no_type/{id}:
     get:
       operationId: primary_key_no_type
       responses:

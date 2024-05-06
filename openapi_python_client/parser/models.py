@@ -121,8 +121,6 @@ class SchemaWrapper:
         description_paths = []
         uuid_paths = []
 
-        print(self.all_properties)
-
         for prop in self.all_properties:
             if prop.schema.types and (not set(prop.schema.types) & {"string", "integer"}):
                 continue

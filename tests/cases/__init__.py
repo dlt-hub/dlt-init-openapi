@@ -3,7 +3,7 @@ from typing import Iterable
 
 ORIGINAL_SPECS_FOLDERS = "./tests/cases/original_specs"
 TEST_SPECS_FOLDER = "./tests/cases/test_specs"
-REPO_SPECS_FOLDER = "./tests/cases/specs_repo/open_api_specs"
+REPO_SPECS_FOLDER = "./tests/cases/original_specs_repo/open_api_specs"
 AUTH_SPECS_FOLDER = "./tests/cases/auth_specs"
 
 

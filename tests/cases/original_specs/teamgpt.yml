@@ -1,0 +1,2378 @@
+openapi: 3.0.2
+info:
+  title: API Teamgpt
+  version: 0.1.0
+paths:
+  /api/companies:
+    post:
+      tags:
+        - Company
+      summary: Create Company
+      operationId: create_company_api_companies_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Create Company Api Companies Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/company/{uuid}":
+    get:
+      tags:
+        - Company
+      summary: Get Company
+      operationId: get_company_api_companies_company__uuid__get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - Company
+      summary: Update Company
+      operationId: update_company_api_companies_company__uuid__patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyUpdatePayload"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/directories":
+    post:
+      tags:
+        - Directory
+      summary: Create Directory
+      operationId: create_directory_api_companies__uuid__directories_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilesystemObject"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Directory Api Companies  Uuid  Directories
+                  Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/filesystem_objects":
+    get:
+      tags:
+        - FilesystemObject
+      summary: Get Filesystem Objects
+      operationId: get_filesystem_objects_api_companies__uuid__filesystem_objects_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+        - required: false
+          schema:
+            title: Parent Directory
+            type: string
+          name: parent_directory
+          in: query
+        - required: false
+          schema:
+            title: Type
+            enum:
+              - directory
+              - media_object
+              - confluence_media_object
+            type: string
+          name: type
+          in: query
+        - required: false
+          schema:
+            title: Name
+            type: string
+          name: name
+          in: query
+        - required: false
+          schema:
+            title: Media Object Uuids
+            type: array
+            items:
+              type: string
+          name: media_object_uuids
+          in: query
+        - required: false
+          schema:
+            title: Extensions
+            type: array
+            items:
+              enum:
+                - csv
+                - xlsx
+              type: string
+          name: extensions
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Filesystem Objects Api Companies  Uuid 
+                  Filesystem Objects Get
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/filesystem_objects/{uuid}":
+    delete:
+      tags:
+        - FilesystemObject
+      summary: Delete Filesystem Object
+      operationId: delete_filesystem_object_api_filesystem_objects__uuid__delete
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - FilesystemObject
+      summary: Update Filesystem Object
+      operationId: update_filesystem_object_api_filesystem_objects__uuid__patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchFilesystemObject"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Update Filesystem Object Api Filesystem Objects 
+                  Uuid  Patch
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/media_objects":
+    post:
+      tags:
+        - MediaObject
+      summary: Create Media Object
+      operationId: create_media_object_api_companies__uuid__media_objects_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_create_media_object_api_companies__uuid__media_objects_post
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Media Object Api Companies  Uuid  Media
+                  Objects Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/media_objects/{uuid}/reprocess":
+    post:
+      tags:
+        - MediaObject
+      summary: Reprocess Media Object
+      operationId: reprocess_media_object_api_media_objects__uuid__reprocess_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/url_media_object":
+    post:
+      tags:
+        - MediaObject
+      summary: Create Url Media Object
+      operationId: create_url_media_object_api_companies__uuid__url_media_object_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: true
+          schema:
+            title: Url
+            maxLength: 2083
+            minLength: 1
+            type: string
+            format: uri
+          name: url
+          in: query
+        - required: false
+          schema:
+            title: Crawl Recursively
+            type: boolean
+            default: false
+          name: crawl_recursively
+          in: query
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_create_url_media_object_api_companies__uuid__url_media_object_post
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Url Media Object Api Companies  Uuid  Url
+                  Media Object Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/media_objects/{uuid}/download":
+    get:
+      tags:
+        - MediaObject
+      summary: Download Media Object
+      operationId: download_media_object_api_media_objects__uuid__download_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Download Media Object Api Media Objects  Uuid 
+                  Download Get
+                type: string
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/users:
+    post:
+      tags:
+        - User
+      summary: Create User
+      operationId: create_user_api_users_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Create User Api Users Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/users/{uuid}":
+    patch:
+      tags:
+        - User
+      summary: Update User Item
+      operationId: update_user_item_api_users__uuid__patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchUser"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Update User Item Api Users  Uuid  Patch
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/user_company_profiles:
+    post:
+      tags:
+        - UserCompanyProfile
+      summary: Create User Company Profile
+      operationId: create_user_company_profile_api_user_company_profiles_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCompanyProfile"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create User Company Profile Api User Company Profiles
+                  Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/user_company_profiles":
+    get:
+      tags:
+        - UserCompanyProfile
+      summary: Get User Company Profiles
+      operationId: get_user_company_profiles_api_companies__uuid__user_company_profiles_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: User Uuid
+            type: string
+          name: user_uuid
+          in: query
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get User Company Profiles Api Companies  Uuid  User
+                  Company Profiles Get
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/user_company_profiles/{uuid}":
+    delete:
+      tags:
+        - UserCompanyProfile
+      summary: Delete User Company Profile
+      operationId: delete_user_company_profile_api_user_company_profiles__uuid__delete
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/conversations":
+    get:
+      tags:
+        - Conversation
+      summary: Get Conversations
+      operationId: get_conversations_api_companies__uuid__conversations_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+        - required: false
+          schema:
+            $ref: "#/components/schemas/ConversationStatuses"
+          name: type
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Conversations Api Companies  Uuid  Conversations
+                  Get
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - Conversation
+      summary: Create Coversation
+      operationId: create_coversation_api_companies__uuid__conversations_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Conversation"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Coversation Api Companies  Uuid  Conversations
+                  Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}":
+    delete:
+      tags:
+        - Conversation
+      summary: Delete Coversation
+      operationId: delete_coversation_api_conversations__uuid__delete
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - Conversation
+      summary: Update Conversation
+      operationId: update_conversation_api_conversations__uuid__patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchConversation"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Update Conversation Api Conversations  Uuid  Patch
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}/messages":
+    get:
+      tags:
+        - Conversation
+      summary: Get Conversation Messages
+      operationId: get_conversation_messages_api_conversations__uuid__messages_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Conversation Messages Api Conversations  Uuid 
+                  Messages Get
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}/message":
+    post:
+      tags:
+        - Conversation
+      summary: Post Message
+      operationId: post_message_api_conversations__uuid__message_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Message"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      deprecated: true
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}/users":
+    post:
+      tags:
+        - Conversation
+      summary: Add Conversation Users
+      operationId: add_conversation_users_api_conversations__uuid__users_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationUsers"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Add Conversation Users Api Conversations  Uuid  Users
+                  Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}/user_message":
+    post:
+      tags:
+        - Conversation
+      summary: Create user message uuid and bot message uuid (Step 1)
+      operationId: post_user_message_api_conversations__uuid__user_message_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUserMessage"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostUserMessageApiResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/conversations/{uuid}/bot_message":
+    post:
+      tags:
+        - Conversation
+      summary: >-
+        Generate bot stream response against bot message uuid and user uuid
+        created in Step 1 (Step 2)
+      operationId: post_user_query_message_api_conversations__uuid__bot_message_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUserMessageQuery"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/confluence_credentials":
+    get:
+      tags:
+        - ConfluenceCredentials
+      summary: Get Confluence Credentials
+      operationId: >-
+        get_confluence_credentials_api_companies__uuid__confluence_credentials_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Confluence Credentials Api Companies  Uuid 
+                  Confluence Credentials Get
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - ConfluenceCredentials
+      summary: Create Confluence Credentials
+      operationId: >-
+        create_confluence_credentials_api_companies__uuid__confluence_credentials_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfluenceAuth"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Confluence Credentials Api Companies  Uuid 
+                  Confluence Credentials Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - ConfluenceCredentials
+      summary: Delete Confluence Credentials
+      operationId: >-
+        delete_confluence_credentials_api_companies__uuid__confluence_credentials_delete
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - ConfluenceCredentials
+      summary: Update Confluence Credentials
+      operationId: >-
+        update_confluence_credentials_api_companies__uuid__confluence_credentials_patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfluenceAuth"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Update Confluence Credentials Api Companies  Uuid 
+                  Confluence Credentials Patch
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/confluence_space_key":
+    get:
+      tags:
+        - Confluence
+      summary: Get Confluence Space Keys
+      operationId: get_confluence_space_keys_api_companies__uuid__confluence_space_key_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConfluenceSpaceKeysResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/confluence_media_object":
+    post:
+      tags:
+        - Confluence
+      summary: Create Confluence Space
+      operationId: >-
+        create_confluence_space_api_companies__uuid__confluence_media_object_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: true
+          schema:
+            title: Space Key
+            type: string
+          name: space_key
+          in: query
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_create_confluence_space_api_companies__uuid__confluence_media_object_post
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Create Confluence Space Api Companies  Uuid 
+                  Confluence Media Object Post
+                type: object
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/messages/{uuid}/stop_stream":
+    post:
+      tags:
+        - Message
+      summary: Stop bot stream response
+      operationId: post_message_stop_stream_api_messages__uuid__stop_stream_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBotMessageStopQuery"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/messages/{uuid}/regenerate":
+    post:
+      tags:
+        - Message
+      summary: Regenerate bot stream response
+      operationId: post_message_regenerate_api_messages__uuid__regenerate_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostBotMessageRegenrate"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/messages/{uuid}/reaction":
+    patch:
+      tags:
+        - Message
+      summary: Add or update Message Reaction
+      operationId: update_message_reaction_api_messages__uuid__reaction_patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMessageReaction"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageReactionResponse"
+        "403":
+          description: "Error: Forbidden"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+              example:
+                detail: Not authenticated
+        "404":
+          description: "Error: Not Found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+              example:
+                detail: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/integrations":
+    get:
+      tags:
+        - Integration
+      summary: Get Integrations
+      operationId: get_integrations_api_companies__uuid__integrations_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetIntegrationsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - Integration
+      summary: Create user integration record
+      operationId: post_integration_api_companies__uuid__integrations_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostIntegrationRequest"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostIntegrationResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    delete:
+      tags:
+        - Integration
+      summary: Delete Integration Item
+      operationId: delete_integration_item_api_companies__uuid__integrations_delete
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteIntegrationRequest"
+        required: true
+      responses:
+        "204":
+          description: Successful Response
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/integrations/{uuid}/files":
+    get:
+      tags:
+        - Integration
+      summary: Get Integrations Files
+      operationId: get_integrations_files_api_integrations__uuid__files_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetIntegrationsFilesResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    post:
+      tags:
+        - Integration
+      summary: Create integration files record
+      operationId: post_integration_files_api_integrations__uuid__files_post
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostIntegrationFilesRequest"
+        required: true
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostIntegrationFilesResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/prompts":
+    get:
+      tags:
+        - CompanyPrompt
+      summary: Get Company Prompts
+      operationId: get_company_prompts_api_companies__uuid__prompts_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            $ref: "#/components/schemas/CompanyPromptEnum"
+          name: type
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyPromptsResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - CompanyPrompt
+      summary: Update Company Prompts
+      operationId: update_company_prompts_api_companies__uuid__prompts_patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              title: Payload
+              type: array
+              items:
+                $ref: >-
+                  #/components/schemas/app__schemas__company_prompt__CompanyPrompt
+        required: true
+      responses:
+        "200":
+          description: CompanyPrompt resource updated
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not Found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+  /api/embedding-models:
+    get:
+      tags:
+        - EmbeddingModels
+      summary: Get Embedding Models
+      operationId: get_embedding_Models_api_embedding_models_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Get Embedding Models Api Embedding Models Get
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmbeddingModelResponse"
+      security:
+        - HTTPBearer: []
+  "/api/companies/{uuid}/setting":
+    get:
+      tags:
+        - CompanySetting
+      summary: Get Company Setting
+      operationId: get_company_setting_api_companies__uuid__setting_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettingDefaultResponse"
+        "403":
+          description: "Error: Forbidden"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+              example:
+                detail: Not authenticated
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+    patch:
+      tags:
+        - CompanySetting
+      summary: Update Company Setting
+      operationId: update_company_setting_api_companies__uuid__setting_patch
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanySettingUpdatePayload"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettingResponse"
+        "403":
+          description: "Error: Forbidden"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+              example:
+                detail: Not authenticated
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+      security:
+        - HTTPBearer: []
+components:
+  schemas:
+    Body_create_confluence_space_api_companies__uuid__confluence_media_object_post:
+      title: >-
+        Body_create_confluence_space_api_companies__uuid__confluence_media_object_post
+      type: object
+      properties:
+        parent_directory:
+          title: Parent Directory
+          type: string
+        teams:
+          title: Teams
+          type: array
+          items:
+            type: string
+    Body_create_media_object_api_companies__uuid__media_objects_post:
+      title: Body_create_media_object_api_companies__uuid__media_objects_post
+      required:
+        - file
+        - name
+      type: object
+      properties:
+        file:
+          title: File
+          type: string
+          format: binary
+        name:
+          title: Name
+          type: string
+        parent_directory:
+          title: Parent Directory
+          type: string
+        teams:
+          title: Teams
+          type: array
+          items:
+            type: string
+        conversation:
+          title: Conversation
+          type: string
+    Body_create_url_media_object_api_companies__uuid__url_media_object_post:
+      title: Body_create_url_media_object_api_companies__uuid__url_media_object_post
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+        parent_directory:
+          title: Parent Directory
+          type: string
+        teams:
+          title: Teams
+          type: array
+          items:
+            type: string
+    Company:
+      title: Company
+      required:
+        - name
+        - uuid
+      type: object
+      properties:
+        name:
+          title: Name
+          maxLength: 190
+          type: string
+        uuid:
+          title: Uuid
+          type: string
+    CompanyPromptEnum:
+      title: CompanyPromptEnum
+      enum:
+        - personality-of-ai-assistant
+        - response-guidelines
+        - formating-and-presentation
+        - interaction-ettiqettes
+        - scope-of-assistance
+        - starting-question-suggestions
+      description: An enumeration.
+    CompanyPromptsResponse:
+      title: CompanyPromptsResponse
+      required:
+        - company_prompts
+        - default_prompts
+      type: object
+      properties:
+        company_prompts:
+          title: Company Prompts
+          type: object
+          additionalProperties:
+            anyOf:
+              - $ref: >-
+                  #/components/schemas/app__response__company_prompts__CompanyPrompt
+              - type: array
+                items:
+                  $ref: >-
+                    #/components/schemas/app__response__company_prompts__CompanyPrompt
+        default_prompts:
+          title: Default Prompts
+          type: object
+          additionalProperties:
+            anyOf:
+              - type: string
+              - type: array
+                items:
+                  type: string
+    CompanyResponse:
+      title: CompanyResponse
+      required:
+        - name
+        - uuid
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+        uuid:
+          title: Uuid
+          type: string
+        embedding_model:
+          $ref: "#/components/schemas/EmbeddingModelResponse"
+        vector_db:
+          $ref: "#/components/schemas/VectorDatabaseResponse"
+    CompanySettingDefaultResponse:
+      title: CompanySettingDefaultResponse
+      required:
+        - default_setting
+      type: object
+      properties:
+        company_setting:
+          $ref: "#/components/schemas/CompanySettingResponse"
+        default_setting:
+          $ref: "#/components/schemas/CompanySettingResponse"
+    CompanySettingResponse:
+      title: CompanySettingResponse
+      required:
+        - top_k
+        - llm_temperature
+        - chat_window_size
+        - media_object_size_limit
+        - url_crawl_limit
+        - chunk_size
+        - chunk_overlap_size
+        - company_quota
+      type: object
+      properties:
+        top_k:
+          title: Top K
+          type: integer
+          example: 2
+        llm_temperature:
+          title: Llm Temperature
+          type: number
+          example: 1.2
+        chat_window_size:
+          title: Chat Window Size
+          type: integer
+          example: 7
+        media_object_size_limit:
+          title: Media Object Size Limit
+          type: integer
+          example: 4
+        url_crawl_limit:
+          title: Url Crawl Limit
+          type: integer
+          example: 41
+        chunk_size:
+          title: Chunk Size
+          type: integer
+          example: 700
+        chunk_overlap_size:
+          title: Chunk Overlap Size
+          type: integer
+          example: 1
+        company_quota:
+          title: Company Quota
+          type: integer
+          example: 104857600
+    CompanySettingUpdatePayload:
+      title: CompanySettingUpdatePayload
+      type: object
+      properties:
+        top_k:
+          title: Top K
+          maximum: 5
+          minimum: 1
+          type: integer
+        llm_temperature:
+          title: Llm Temperature
+          maximum: 1.5
+          minimum: 0
+          type: number
+        company_quota:
+          title: Default Company Quota In Bytes
+          maximum: 104857600
+          minimum: 1
+          type: integer
+    CompanyUpdatePayload:
+      title: CompanyUpdatePayload
+      type: object
+      properties:
+        embedding_model:
+          title: Embedding Model
+          type: string
+    ConfluenceAuth:
+      title: ConfluenceAuth
+      required:
+        - username
+        - api_key
+        - url
+      type: object
+      properties:
+        username:
+          title: Username
+          type: string
+          format: email
+        api_key:
+          title: Api Key
+          type: string
+        url:
+          title: Url
+          type: string
+    ConfluenceSpaceKeyResponse:
+      title: ConfluenceSpaceKeyResponse
+      required:
+        - uuid
+        - space_key
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        space_key:
+          title: Space Key
+          type: string
+    ConfluenceSpaceKeysResponse:
+      title: ConfluenceSpaceKeysResponse
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          title: Data
+          type: array
+          items:
+            $ref: "#/components/schemas/ConfluenceSpaceKeyResponse"
+    Conversation:
+      title: Conversation
+      type: object
+      properties:
+        conversation_users:
+          title: Conversation Users
+          type: array
+          items:
+            type: string
+        name:
+          title: Name
+          maxLength: 190
+          type: string
+          default: New Chat
+    ConversationStatuses:
+      title: ConversationStatuses
+      enum:
+        - private
+        - shared
+      type: string
+      description: An enumeration.
+    ConversationUsers:
+      title: ConversationUsers
+      type: object
+      properties:
+        conversation_users:
+          title: Conversation Users
+          type: array
+          items:
+            type: string
+    DeleteIntegrationRequest:
+      title: DeleteIntegrationRequest
+      required:
+        - integration_uuid
+      type: object
+      properties:
+        integration_uuid:
+          title: Integration Uuid
+          type: string
+    DocumentTypeEnum:
+      title: DocumentTypeEnum
+      enum:
+        - DEFAULT
+        - FINANCIAL
+        - GPT4
+      description: An enumeration.
+    EmbeddingModelResponse:
+      title: EmbeddingModelResponse
+      required:
+        - uuid
+        - slug
+        - name
+        - description
+        - is_active
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        slug:
+          title: Slug
+          type: string
+        name:
+          title: Name
+          type: string
+        description:
+          title: Description
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+    FilesystemObject:
+      title: FilesystemObject
+      required:
+        - name
+      type: object
+      properties:
+        parent_directory:
+          title: Parent Directory
+          type: string
+        name:
+          title: Name
+          maxLength: 255
+          type: string
+    FormattingTypeEnum:
+      title: FormattingTypeEnum
+      enum:
+        - HTML
+        - MD
+      description: An enumeration.
+    GetIntegrationFilesResponse:
+      title: GetIntegrationFilesResponse
+      required:
+        - uuid
+        - merge_file_id
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        merge_file_id:
+          title: Merge File Id
+          type: string
+    GetIntegrationsFilesResponse:
+      title: GetIntegrationsFilesResponse
+      required:
+        - data
+        - total_items
+      type: object
+      properties:
+        data:
+          title: Data
+          type: array
+          items:
+            $ref: "#/components/schemas/GetIntegrationFilesResponse"
+        total_items:
+          title: Total Items
+          type: integer
+    GetIntegrationsResponse:
+      title: GetIntegrationsResponse
+      required:
+        - data
+        - total_items
+      type: object
+      properties:
+        data:
+          title: Data
+          type: array
+          items:
+            $ref: "#/components/schemas/PostIntegrationResponse"
+        total_items:
+          title: Total Items
+          type: integer
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+    Message:
+      title: Message
+      required:
+        - content
+      type: object
+      properties:
+        content:
+          title: Content
+          type: string
+        format_output:
+          title: Format Output
+          type: boolean
+          default: false
+        document_type:
+          allOf:
+            - $ref: "#/components/schemas/DocumentTypeEnum"
+          default: DEFAULT
+        output_mode:
+          allOf:
+            - $ref: "#/components/schemas/FormattingTypeEnum"
+          default: HTML
+        use_json_stream:
+          title: Use Json Stream
+          type: boolean
+          default: false
+    MessageReactionResponse:
+      title: MessageReactionResponse
+      required:
+        - uuid
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+    PatchConversation:
+      title: PatchConversation
+      type: object
+      properties:
+        name:
+          title: Name
+          maxLength: 190
+          type: string
+    PatchFilesystemObject:
+      title: PatchFilesystemObject
+      type: object
+      properties:
+        parent_directory:
+          title: Parent Directory
+          type: string
+        name:
+          title: Name
+          maxLength: 255
+          type: string
+    PatchUser:
+      title: PatchUser
+      type: object
+      properties:
+        token_updated_at:
+          title: Token Updated At
+          type: string
+          format: date-time
+    PostBotMessageRegenrate:
+      title: PostBotMessageRegenrate
+      type: object
+      properties:
+        document_type:
+          allOf:
+            - $ref: "#/components/schemas/DocumentTypeEnum"
+          default: DEFAULT
+        media_object_uuid:
+          title: Media Object Uuid
+          type: string
+        media_object_uuids:
+          title: Media Object Uuids
+          type: array
+          items: {}
+    PostBotMessageStopQuery:
+      title: PostBotMessageStopQuery
+      required:
+        - content
+      type: object
+      properties:
+        content:
+          title: Content
+          type: string
+    PostIntegrationFilesRequest:
+      title: PostIntegrationFilesRequest
+      required:
+        - files
+      type: object
+      properties:
+        files:
+          title: Files
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/app__schemas__integration__IntegrationFilesResponse
+    PostIntegrationFilesResponse:
+      title: PostIntegrationFilesResponse
+      required:
+        - files
+      type: object
+      properties:
+        files:
+          title: Files
+          type: array
+          items:
+            $ref: >-
+              #/components/schemas/app__response__integration_selected_files__IntegrationFilesResponse
+    PostIntegrationRequest:
+      title: PostIntegrationRequest
+      required:
+        - integration_uuid
+        - category_slug
+        - integration_slug
+        - teams
+      type: object
+      properties:
+        integration_uuid:
+          title: Integration Uuid
+          type: string
+        category_slug:
+          title: Category Slug
+          type: string
+        integration_slug:
+          title: Integration Slug
+          type: string
+        teams:
+          title: Teams
+          type: array
+          items:
+            type: string
+    PostIntegrationResponse:
+      title: PostIntegrationResponse
+      required:
+        - uuid
+        - integration_uuid
+        - category_slug
+        - integration_slug
+        - user_uuid
+        - company_uuid
+        - last_sync_began
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        integration_uuid:
+          title: Integration Uuid
+          type: string
+        category_slug:
+          title: Category Slug
+          type: string
+        integration_slug:
+          title: Integration Slug
+          type: string
+        user_uuid:
+          title: User Uuid
+          type: string
+        company_uuid:
+          title: Company Uuid
+          type: string
+        last_sync_began:
+          title: Last Sync Began
+          type: string
+        teams:
+          title: Teams
+          type: array
+          items:
+            type: string
+    PostUserMessage:
+      title: PostUserMessage
+      required:
+        - content
+      type: object
+      properties:
+        content:
+          title: Content
+          type: string
+        document_type:
+          allOf:
+            - $ref: "#/components/schemas/DocumentTypeEnum"
+          default: DEFAULT
+        output_mode:
+          allOf:
+            - $ref: "#/components/schemas/FormattingTypeEnum"
+          default: HTML
+    PostUserMessageApiResponse:
+      title: PostUserMessageApiResponse
+      required:
+        - user_message_uuid
+        - bot_message_uuid
+      type: object
+      properties:
+        user_message_uuid:
+          title: User Message Uuid
+          type: string
+        bot_message_uuid:
+          title: Bot Message Uuid
+          type: string
+    PostUserMessageQuery:
+      title: PostUserMessageQuery
+      required:
+        - user_message_uuid
+        - bot_message_uuid
+      type: object
+      properties:
+        user_message_uuid:
+          title: User Message Uuid
+          type: string
+        bot_message_uuid:
+          title: Bot Message Uuid
+          type: string
+        media_object_uuid:
+          title: Media Object Uuid
+          type: string
+        media_object_uuids:
+          title: Media Object Uuids
+          type: array
+          items:
+            type: string
+    ReactionEnum:
+      title: ReactionEnum
+      enum:
+        - like
+        - dislike
+        - undo
+      type: string
+      description: An enumeration.
+    UpdateMessageReaction:
+      title: UpdateMessageReaction
+      required:
+        - reaction
+      type: object
+      properties:
+        reaction:
+          $ref: "#/components/schemas/ReactionEnum"
+        space_uuid:
+          title: Space Uuid
+          type: string
+    User:
+      title: User
+      required:
+        - email
+        - uuid
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          format: email
+        uuid:
+          title: Uuid
+          type: string
+        token_updated_at:
+          title: Token Updated At
+          type: string
+          format: date-time
+    UserCompanyProfile:
+      title: UserCompanyProfile
+      required:
+        - uuid
+        - user
+        - company
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        user:
+          title: User
+          anyOf:
+            - $ref: "#/components/schemas/User"
+            - type: string
+        company:
+          title: Company
+          anyOf:
+            - $ref: "#/components/schemas/Company"
+            - type: string
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+    VectorDatabaseResponse:
+      title: VectorDatabaseResponse
+      required:
+        - uuid
+        - slug
+        - name
+        - is_active
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        slug:
+          title: Slug
+          type: string
+        name:
+          title: Name
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+    app__response__company_prompts__CompanyPrompt:
+      title: CompanyPrompt
+      required:
+        - uuid
+        - prompt
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        prompt:
+          title: Prompt
+          type: string
+    app__response__integration_selected_files__IntegrationFilesResponse:
+      title: IntegrationFilesResponse
+      required:
+        - uuid
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+    app__schemas__company_prompt__CompanyPrompt:
+      title: CompanyPrompt
+      required:
+        - uuid
+        - prompt
+      type: object
+      properties:
+        uuid:
+          title: Uuid
+          type: string
+        prompt:
+          title: Prompt
+          type: string
+    app__schemas__integration__IntegrationFilesResponse:
+      title: IntegrationFilesResponse
+      required:
+        - merge_file_id
+      type: object
+      properties:
+        merge_file_id:
+          title: Merge File Id
+          type: string
+  securitySchemes:
+    HTTPBearer:
+      type: http
+      scheme: bearer
+servers:
+  - url: "https://api-teamgpt.workhub.ai"

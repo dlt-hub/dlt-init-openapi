@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Literal, cast, Union, List, Dict, Iterable, Tuple, Set
+from typing import Optional, Literal, cast, Union, List, Dict, Iterable, Set
 
 from dataclasses import dataclass, field
 
@@ -10,7 +10,6 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.paths import table_names_from_paths, get_path_parts, is_var_part
 from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 from openapi_python_client.utils import PythonIdentifier
-from openapi_python_client.parser.credentials import CredentialsProperty
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
 from .const import RE_MATCH_ALL
@@ -51,20 +50,6 @@ class Response:
     list_property: Optional[DataPropertyPath] = None
     payload: Optional[DataPropertyPath] = None
     """Payload set initially before comparing other endpoints"""
-
-    @property
-    def list_properties(self) -> Dict[Tuple[str, ...], SchemaWrapper]:
-        """Paths to list properties"""
-        if not self.content_schema:
-            return {}
-        return self.content_schema.crawled_properties.list_properties
-
-    @property
-    def object_properties(self) -> Dict[Tuple[str, ...], SchemaWrapper]:
-        """Paths to object properties"""
-        if not self.content_schema:
-            return {}
-        return self.content_schema.crawled_properties.object_properties
 
     @classmethod
     def from_reference(
@@ -132,7 +117,6 @@ class Endpoint:
     operation_id: str
 
     python_name: PythonIdentifier
-    credentials: Optional[CredentialsProperty]
 
     _parent: Optional["Endpoint"] = None
     children: List["Endpoint"] = field(default_factory=list)
@@ -296,7 +280,6 @@ class Endpoint:
             description=operation.description,
             path_summary=path_summary,
             path_description=path_description,
-            credentials=None,
         )
         endpoint.pagination = Pagination.from_endpoint(endpoint)
 

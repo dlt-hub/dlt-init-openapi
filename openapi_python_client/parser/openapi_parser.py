@@ -16,7 +16,7 @@ from openapi_python_client.parser.endpoints import EndpointCollection
 from openapi_python_client.parser.config import Config
 from openapi_python_client.parser.info import OpenApiInfo
 from openapi_python_client.parser.credentials import CredentialsProperty
-
+from openapi_python_client.detectors.base_detector import BaseDetector
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ class OpenapiParser:
     info: OpenApiInfo
     credentials: Optional[CredentialsProperty] = None
     context: OpenapiContext
+    detector: BaseDetector
 
     def __init__(self, spec_file: Union[Path, str], config: Config = Config()) -> None:
         self.spec_file = spec_file
@@ -63,8 +64,12 @@ class OpenapiParser:
         # log.info("Pydantic parse")
         spec = osp.OpenAPI.parse_obj(self.spec_raw)
 
+        from openapi_python_client.detectors.default import DefaultDetector
+
+        self.detector = DefaultDetector()
+
         log.info("Extracting metadata")
-        self.context = OpenapiContext(self.config, spec, self.spec_raw)
+        self.context = OpenapiContext(self.config, spec, self.spec_raw, self.detector)
         self.info = OpenApiInfo.from_context(self.context)
 
         log.info("Parsing endpoints")

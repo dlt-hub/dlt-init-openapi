@@ -7,7 +7,7 @@ import referencing.jsonschema
 
 from openapi_python_client.parser.config import Config
 from openapi_python_client.utils import ClassName
-
+from openapi_python_client.detectors.base_detector import BaseDetector
 
 TComponentClass = Union[
     osp.Schema,
@@ -46,16 +46,18 @@ class SecurityScheme:
 class OpenapiContext:
     spec: osp.OpenAPI
     spec_raw: Dict[str, Any]
+    detector: BaseDetector
 
     _component_cache: Dict[str, Dict[str, Any]]
     security_schemes: Dict[str, SecurityScheme]
 
-    def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any]) -> None:
+    def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any], detector: BaseDetector) -> None:
         self.config = config
         self.spec = spec
         self.spec_raw = spec_raw
         self._component_cache = {}
         self.security_schemes = {}
+        self.detector = detector
         resource = referencing.Resource(  # type: ignore[var-annotated, call-arg]
             contents=self.spec_raw, specification=referencing.jsonschema.DRAFT202012
         )

@@ -1,0 +1,54 @@
+openapi: 3.0.0
+info:
+  title: 'transformer'
+  version: 1.0.0
+  description: 'different transformer examples'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+
+  /collection/:
+    get:
+      operationId: collections
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 3
+                    name: 
+                      type: string
+
+
+  /collection/{collection_id}:
+    get:
+      operationId: single_collection
+      parameters:
+        - name: collection_id
+          in: path
+          required: true
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+            title: Organization Id
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 3

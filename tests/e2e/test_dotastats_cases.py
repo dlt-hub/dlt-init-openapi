@@ -8,7 +8,7 @@ from tests.cases import get_test_case_path
 
 
 @pytest.mark.skip
-def test_simple_datastats_load() -> None:
+def test_simple_dotastats_load() -> None:
     api_spec = get_test_case_path("dotastats_with_simple_pagination.yml")
     source = get_dict_from_open_api(api_spec)
     assert len(source["resources"]) == 1

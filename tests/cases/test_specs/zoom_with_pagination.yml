@@ -1,0 +1,240 @@
+openapi: 3.0.0
+servers:
+  - url: https://api.zoom.us/v2
+info:
+  description: |-
+    The Zoom API allows developers to access information from Zoom. You can use this API to build private services or public applications on the [Zoom App Marketplace](http://marketplace.zoom.us). To learn how to get your credentials and create private/public applications, read our [Authorization Guide](https://marketplace.zoom.us/docs/guides/authorization/credentials).
+    All endpoints are available via `https` and are located at `api.zoom.us/v2/`.
+
+    For instance you can list all users on an account via `https://api.zoom.us/v2/users/`.
+  title: Zoom API
+  version: 2.0.0
+security:
+  - OAuth: []
+paths:
+  /accounts:
+    get:
+      description: |+
+        List all the sub accounts that have been created by a master account.<br><br>Zoom allows only [approved partners](https://marketplace.zoom.us/docs/api-reference/master-account-apis) to use master APIs and manage sub accounts. Email the partner programs team at **partner-success@zoom.us** for more details.
+
+        <br>**Prerequisites:**<br>
+        * Pro or a higher paid account with master account option enabled. <br>
+
+        **Scope**: `account:read:admin`
+        <br>**[Rate Limit Label](https://marketplace.zoom.us/docs/api-reference/rate-limits#rate-limits):** `Medium`<br>
+
+      operationId: accounts
+      parameters:
+        - description: The number of records returned within a single API call.
+          in: query
+          name: page_size
+          schema:
+            default: 30
+            maximum: 300
+            type: integer
+        - description: |-
+            
+            **Deprecated** - This field has been deprecated and we will stop supporting it completely in a future release. Please use "next_page_token" for pagination instead of this field.
+
+            The page number of the current page in the returned records.
+          in: query
+          name: page_number
+          schema:
+            default: 1
+            type: integer
+        - description: The next page token is used to paginate through large result sets. A next page token will be returned whenever the set of available results exceeds the current page size. The expiration period for this token is 15 minutes.
+          in: query
+          name: next_page_token
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    accounts:
+                      - account_name: string
+                        account_type: string
+                        created_at: string [date-time]
+                        id: string [uuid]
+                        owner_email: string
+                        seats: integer
+                        subscription_end_time: string [date-time]
+                        subscription_start_time: string [date-time]
+                    page_count: integer
+                    page_number: integer
+                    page_size: integer
+                    total_records: integer
+              schema:
+                allOf:
+                  - description: Pagination Object.
+                    properties:
+                      next_page_token:
+                        description: The next page token is used to paginate through large result sets. A next page token will be returned whenever the set of available results exceeds the current page size. The expiration period for this token is 15 minutes.
+                        type: string
+                      page_count:
+                        description: The number of pages returned for the request made.
+                        type: integer
+                      page_number:
+                        default: 1
+                        description: |-
+                          **Deprecated**: This field has been deprecated. Please use the "next_page_token" field for pagination instead of this field.
+
+                          The page number of the current results.
+                        type: integer
+                      page_size:
+                        default: 30
+                        description: The number of records returned with a single API call.
+                        maximum: 300
+                        type: integer
+                      total_records:
+                        description: The total number of all the records available across pages.
+                        type: integer
+                    type: object
+                  - description: Account object in the account list.
+                    properties:
+                      accounts:
+                        description: List of Account objects.
+                        items:
+                          properties:
+                            account_name:
+                              description: Account name.
+                              type: string
+                            account_number:
+                              description: Account Number of the account.
+                              type: string
+                            account_type:
+                              description: Account type.
+                              type: string
+                            created_at:
+                              description: Account creation date and time.
+                              format: date-time
+                              type: string
+                            id:
+                              description: Account ID.
+                              type: string
+                            owner_email:
+                              description: Account owner email.
+                              example: john.doe@zoom.us
+                              type: string
+                            seats:
+                              description: Account seats.
+                              type: integer
+                            subscription_end_time:
+                              description: Account subscription end date and time.
+                              format: date-time
+                              type: string
+                            subscription_start_time:
+                              description: Account subscription start date and time.
+                              format: date-time
+                              type: string
+                          type: object
+                        type: array
+                    type: object
+                description: List of Accounts.
+                title: Account List
+                type: object
+          description: Account list returned.
+      summary: List sub accounts
+      tags:
+        - Accounts
+  /contacts:
+    get:
+      description: |-
+        A user under an organization's Zoom account has internal users listed under Company Contacts in the Zoom Client. Use this API to search users that are in the company contacts of a Zoom account. Using the `search_key` query parameter, provide either first name, last name or the email address of the user that you would like to search for. Optionally, set `query_presence_status` to `true` in order to include the presence status of a contact. <br><br>
+
+        **Scopes:** `contact:read:admin`, `contact:read`<br>
+
+         **[Rate Limit Label](https://marketplace.zoom.us/docs/api-reference/rate-limits#rate-limits):** `Medium` 
+      operationId: searchCompanyContacts
+      parameters:
+        - description: Provide the keyword - either first name, last name or email of the contact whom you have to search for.
+          in: query
+          name: search_key
+          required: true
+          schema:
+            type: string
+        - description: Set `query_presence_status` to `true` in order to include the presence status of a contact in the response.
+          in: query
+          name: query_presence_status
+          schema:
+            type: string
+        - description: The number of records to be returned with a single API call.
+          in: query
+          name: page_size
+          schema:
+            default: 1
+            maximum: 25
+            type: integer
+        - description: The next page token is used to paginate through large result sets. A next page token will be returned whenever the set of available results exceeds the current page size. The expiration period for this token is 15 minutes.
+          in: query
+          name: next_page_token
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    contacts:
+                      - direct_numbers:
+                          - 111111
+                          - 222222
+                        email: qui@djfsd.sdfjhdf
+                        extension_number: "010"
+                        first_name: John
+                        id: isds324bdfsf
+                        im_group_id: fhksdhfew34hjds
+                        im_group_name: Engineering
+                        last_name: Doe
+                        phone_number: "00000000"
+                        presence_status: Offline
+                        sip_phone_number: "11111111"
+                    next_page_token: " "
+                    page_size: 1
+              schema:
+                properties:
+                  contacts:
+                    items:
+                      properties:
+                        dept:
+                          description: Department of the contact as provided in the user's Zoom profile.
+                          type: string
+                        direct_numbers:
+                          description: Direct Number(s) of a user who has Zoom Phone license assigned.
+                          items:
+                            type: string
+                          type: array
+                        email:
+                          description: Email address of the contact.
+                          type: string
+                        extension_number:
+                          description: Extension Number of a user who has Zoom Phone license assigned.
+                          type: string
+                        first_name:
+                          description: First name of the contact.
+                          type: string
+                        id:
+                          description: User ID of the contact.
+                          type: string
+                        im_group_id:
+                          description: "Unique Identifier of the [IM directory group](https://support.zoom.us/hc/en-us/articles/203749815-IM-Management) in which the user has been added. An IM Directory group is not the same as a channel. IM Directory allows administrators to assign users in their account to groups that display within the Contacts list on Zoom clients. "
+                          type: string
+                        im_group_name:
+                          description: "Name of the [IM directory group](https://support.zoom.us/hc/en-us/articles/203749815-IM-Management) in which the user has been added. An IM Directory group is not the same as a channel. IM Directory allows administrators to assign users in their account to groups that display within the Contacts list on Zoom clients. "
+                          type: string
+                      type: object
+                    type: array
+                  next_page_token:
+                    description: The next page token is used to paginate through large result sets. A next page token will be returned whenever the set of available results exceeds the current page size. The expiration period for this token is 15 minutes.
+                    type: string
+                  page_size:
+                    description: The number of records returned with a single API call. Default value is `1`.
+                    maximum: 25
+                    type: integer
+                type: object
+      summary: Search company contacts

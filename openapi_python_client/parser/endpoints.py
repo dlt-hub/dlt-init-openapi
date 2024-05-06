@@ -83,9 +83,7 @@ class Endpoint:
     @property
     def is_list(self) -> bool:
         """if we know the payload, we can discover from there, if not assume list if last path part is not arg"""
-        if self.payload:
-            return self.payload.is_list
-        return not is_var_part(self.path_parts[-1])
+        return self.payload.is_list if self.payload else (not is_var_part(self.path_parts[-1]))
 
     @property
     def parent(self) -> Optional["Endpoint"]:

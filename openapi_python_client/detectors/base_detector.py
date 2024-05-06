@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from openapi_python_client.parser.endpoints import Response
     from openapi_python_client.parser.context import OpenapiContext
     from openapi_python_client.parser.parameters import Parameter
+    from openapi_python_client.parser.models import SchemaWrapper, DataPropertyPath
 
 
 class BaseDetector(ABC):
@@ -23,7 +24,8 @@ class BaseDetector(ABC):
         ...
 
     @abstractmethod
-    def detect_payload_path(self) -> None:
+    def detect_payload(self, content_schema: "SchemaWrapper", expect_list: bool) -> Optional["DataPropertyPath"]:
+        """Detect json path of the actual payload within a content schema"""
         ...
 
     @abstractmethod
@@ -36,4 +38,8 @@ class BaseDetector(ABC):
 
     @abstractmethod
     def detect_parent_endpoint(self) -> None:
+        ...
+
+    @abstractmethod
+    def detect_transformer_mapping(self) -> None:
         ...

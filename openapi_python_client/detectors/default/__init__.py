@@ -46,15 +46,12 @@ class DefaultDetector(BaseDetector):
         # detect pagination
         pagination = self._detect_pagination(content_schema, parameters)
 
-        # detect response payload path
+        # detect response payload path, we can give a hint wether we expect a list or not
         path_suggests_list = not is_var_part(get_path_parts(path)[-1])
         expect_list = (pagination is not None) or path_suggests_list
-        response.payload = self._detect_payload(content_schema=content_schema, expect_list=expect_list)
+        response.payload = self.detect_payload(content_schema=content_schema, expect_list=expect_list)
 
         return pagination, response
-
-    def detect_payload_path(self) -> None:
-        ...
 
     def detect_authentication(self) -> None:
         ...
@@ -65,7 +62,10 @@ class DefaultDetector(BaseDetector):
     def detect_parent_endpoint(self) -> None:
         ...
 
-    def _detect_payload(self, content_schema: SchemaWrapper, expect_list: bool) -> Optional[DataPropertyPath]:
+    def detect_transformer_mapping(self) -> None:
+        ...
+
+    def detect_payload(self, content_schema: SchemaWrapper, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
         payload: Optional[DataPropertyPath] = None
         payload_schema: Optional[SchemaWrapper] = content_schema
@@ -75,7 +75,6 @@ class DefaultDetector(BaseDetector):
             payload_path: List[str] = []
 
             if expect_list:
-                # TODO: improve heuristics and move into some utility function for testing
                 if payload_schema.is_list:
                     payload = DataPropertyPath(tuple(payload_path), payload_schema)
                 else:
@@ -88,7 +87,6 @@ class DefaultDetector(BaseDetector):
                     prop = payload_schema.properties[0]
                     payload_path.append(prop.name)
                     payload_schema = prop.schema
-
                 payload = DataPropertyPath(tuple(payload_path), payload_schema)
 
         return payload

@@ -25,7 +25,6 @@ def {{ source_name }}(
         },
         "resources": 
         [
-        
         {% for endpoint in endpoint_collection.all_endpoints_to_render %}
         {
             "name": "{{ endpoint.operation_id }}",
@@ -37,7 +36,7 @@ def {{ source_name }}(
                 "path": "{{endpoint.path }}",
                 {% if endpoint.transformer %}
                 "params": {
-                    {% for key, value in endpoint.transformer.path_params_mapping_first_item.items() %}
+                    {% for key, value in endpoint.transformer.path_params_mapping_first_item.items()%}
                     "{{key}}": {
                         "type": "resolve",
                         "resource": "{{endpoint.parent.operation_id }}",
@@ -58,7 +57,6 @@ def {{ source_name }}(
                     {% endfor %}
                 },
                 {% endif %}
-
             }
         },
         {% endfor %}

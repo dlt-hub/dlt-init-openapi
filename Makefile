@@ -7,12 +7,12 @@ lint:
 	poetry run flake8 openapi_python_client tests
 	poetry run mypy openapi_python_client tests
 	poetry run black tests openapi_python_client --check
-	isort black tests openapi_python_client --check --diff
+	poetry run isort black tests openapi_python_client --check --diff
 
 # format the whole project
 format: 
 	rm -rf tests/_local
-	isort black tests openapi_python_client
+	poetry run isort black tests openapi_python_client
 	poetry run black tests openapi_python_client
 
 test:

@@ -69,28 +69,27 @@ class DefaultDetector(BaseDetector):
     def detect_payload(self, content_schema: SchemaWrapper, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
         payload: Optional[DataPropertyPath] = None
-        payload_schema: Optional[SchemaWrapper] = content_schema
 
         # try to discover payload path and schema
-        if payload_schema:
+        if content_schema:
             payload_path: List[str] = []
 
             if expect_list:
-                if payload_schema.is_list:
-                    payload = DataPropertyPath(tuple(payload_path), payload_schema)
+                if content_schema.is_list:
+                    payload = DataPropertyPath(tuple(payload_path), content_schema)
                 else:
-                    payload = payload_schema.crawled_properties.find_property(
+                    payload = content_schema.crawled_properties.find_property(
                         RE_MATCH_ALL, "array", allow_unknown_types=False
                     )
 
             # either no list expected or no list found..
             if not payload:
-                while len(payload_schema.properties) == 1 and payload_schema.properties[0].is_object:
+                while len(content_schema.properties) == 1 and content_schema.properties[0].is_object:
                     # Schema contains only a single object property. The payload is inside
-                    prop = payload_schema.properties[0]
+                    prop = content_schema.properties[0]
                     payload_path.append(prop.name)
-                    payload_schema = prop.schema
-                payload = DataPropertyPath(tuple(payload_path), payload_schema)
+                    content_schema = prop.schema
+                payload = DataPropertyPath(tuple(payload_path), content_schema)
 
         return payload
 

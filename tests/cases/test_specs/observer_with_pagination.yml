@@ -1,0 +1,198 @@
+openapi: 3.0.2
+info:
+  title: Observer API
+  description: Observer API server
+  version: 0.1.0
+paths:
+  /admin/users:
+    get:
+      tags:
+        - admin
+        - users
+      summary: Admin Get Users
+      operationId: admin_get_users_admin_users_get
+      parameters:
+        - description: Email to filter by
+          required: false
+          schema:
+            title: Email
+            type: string
+            description: Email to filter by
+          name: email
+          in: query
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersResponse"
+  /offices:
+    get:
+      tags:
+        - offices
+      summary: Get Offices
+      operationId: get_offices_offices_get
+      parameters:
+        - description: When given offices will be filtered by name
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: When given offices will be filtered by name
+          name: name
+          in: query
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OfficesResponse"
+components:
+  schemas:
+    OfficeResponse:
+      title: OfficeResponse
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID
+        name:
+          title: Name
+          type: string
+          description: Name of the office
+    OfficesResponse:
+      title: OfficesResponse
+      required:
+        - total
+        - items
+      type: object
+      properties:
+        total:
+          title: Total
+          type: integer
+          description: Total number of offices
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: "#/components/schemas/OfficeResponse"
+          description: List of offices
+    UserResponse:
+      title: UserResponse
+      required:
+        - email
+        - id
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of a user
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID to which user belongs
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: ID of user
+        is_active:
+          title: Is Active
+          type: boolean
+          description: Is user active?
+          default: true
+        is_confirmed:
+          title: Is Confirmed
+          type: boolean
+          description: Is user confirmed?
+          default: false
+        mfa_enabled:
+          title: Mfa Enabled
+          type: boolean
+          description: Is MFA enabled for user?
+          default: false
+    UsersResponse:
+      title: UsersResponse
+      required:
+        - total
+        - items
+      type: object
+      properties:
+        total:
+          title: Total
+          type: integer
+          description: Total count of users
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponse"
+          description: List of users

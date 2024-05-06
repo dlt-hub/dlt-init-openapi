@@ -1,0 +1,6349 @@
+openapi: 3.0.2
+info:
+  title: Observer API
+  description: Observer API server
+  version: 0.1.0
+paths:
+  /account/me:
+    get:
+      tags:
+        - account
+      summary: Get Me
+      operationId: get_me_account_me_get
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/account/confirm/{code}':
+    get:
+      tags:
+        - account
+      summary: Confirm Account
+      operationId: confirm_account_account_confirm__code__get
+      parameters:
+        - required: true
+          schema:
+            title: Code
+            type: string
+          name: code
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /account/confirmation/resend:
+    post:
+      tags:
+        - account
+      summary: Resend Confirmation
+      operationId: resend_confirmation_account_confirmation_resend_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admin/invites:
+    get:
+      tags:
+        - admin
+        - invites
+      summary: Get Invites
+      operationId: get_invites_admin_invites_get
+      parameters:
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInvitesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - admin
+        - invites
+      summary: Create Invite
+      operationId: create_invite_admin_invites_post
+      parameters:
+        - required: false
+          schema:
+            title: X-Forwarded-For
+            type: string
+            default: ''
+          name: X-Forwarded-For
+          in: header
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInviteRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInviteResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/admin/invites/{code}':
+    delete:
+      tags:
+        - admin
+        - invites
+      summary: Delete Invite
+      operationId: delete_invite_admin_invites__code__delete
+      parameters:
+        - required: true
+          schema:
+            title: Code
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: code
+          in: path
+        - description: If set then related user will be deleted
+          required: false
+          schema:
+            title: Delete User
+            type: boolean
+            description: If set then related user will be deleted
+            default: false
+          name: delete_user
+          in: query
+        - required: false
+          schema:
+            title: X-Forwarded-For
+            type: string
+            default: ''
+          name: X-Forwarded-For
+          in: header
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admin/users:
+    get:
+      tags:
+        - admin
+        - users
+      summary: Admin Get Users
+      operationId: admin_get_users_admin_users_get
+      parameters:
+        - description: Email to filter by
+          required: false
+          schema:
+            title: Email
+            type: string
+            description: Email to filter by
+          name: email
+          in: query
+        - description: Full name of user
+          required: false
+          schema:
+            title: Full Name
+            type: string
+            description: Full name of user
+          name: full_name
+          in: query
+        - description: Role of user
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Role'
+            description: Role of user
+          name: role
+          in: query
+        - description: Office users belongs to
+          required: false
+          schema:
+            title: Office Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Office users belongs to
+          name: office_id
+          in: query
+        - description: Active status of user
+          required: false
+          schema:
+            title: Is Active
+            type: boolean
+            description: Active status of user
+          name: is_active
+          in: query
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - admin
+        - users
+      summary: Admin Create User
+      operationId: admin_create_user_admin_users_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/admin/users/{user_id}':
+    get:
+      tags:
+        - admin
+        - users
+      summary: Admin Get User
+      operationId: admin_get_user_admin_users__user_id__get
+      parameters:
+        - required: true
+          schema:
+            title: User Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: user_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - admin
+        - users
+      summary: Admin Update User
+      operationId: admin_update_user_admin_users__user_id__put
+      parameters:
+        - required: true
+          schema:
+            title: User Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: user_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateUserRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - admin
+        - users
+      summary: Admin Delete User
+      operationId: admin_delete_user_admin_users__user_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: User Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: user_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/token:
+    post:
+      tags:
+        - auth
+      summary: Token Login
+      description: Login using email and password
+      operationId: token_login_auth_token_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginPayload'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/token/refresh:
+    post:
+      tags:
+        - auth
+      summary: Token Refresh
+      description: Refresh access token using refresh token
+      operationId: token_refresh_auth_token_refresh_post
+      parameters:
+        - description: Refresh token cookie
+          required: false
+          schema:
+            title: Refresh Token
+            type: string
+            description: Refresh token cookie
+          name: refresh_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Token Register
+      description: Register using email and password
+      operationId: token_register_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationPayload'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/change-password:
+    post:
+      tags:
+        - auth
+      summary: Change Password
+      description: Change password for user
+      operationId: change_password_auth_change_password_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/reset-password:
+    post:
+      tags:
+        - auth
+      summary: Reset Password Request
+      description: Reset password for user using email
+      operationId: reset_password_request_auth_reset_password_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/auth/reset-password/{code}':
+    post:
+      tags:
+        - auth
+      summary: Reset Password With Code
+      description: Reset password using reset code
+      operationId: reset_password_with_code_auth_reset_password__code__post
+      parameters:
+        - required: true
+          schema:
+            title: Code
+            type: string
+          name: code
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPasswordRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /categories:
+    get:
+      tags:
+        - people
+        - categories
+      summary: Get Categories
+      operationId: get_categories_categories_get
+      parameters:
+        - description: Lookup by name
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: Lookup by name
+          name: name
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Get Categories Categories Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - people
+        - categories
+      summary: Create Category
+      operationId: create_category_categories_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCategoryRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Category already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/categories/{category_id}':
+    get:
+      tags:
+        - people
+        - categories
+      summary: Get Category
+      operationId: get_category_categories__category_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Category Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: category_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - people
+        - categories
+      summary: Update Category
+      operationId: update_category_categories__category_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Category Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: category_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - people
+        - categories
+      summary: Delete Category
+      operationId: delete_category_categories__category_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Category Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: category_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/documents/{doc_id}':
+    get:
+      tags:
+        - documents
+      summary: Get Document
+      operationId: get_document_documents__doc_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Doc Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: doc_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - documents
+      summary: Delete Document
+      operationId: delete_document_documents__doc_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Doc Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: doc_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/documents/stream/{doc_id}':
+    get:
+      tags:
+        - documents
+      summary: Stream Document
+      operationId: stream_document_documents_stream__doc_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Doc Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: doc_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /people:
+    post:
+      tags:
+        - people
+      summary: Create Person
+      operationId: create_person_people_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPersonRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}':
+    get:
+      tags:
+        - people
+      summary: Get Person
+      operationId: get_person_people__person_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - people
+      summary: Update Person
+      operationId: update_person_people__person_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePersonRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - people
+      summary: Delete Person
+      operationId: delete_person_people__person_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: X-Forwarded-For
+            type: string
+            default: ''
+          name: X-Forwarded-For
+          in: header
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/personal-info':
+    get:
+      tags:
+        - people
+      summary: Get Personal Info
+      operationId: get_personal_info_people__person_id__personal_info_get
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfoResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/migration-records':
+    get:
+      tags:
+        - people
+        - migration history
+      summary: Get Person Migration Records
+      description: Get migration records for a person
+      operationId: get_person_migration_records_people__person_id__migration_records_get
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Person Migration Records People  Person Id 
+                  Migration Records Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/FullMigrationHistoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/document':
+    post:
+      tags:
+        - documents
+      summary: Person Upload Document
+      operationId: person_upload_document_people__person_id__document_post
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_person_upload_document_people__person_id__document_post
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/documents':
+    get:
+      tags:
+        - documents
+      summary: Person Get Documents
+      operationId: person_get_documents_people__person_id__documents_get
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Person Get Documents People  Person Id  Documents Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/family-members':
+    get:
+      tags:
+        - people
+        - family members
+      summary: Get Persons Family Members
+      description: Get family members for a person
+      operationId: get_persons_family_members_people__person_id__family_members_get
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Persons Family Members People  Person Id  Family
+                  Members Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/FamilyMemberResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - people
+        - family members
+      summary: Add Persons Family Member
+      description: Add family member for a person
+      operationId: add_persons_family_member_people__person_id__family_members_post
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewFamilyMemberRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyMemberResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/people/{person_id}/family-members/{member_id}':
+    put:
+      tags:
+        - people
+        - family members
+      summary: Update Persons Family Member
+      description: Add family member for a person
+      operationId: >-
+        update_persons_family_member_people__person_id__family_members__member_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: true
+          schema:
+            title: Member Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: member_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateFamilyMemberRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyMemberResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - people
+        - family members
+      summary: Delete Persons Family Member
+      description: Delete family member for a person
+      operationId: >-
+        delete_persons_family_member_people__person_id__family_members__member_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Person Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: person_id
+          in: path
+        - required: true
+          schema:
+            title: Member Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: member_id
+          in: path
+        - required: false
+          schema:
+            title: X-Forwarded-For
+            type: string
+            default: ''
+          name: X-Forwarded-For
+          in: header
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/invites/join/{code}':
+    post:
+      tags:
+        - invites
+      summary: Join With Invite
+      description: >-
+        Once users receive invites we want them to hit this endpoint with new
+        account password.
+
+        Given invite is valid and password is strong enough we do the following
+        things:
+
+            1. Hash password and update user's password,
+            2. Confirm user automatically,
+            3. Issue session token and refresh token (aka authenticate users).
+      operationId: join_with_invite_invites_join__code__post
+      parameters:
+        - required: true
+          schema:
+            title: Code
+            type: string
+          name: code
+          in: path
+        - required: false
+          schema:
+            title: X-Forwarded-For
+            type: string
+            default: ''
+          name: X-Forwarded-For
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteJoinRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /health:
+    get:
+      tags:
+        - health
+      summary: Health
+      description: Simple health endpoint
+      operationId: health_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /migrations:
+    post:
+      tags:
+        - migration history
+      summary: Create Migration Record
+      description: Create migration record
+      operationId: create_migration_record_migrations_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMigrationHistoryRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationHistoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/migrations/{record_id}':
+    get:
+      tags:
+        - migration history
+      summary: Get Migration Record
+      description: Get migration record
+      operationId: get_migration_record_migrations__record_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Record Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: record_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationHistoryResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - migration history
+      summary: Delete Migration Record
+      description: Delete migration record
+      operationId: delete_migration_record_migrations__record_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Record Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: record_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /mfa/configure:
+    post:
+      tags:
+        - mfa
+      summary: Configure Mfa
+      description: Setup MFA authentication
+      operationId: configure_mfa_mfa_configure_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MFAActivationResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /mfa/setup:
+    post:
+      tags:
+        - mfa
+      summary: Setup Mfa
+      description: |-
+        Save MFA configuration and create backup codes.
+
+        NOTE:
+            Only the latest private key is used to encrypt secret and backup codes.
+      operationId: setup_mfa_mfa_setup_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MFAActivationRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MFABackupCodesResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /mfa/reset:
+    post:
+      tags:
+        - mfa
+      summary: Reset Mfa
+      description: |-
+        Reset MFA using one of backup codes
+
+        NOTE:
+            HTTP 204 returned anyway to prevent user email brute forcing  because we only
+            want exact matches to check and reset if given backup code is valid.
+      operationId: reset_mfa_mfa_reset_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MFAAResetRequest'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /offices:
+    get:
+      tags:
+        - offices
+      summary: Get Offices
+      operationId: get_offices_offices_get
+      parameters:
+        - description: When given offices will be filtered by name
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: When given offices will be filtered by name
+          name: name
+          in: query
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficesResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - offices
+      summary: Create Office
+      operationId: create_office_offices_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewOfficeRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/offices/{office_id}':
+    get:
+      tags:
+        - offices
+      summary: Get Office
+      operationId: get_office_offices__office_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Office Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: office_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - offices
+      summary: Update Office
+      operationId: update_office_offices__office_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Office Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: office_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOfficeRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OfficeResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - offices
+      summary: Delete Office
+      operationId: delete_office_offices__office_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Office Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: office_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /world/countries:
+    get:
+      tags:
+        - countries
+      summary: Get Countries
+      operationId: get_countries_world_countries_get
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Get Countries World Countries Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountryResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - countries
+      summary: Create Country
+      operationId: create_country_world_countries_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCountryRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/world/countries/{country_id}':
+    get:
+      tags:
+        - countries
+      summary: Get Country
+      operationId: get_country_world_countries__country_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Country Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: country_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - countries
+      summary: Update Country
+      operationId: update_country_world_countries__country_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Country Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: country_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCountryRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - countries
+      summary: Delete Country
+      operationId: delete_country_world_countries__country_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Country Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: country_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /world/states:
+    get:
+      tags:
+        - states
+      summary: Get States
+      operationId: get_states_world_states_get
+      parameters:
+        - description: Name of state
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: Name of state
+          name: name
+          in: query
+        - description: Code of state
+          required: false
+          schema:
+            title: Code
+            type: string
+            description: Code of state
+          name: code
+          in: query
+        - description: ID of country
+          required: false
+          schema:
+            title: Country Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: ID of country
+          name: country_id
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Get States World States Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/StateResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - states
+      summary: Create State
+      operationId: create_state_world_states_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewStateRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/world/states/{state_id}':
+    get:
+      tags:
+        - states
+      summary: Get State
+      operationId: get_state_world_states__state_id__get
+      parameters:
+        - required: true
+          schema:
+            title: State Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: state_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - states
+      summary: Update State
+      operationId: update_state_world_states__state_id__put
+      parameters:
+        - required: true
+          schema:
+            title: State Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: state_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - states
+      summary: Delete State
+      operationId: delete_state_world_states__state_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: State Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: state_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /world/places:
+    get:
+      tags:
+        - places
+      summary: Get Places
+      operationId: get_places_world_places_get
+      parameters:
+        - description: Name of place
+          required: false
+          schema:
+            title: Name
+            type: string
+            description: Name of place
+          name: name
+          in: query
+        - description: Code of place
+          required: false
+          schema:
+            title: Code
+            type: string
+            description: Code of place
+          name: code
+          in: query
+        - description: Type of place
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/PlaceType'
+            description: Type of place
+          name: place_type
+          in: query
+        - description: ID of state
+          required: false
+          schema:
+            title: State Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: ID of state
+          name: state_id
+          in: query
+        - description: ID of country
+          required: false
+          schema:
+            title: Country Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: ID of country
+          name: country_id
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Get Places World Places Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlaceResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - places
+      summary: Create Place
+      operationId: create_place_world_places_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPlaceRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/world/places/{place_id}':
+    get:
+      tags:
+        - places
+      summary: Get Place
+      operationId: get_place_world_places__place_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Place Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: place_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - places
+      summary: Update Place
+      operationId: update_place_world_places__place_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Place Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: place_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePlaceRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlaceResponse'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - places
+      summary: Delete Place
+      operationId: delete_place_world_places__place_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Place Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: place_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /pets:
+    post:
+      tags:
+        - pets
+      summary: Create Pet
+      operationId: create_pet_pets_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPetRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/pets/{pet_id}':
+    get:
+      tags:
+        - pets
+      summary: Get Pet
+      operationId: get_pet_pets__pet_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Pet Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: pet_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - pets
+      summary: Update Pet
+      operationId: update_pet_pets__pet_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Pet Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: pet_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePetRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - pets
+      summary: Delete Pet
+      operationId: delete_pet_pets__pet_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Pet Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: pet_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/pets/{pet_id}/document':
+    post:
+      tags:
+        - pets
+        - documents
+      summary: Pet Upload Document
+      operationId: pet_upload_document_pets__pet_id__document_post
+      parameters:
+        - required: true
+          schema:
+            title: Pet Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: pet_id
+          in: path
+        - description: Uploaded file size
+          required: true
+          schema:
+            title: Content-Length
+            type: integer
+            description: Uploaded file size
+          name: content-length
+          in: header
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: >-
+                #/components/schemas/Body_pet_upload_document_pets__pet_id__document_post
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/pets/{pet_id}/documents':
+    get:
+      tags:
+        - pets
+        - documents
+      summary: Pet Get Documents
+      operationId: pet_get_documents_pets__pet_id__documents_get
+      parameters:
+        - required: true
+          schema:
+            title: Pet Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: pet_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Pet Get Documents Pets  Pet Id  Documents Get
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /support-records:
+    post:
+      tags:
+        - support records
+      summary: Create Support Record
+      operationId: create_support_record_support_records_post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSupportRecordRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRecordResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/support-records/{record_id}':
+    get:
+      tags:
+        - support records
+      summary: Get Support Record
+      operationId: get_support_record_support_records__record_id__get
+      parameters:
+        - required: true
+          schema:
+            title: Record Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: record_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRecordResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - support records
+      summary: Update Support Record
+      operationId: update_support_record_support_records__record_id__put
+      parameters:
+        - required: true
+          schema:
+            title: Record Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: record_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSupportRecordRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRecordResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - support records
+      summary: Delete Support Record
+      operationId: delete_support_record_support_records__record_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: Record Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: record_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /projects/:
+    post:
+      tags:
+        - projects
+      summary: Create Project
+      operationId: create_project_projects__post
+      parameters:
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProjectRequest'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/projects/{project_id}':
+    get:
+      tags:
+        - projects
+      summary: Get Project
+      operationId: get_project_projects__project_id__get
+      parameters:
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - projects
+      summary: Update Project
+      operationId: update_project_projects__project_id__put
+      parameters:
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - projects
+      summary: Delete Project
+      operationId: delete_project_projects__project_id__delete
+      parameters:
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/projects/{project_id}/members':
+    get:
+      tags:
+        - projects
+      summary: Get Project Members
+      operationId: get_project_members_projects__project_id__members_get
+      parameters:
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - description: How many items to return?
+          required: false
+          schema:
+            title: Limit
+            type: integer
+            description: How many items to return?
+            default: 100
+          name: limit
+          in: query
+        - description: How many items to skip?
+          required: false
+          schema:
+            title: Offset
+            type: integer
+            description: How many items to skip?
+            default: 0
+          name: offset
+          in: query
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMembersResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - projects
+      summary: Add Project Member
+      operationId: add_project_member_projects__project_id__members_post
+      parameters:
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMemberResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/projects/{project_id}/members/{user_id}':
+    put:
+      tags:
+        - projects
+      summary: Update Project Member
+      operationId: update_project_member_projects__project_id__members__user_id__put
+      parameters:
+        - required: true
+          schema:
+            title: User Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: user_id
+          in: path
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePermissionRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMemberResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project or member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+        - projects
+      summary: Delete Project Member
+      operationId: delete_project_member_projects__project_id__members__user_id__delete
+      parameters:
+        - required: true
+          schema:
+            title: User Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+          name: user_id
+          in: path
+        - description: Project ID path param
+          required: true
+          schema:
+            title: Project Id
+            anyOf:
+              - type: string
+                format: uuid
+              - type: string
+            description: Project ID path param
+          name: project_id
+          in: path
+        - required: false
+          schema:
+            title: Access Token
+            type: string
+          name: access_token
+          in: cookie
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '404':
+          description: Project or member not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    APIError:
+      title: APIError
+      required:
+        - code
+        - status_code
+        - message
+      type: object
+      properties:
+        code:
+          $ref: '#/components/schemas/ErrorCode'
+        status_code:
+          title: Status Code
+          type: integer
+        message:
+          title: Message
+          type: string
+        data:
+          title: Data
+    AdminUpdateUserRequest:
+      title: AdminUpdateUserRequest
+      required:
+        - email
+        - role
+        - is_active
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of a user
+        role:
+          allOf:
+            - $ref: '#/components/schemas/Role'
+          description: Role of a user
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID to which user belongs
+        is_active:
+          title: Is Active
+          type: boolean
+          description: Is user active?
+    AgeGroup:
+      title: AgeGroup
+      enum:
+        - infant
+        - toddler
+        - pre_school
+        - middle_childhood
+        - young_teen
+        - teenager
+        - young_adult
+        - early_adult
+        - middle_aged_adult
+        - old_adult
+        - unknown
+      type: string
+      description: An enumeration.
+    Body_person_upload_document_people__person_id__document_post:
+      title: Body_person_upload_document_people__person_id__document_post
+      required:
+        - file
+      type: object
+      properties:
+        file:
+          title: File
+          type: string
+          format: binary
+    Body_pet_upload_document_pets__pet_id__document_post:
+      title: Body_pet_upload_document_pets__pet_id__document_post
+      required:
+        - file
+      type: object
+      properties:
+        file:
+          title: File
+          type: string
+          format: binary
+    CategoryResponse:
+      title: CategoryResponse
+      required:
+        - name
+        - id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Category name
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+    ChangePasswordRequest:
+      title: ChangePasswordRequest
+      required:
+        - old_password
+        - new_password
+      type: object
+      properties:
+        old_password:
+          title: Old Password
+          type: string
+          description: Old password which user has provided
+          format: password
+          writeOnly: true
+        new_password:
+          title: New Password
+          type: string
+          description: New password which user has provided
+          format: password
+          writeOnly: true
+        totp_code:
+          title: Totp Code
+          type: string
+          description: TOTP code if MFA is active for a given user
+    CountryResponse:
+      title: CountryResponse
+      required:
+        - name
+        - code
+        - id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of country
+        code:
+          title: Code
+          type: string
+          description: Country code
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+    CreateUserRequest:
+      title: CreateUserRequest
+      required:
+        - email
+        - role
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of a user
+        role:
+          allOf:
+            - $ref: '#/components/schemas/Role'
+          description: Role of a user
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID to which user belongs
+        password:
+          title: Password
+          type: string
+          description: Password which user has provided
+          format: password
+          writeOnly: true
+        is_active:
+          title: Is Active
+          type: boolean
+          description: Is user active?
+          default: true
+    DisplacedPersonStatus:
+      title: DisplacedPersonStatus
+      enum:
+        - consulted
+        - needs_call_back
+        - needs_legal_support
+        - needs_social_support
+        - needs_monitoring
+        - registered
+        - unknown
+      type: string
+      description: An enumeration.
+    DocumentResponse:
+      title: DocumentResponse
+      required:
+        - name
+        - size
+        - mimetype
+        - owner_id
+        - id
+        - created_at
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Document filename
+        size:
+          title: Size
+          exclusiveMinimum: 0
+          type: integer
+          description: Size of document in bytes
+        mimetype:
+          title: Mimetype
+          type: string
+          description: Document type (mimetype)
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Owner ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Document ID
+        created_at:
+          title: Created At
+          type: string
+          description: Creation date and time
+          format: date-time
+    ErrorCode:
+      title: ErrorCode
+      enum:
+        - unauthorized
+        - forbidden
+        - not_found
+        - conflict_error
+        - totp_error
+        - totp_invalid_backup_code_error
+        - totp_required_error
+        - totp_exists_error
+        - registration_error
+        - registrations_closed_error
+        - password_reset_code_expired_error
+        - weak_password_error
+        - invalid_password_error
+        - similar_passwords_error
+        - document_is_too_large_error
+        - unsupported_document_format
+        - confirmation_code_expired_error
+        - invite_expired_error
+        - internal_error
+        - bad_request
+      type: string
+      description: An enumeration.
+    FamilyMemberResponse:
+      title: FamilyMemberResponse
+      required:
+        - age_group
+        - person_id
+        - id
+        - project_id
+      type: object
+      properties:
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of family member
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Full name of family member
+          format: date
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Sex of family member
+        notes:
+          title: Notes
+          type: string
+          description: Notes
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Age group of family member
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Family member ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+    FullMigrationHistoryResponse:
+      title: FullMigrationHistoryResponse
+      required:
+        - id
+        - person_id
+        - migration_date
+        - project_id
+        - created_at
+      type: object
+      properties:
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Migration record ID
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+        migration_date:
+          title: Migration Date
+          type: string
+          description: Date of migration
+          format: date
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID to which it belongs
+        from_place:
+          title: From Place
+          allOf:
+            - $ref: '#/components/schemas/PlaceResponse'
+          description: Place where person has moved from
+        current_place:
+          title: Current Place
+          allOf:
+            - $ref: '#/components/schemas/PlaceResponse'
+          description: Current place of living
+        created_at:
+          title: Created At
+          type: string
+          description: Creation date
+          format: date-time
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    HealthResponse:
+      title: HealthResponse
+      required:
+        - status
+      type: object
+      properties:
+        status:
+          title: Status
+          type: string
+    InviteJoinRequest:
+      title: InviteJoinRequest
+      required:
+        - password
+      type: object
+      properties:
+        password:
+          title: Password
+          type: string
+          description: Password which user has provided
+          format: password
+          writeOnly: true
+    InvitePermissionRequest:
+      title: InvitePermissionRequest
+      required:
+        - project_id
+      type: object
+      properties:
+        can_create:
+          title: Can Create
+          type: boolean
+          description: User can create records
+          default: false
+        can_read:
+          title: Can Read
+          type: boolean
+          description: User can create records
+          default: true
+        can_update:
+          title: Can Update
+          type: boolean
+          description: User can update records
+          default: false
+        can_delete:
+          title: Can Delete
+          type: boolean
+          description: User can delete records
+          default: false
+        can_read_documents:
+          title: Can Read Documents
+          type: boolean
+          description: User can read documents
+          default: false
+        can_read_personal_info:
+          title: Can Read Personal Info
+          type: boolean
+          description: User can read personal info
+          default: false
+        can_invite_members:
+          title: Can Invite Members
+          type: boolean
+          description: User can invite new members to projects
+          default: false
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User can create records
+    LoginPayload:
+      title: LoginPayload
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address to login
+          format: email
+        password:
+          title: Password
+          type: string
+          description: Password to login
+          format: password
+          writeOnly: true
+        totp_code:
+          title: Totp Code
+          type: string
+          description: TOTP code if MFA is active for a given user
+    MFAAResetRequest:
+      title: MFAAResetRequest
+      required:
+        - email
+        - backup_code
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: User email
+          format: email
+        backup_code:
+          title: Backup Code
+          type: string
+          description: MFA backup code
+    MFAActivationRequest:
+      title: MFAActivationRequest
+      required:
+        - secret
+        - totp_code
+      type: object
+      properties:
+        secret:
+          title: Secret
+          type: string
+          description: TOTP secret
+          format: password
+          writeOnly: true
+        totp_code:
+          title: Totp Code
+          type: string
+          description: TOTP code to validate and save for user
+          format: password
+          writeOnly: true
+    MFAActivationResponse:
+      title: MFAActivationResponse
+      required:
+        - secret
+        - qr_image
+      type: object
+      properties:
+        secret:
+          title: Secret
+          type: string
+          description: TOTP secret
+        qr_image:
+          title: Qr Image
+          type: string
+          description: Base64 QR code image
+    MFABackupCodesResponse:
+      title: MFABackupCodesResponse
+      required:
+        - backup_codes
+      type: object
+      properties:
+        backup_codes:
+          title: Backup Codes
+          type: array
+          items:
+            type: string
+          description: List of backup codes
+    MigrationHistoryResponse:
+      title: MigrationHistoryResponse
+      required:
+        - person_id
+        - migration_date
+        - project_id
+        - id
+        - created_at
+      type: object
+      properties:
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+        migration_date:
+          title: Migration Date
+          type: string
+          description: Date of migration
+          format: date
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID to which it belongs
+        from_place_id:
+          title: From Place Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: From place ID where then person has moved
+        current_place_id:
+          title: Current Place Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Current place of living
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Migration record ID
+        created_at:
+          title: Created At
+          type: string
+          description: Creation date
+          format: date-time
+    NewCategoryRequest:
+      title: NewCategoryRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Category name
+    NewCountryRequest:
+      title: NewCountryRequest
+      required:
+        - name
+        - code
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of country
+        code:
+          title: Code
+          type: string
+          description: Country code
+    NewFamilyMemberRequest:
+      title: NewFamilyMemberRequest
+      required:
+        - age_group
+        - person_id
+        - project_id
+      type: object
+      properties:
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of family member
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Full name of family member
+          format: date
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Sex of family member
+        notes:
+          title: Notes
+          type: string
+          description: Notes
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Age group of family member
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+    NewMigrationHistoryRequest:
+      title: NewMigrationHistoryRequest
+      required:
+        - person_id
+        - migration_date
+        - project_id
+      type: object
+      properties:
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+        migration_date:
+          title: Migration Date
+          type: string
+          description: Date of migration
+          format: date
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID to which it belongs
+        from_place_id:
+          title: From Place Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: From place ID where then person has moved
+        current_place_id:
+          title: Current Place Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Current place of living
+    NewOfficeRequest:
+      title: NewOfficeRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of the office
+    NewPasswordRequest:
+      title: NewPasswordRequest
+      required:
+        - password
+      type: object
+      properties:
+        password:
+          title: Password
+          type: string
+          description: Password which user has provided
+          format: password
+          writeOnly: true
+    NewPermissionRequest:
+      title: NewPermissionRequest
+      required:
+        - user_id
+        - project_id
+      type: object
+      properties:
+        can_create:
+          title: Can Create
+          type: boolean
+          description: User can create records
+          default: false
+        can_read:
+          title: Can Read
+          type: boolean
+          description: User can create records
+          default: true
+        can_update:
+          title: Can Update
+          type: boolean
+          description: User can update records
+          default: false
+        can_delete:
+          title: Can Delete
+          type: boolean
+          description: User can delete records
+          default: false
+        can_read_documents:
+          title: Can Read Documents
+          type: boolean
+          description: User can read documents
+          default: false
+        can_read_personal_info:
+          title: Can Read Personal Info
+          type: boolean
+          description: User can read personal info
+          default: false
+        can_invite_members:
+          title: Can Invite Members
+          type: boolean
+          description: User can invite new members to projects
+          default: false
+        user_id:
+          title: User Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User can create records
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User can create records
+    NewPersonRequest:
+      title: NewPersonRequest
+      type: object
+      properties:
+        status:
+          allOf:
+            - $ref: '#/components/schemas/DisplacedPersonStatus'
+          description: Current status
+          default: registered
+        reference_id:
+          title: Reference Id
+          type: string
+          description: 'Reference ID, maybe some of state issued IDs etc.'
+        email:
+          title: Email
+          type: string
+          description: Contact email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Person's sex
+        pronoun:
+          title: Pronoun
+          type: string
+          description: Person's pronouns
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Birth date
+          format: date-time
+        notes:
+          title: Notes
+          type: string
+          description: Additional notes
+        phone_number:
+          title: Phone Number
+          type: string
+          description: Primary phone number
+        phone_number_additional:
+          title: Phone Number Additional
+          type: string
+          description: Displaced person ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Related project ID
+        category_id:
+          title: Category Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Vulnerability category ID
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Registration office ID
+        tags:
+          title: Tags
+          type: array
+          items:
+            type: string
+          description: List of tags
+    NewPetRequest:
+      title: NewPetRequest
+      required:
+        - name
+        - status
+        - owner_id
+        - project_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Pet's name
+        notes:
+          title: Notes
+          type: string
+          description: Additional notes
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PetStatus'
+          description: Pet status
+        registration_id:
+          title: Registration Id
+          type: string
+          description: 'Pet''s registration ID, passport ID etc.'
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Pet's owner ID (Person ID)
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project owner ID
+    NewPlaceRequest:
+      title: NewPlaceRequest
+      required:
+        - name
+        - code
+        - country_id
+        - state_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of place
+        code:
+          title: Code
+          type: string
+          description: Place code
+        place_type:
+          allOf:
+            - $ref: '#/components/schemas/PlaceType'
+          description: Type of place
+          default: city
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+        state_id:
+          title: State Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: State ID
+    NewProjectRequest:
+      title: NewProjectRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of project
+        description:
+          title: Description
+          type: string
+          description: Description of project
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: ID of creator it overridden currently active user
+    NewStateRequest:
+      title: NewStateRequest
+      required:
+        - name
+        - code
+        - country_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of state
+        code:
+          title: Code
+          type: string
+          description: State code
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+    NewSupportRecordRequest:
+      title: NewSupportRecordRequest
+      required:
+        - type
+        - consultant_id
+        - record_for
+        - owner_id
+        - project_id
+      type: object
+      properties:
+        description:
+          title: Description
+          type: string
+          description: Description of support record
+        type:
+          allOf:
+            - $ref: '#/components/schemas/SupportType'
+          description: Type of support
+        consultant_id:
+          title: Consultant Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Consultant ID
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Beneficiary age group
+        record_for:
+          allOf:
+            - $ref: '#/components/schemas/SupportRecordSubject'
+          description: Record subject
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Owner of support humans or pets
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+    OfficeResponse:
+      title: OfficeResponse
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID
+        name:
+          title: Name
+          type: string
+          description: Name of the office
+    OfficesResponse:
+      title: OfficesResponse
+      required:
+        - total
+        - items
+      type: object
+      properties:
+        total:
+          title: Total
+          type: integer
+          description: Total number of offices
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: '#/components/schemas/OfficeResponse'
+          description: List of offices
+    PermissionResponse:
+      title: PermissionResponse
+      required:
+        - id
+        - user_id
+        - project_id
+      type: object
+      properties:
+        can_create:
+          title: Can Create
+          type: boolean
+          description: User can create records
+          default: false
+        can_read:
+          title: Can Read
+          type: boolean
+          description: User can create records
+          default: true
+        can_update:
+          title: Can Update
+          type: boolean
+          description: User can update records
+          default: false
+        can_delete:
+          title: Can Delete
+          type: boolean
+          description: User can delete records
+          default: false
+        can_read_documents:
+          title: Can Read Documents
+          type: boolean
+          description: User can read documents
+          default: false
+        can_read_personal_info:
+          title: Can Read Personal Info
+          type: boolean
+          description: User can read personal info
+          default: false
+        can_invite_members:
+          title: Can Invite Members
+          type: boolean
+          description: User can invite new members to projects
+          default: false
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Permission ID
+        user_id:
+          title: User Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User can create records
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User can create records
+    PersonResponse:
+      title: PersonResponse
+      required:
+        - id
+        - consultant_id
+      type: object
+      properties:
+        status:
+          allOf:
+            - $ref: '#/components/schemas/DisplacedPersonStatus'
+          description: Current status
+          default: registered
+        reference_id:
+          title: Reference Id
+          type: string
+          description: 'Reference ID, maybe some of state issued IDs etc.'
+        email:
+          title: Email
+          type: string
+          description: Contact email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Person's sex
+        pronoun:
+          title: Pronoun
+          type: string
+          description: Person's pronouns
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Birth date
+          format: date-time
+        notes:
+          title: Notes
+          type: string
+          description: Additional notes
+        phone_number:
+          title: Phone Number
+          type: string
+          description: Primary phone number
+        phone_number_additional:
+          title: Phone Number Additional
+          type: string
+          description: Displaced person ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Related project ID
+        category_id:
+          title: Category Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Vulnerability category ID
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Registration office ID
+        tags:
+          title: Tags
+          type: array
+          items:
+            type: string
+          description: List of tags
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Displaced person ID
+        external_id:
+          title: External Id
+          type: string
+          description: External identifier
+        consultant_id:
+          title: Consultant Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Consultant ID
+        created_at:
+          title: Created At
+          type: string
+          description: Creation date
+          format: date-time
+        updated_at:
+          title: Updated At
+          type: string
+          description: Update date
+          format: date-time
+    PersonalInfoResponse:
+      title: PersonalInfoResponse
+      type: object
+      properties:
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Person's sex
+        pronoun:
+          title: Pronoun
+          type: string
+          description: Person's pronouns
+        email:
+          title: Email
+          type: string
+          description: Contact email
+        phone_number:
+          title: Phone Number
+          type: string
+          description: Primary phone number
+        phone_number_additional:
+          title: Phone Number Additional
+          type: string
+          description: Displaced person ID
+    PetResponse:
+      title: PetResponse
+      required:
+        - id
+        - created_at
+      type: object
+      properties:
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Pet ID
+        created_at:
+          title: Created At
+          type: string
+          description: Creation datetime
+          format: date-time
+    PetStatus:
+      title: PetStatus
+      enum:
+        - registered
+        - adopted
+        - owner_found
+        - needs_shelter
+        - unknown
+      type: string
+      description: An enumeration.
+    PlaceResponse:
+      title: PlaceResponse
+      required:
+        - name
+        - code
+        - id
+        - country_id
+        - state_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of place
+        code:
+          title: Code
+          type: string
+          description: Place code
+        place_type:
+          allOf:
+            - $ref: '#/components/schemas/PlaceType'
+          description: Type of place
+          default: city
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Place ID
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+        state_id:
+          title: State Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: State ID
+    PlaceType:
+      title: PlaceType
+      enum:
+        - city
+        - town
+        - village
+      type: string
+      description: An enumeration.
+    ProjectMemberResponse:
+      title: ProjectMemberResponse
+      required:
+        - is_active
+        - role
+        - permissions
+      type: object
+      properties:
+        is_active:
+          title: Is Active
+          type: boolean
+        full_name:
+          title: Full Name
+          type: string
+        role:
+          $ref: '#/components/schemas/Role'
+        permissions:
+          $ref: '#/components/schemas/PermissionResponse'
+    ProjectMembersResponse:
+      title: ProjectMembersResponse
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectMemberResponse'
+          description: List of project member
+    ProjectResponse:
+      title: ProjectResponse
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: ID of project
+        name:
+          title: Name
+          type: string
+          description: Name of project
+        description:
+          title: Description
+          type: string
+          description: Description of project
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: ID of creator
+    RegistrationPayload:
+      title: RegistrationPayload
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+        password:
+          title: Password
+          type: string
+          description: Password which user has provided
+          format: password
+          writeOnly: true
+    ResetPasswordRequest:
+      title: ResetPasswordRequest
+      required:
+        - email
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+    Role:
+      title: Role
+      enum:
+        - admin
+        - staff
+        - consultant
+        - guest
+      type: string
+      description: An enumeration.
+    Sex:
+      title: Sex
+      enum:
+        - male
+        - female
+        - unknown
+      type: string
+      description: An enumeration.
+    StateResponse:
+      title: StateResponse
+      required:
+        - name
+        - code
+        - id
+        - country_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of state
+        code:
+          title: Code
+          type: string
+          description: State code
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: State ID
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+    SupportRecordResponse:
+      title: SupportRecordResponse
+      required:
+        - type
+        - consultant_id
+        - record_for
+        - owner_id
+        - project_id
+        - id
+        - created_at
+      type: object
+      properties:
+        description:
+          title: Description
+          type: string
+          description: Description of support record
+        type:
+          allOf:
+            - $ref: '#/components/schemas/SupportType'
+          description: Type of support
+        consultant_id:
+          title: Consultant Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Consultant ID
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Beneficiary age group
+        record_for:
+          allOf:
+            - $ref: '#/components/schemas/SupportRecordSubject'
+          description: Record subject
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Owner of support humans or pets
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Support record ID
+        created_at:
+          title: Created At
+          type: string
+          description: Creation date
+          format: date-time
+    SupportRecordSubject:
+      title: SupportRecordSubject
+      enum:
+        - person
+        - pet
+      type: string
+      description: An enumeration.
+    SupportType:
+      title: SupportType
+      enum:
+        - humanitarian
+        - legal
+        - medical
+        - general
+      type: string
+      description: An enumeration.
+    TokenResponse:
+      title: TokenResponse
+      required:
+        - access_token
+        - refresh_token
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+          description: JWT access token
+        refresh_token:
+          title: Refresh Token
+          type: string
+          description: JWT refresh token
+    UpdateCategoryRequest:
+      title: UpdateCategoryRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Category name
+    UpdateCountryRequest:
+      title: UpdateCountryRequest
+      required:
+        - name
+        - code
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of country
+        code:
+          title: Code
+          type: string
+          description: Country code
+    UpdateFamilyMemberRequest:
+      title: UpdateFamilyMemberRequest
+      required:
+        - age_group
+        - person_id
+      type: object
+      properties:
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of family member
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Full name of family member
+          format: date
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Sex of family member
+        notes:
+          title: Notes
+          type: string
+          description: Notes
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Age group of family member
+        person_id:
+          title: Person Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Person ID
+    UpdateOfficeRequest:
+      title: UpdateOfficeRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of the office
+    UpdatePermissionRequest:
+      title: UpdatePermissionRequest
+      type: object
+      properties:
+        can_create:
+          title: Can Create
+          type: boolean
+          description: User can create records
+          default: false
+        can_read:
+          title: Can Read
+          type: boolean
+          description: User can create records
+          default: true
+        can_update:
+          title: Can Update
+          type: boolean
+          description: User can update records
+          default: false
+        can_delete:
+          title: Can Delete
+          type: boolean
+          description: User can delete records
+          default: false
+        can_read_documents:
+          title: Can Read Documents
+          type: boolean
+          description: User can read documents
+          default: false
+        can_read_personal_info:
+          title: Can Read Personal Info
+          type: boolean
+          description: User can read personal info
+          default: false
+        can_invite_members:
+          title: Can Invite Members
+          type: boolean
+          description: User can invite new members to projects
+          default: false
+    UpdatePersonRequest:
+      title: UpdatePersonRequest
+      type: object
+      properties:
+        status:
+          allOf:
+            - $ref: '#/components/schemas/DisplacedPersonStatus'
+          description: Current status
+          default: registered
+        reference_id:
+          title: Reference Id
+          type: string
+          description: 'Reference ID, maybe some of state issued IDs etc.'
+        email:
+          title: Email
+          type: string
+          description: Contact email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name
+        sex:
+          allOf:
+            - $ref: '#/components/schemas/Sex'
+          description: Person's sex
+        pronoun:
+          title: Pronoun
+          type: string
+          description: Person's pronouns
+        birth_date:
+          title: Birth Date
+          type: string
+          description: Birth date
+          format: date-time
+        notes:
+          title: Notes
+          type: string
+          description: Additional notes
+        phone_number:
+          title: Phone Number
+          type: string
+          description: Primary phone number
+        phone_number_additional:
+          title: Phone Number Additional
+          type: string
+          description: Displaced person ID
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Related project ID
+        category_id:
+          title: Category Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Vulnerability category ID
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Registration office ID
+        tags:
+          title: Tags
+          type: array
+          items:
+            type: string
+          description: List of tags
+    UpdatePetRequest:
+      title: UpdatePetRequest
+      required:
+        - name
+        - status
+        - owner_id
+        - project_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Pet's name
+        notes:
+          title: Notes
+          type: string
+          description: Additional notes
+        status:
+          allOf:
+            - $ref: '#/components/schemas/PetStatus'
+          description: Pet status
+        registration_id:
+          title: Registration Id
+          type: string
+          description: 'Pet''s registration ID, passport ID etc.'
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Pet's owner ID (Person ID)
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project owner ID
+    UpdatePlaceRequest:
+      title: UpdatePlaceRequest
+      required:
+        - name
+        - code
+        - country_id
+        - state_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of place
+        code:
+          title: Code
+          type: string
+          description: Place code
+        place_type:
+          allOf:
+            - $ref: '#/components/schemas/PlaceType'
+          description: Type of place
+          default: city
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+        state_id:
+          title: State Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: State ID
+    UpdateProjectRequest:
+      title: UpdateProjectRequest
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of project
+        description:
+          title: Description
+          type: string
+          description: Description of project
+    UpdateStateRequest:
+      title: UpdateStateRequest
+      required:
+        - name
+        - code
+        - country_id
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Name of state
+        code:
+          title: Code
+          type: string
+          description: State code
+        country_id:
+          title: Country Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Country ID
+    UpdateSupportRecordRequest:
+      title: UpdateSupportRecordRequest
+      required:
+        - type
+        - consultant_id
+        - record_for
+        - owner_id
+        - project_id
+      type: object
+      properties:
+        description:
+          title: Description
+          type: string
+          description: Description of support record
+        type:
+          allOf:
+            - $ref: '#/components/schemas/SupportType'
+          description: Type of support
+        consultant_id:
+          title: Consultant Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Consultant ID
+        age_group:
+          allOf:
+            - $ref: '#/components/schemas/AgeGroup'
+          description: Beneficiary age group
+        record_for:
+          allOf:
+            - $ref: '#/components/schemas/SupportRecordSubject'
+          description: Record subject
+        owner_id:
+          title: Owner Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Owner of support humans or pets
+        project_id:
+          title: Project Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Project ID
+    UserInviteRequest:
+      title: UserInviteRequest
+      required:
+        - email
+        - role
+        - permissions
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: User email to send a new invite
+          format: email
+        role:
+          allOf:
+            - $ref: '#/components/schemas/Role'
+          description: Role of a user
+        permissions:
+          title: Permissions
+          type: array
+          items:
+            $ref: '#/components/schemas/InvitePermissionRequest'
+          description: List of permissions to different projects
+    UserInviteResponse:
+      title: UserInviteResponse
+      required:
+        - code
+        - user_id
+        - expires_at
+      type: object
+      properties:
+        code:
+          title: Code
+          type: string
+          description: Invite code
+        user_id:
+          title: User Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: User ID
+        expires_at:
+          title: Expires At
+          type: string
+          description: Expiration datetime
+          format: date-time
+    UserInvitesResponse:
+      title: UserInvitesResponse
+      required:
+        - total
+        - items
+      type: object
+      properties:
+        total:
+          title: Total
+          type: integer
+          description: Total amount of invites
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: '#/components/schemas/UserInviteResponse'
+          description: List of invites DESC ordered by expiration date
+    UserResponse:
+      title: UserResponse
+      required:
+        - email
+        - role
+        - id
+      type: object
+      properties:
+        email:
+          title: Email
+          type: string
+          description: E-mail address of a user
+          format: email
+        full_name:
+          title: Full Name
+          type: string
+          description: Full name of a user
+        role:
+          allOf:
+            - $ref: '#/components/schemas/Role'
+          description: Role of a user
+        office_id:
+          title: Office Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: Office ID to which user belongs
+        id:
+          title: Id
+          anyOf:
+            - type: string
+              format: uuid
+            - type: string
+          description: ID of user
+        is_active:
+          title: Is Active
+          type: boolean
+          description: Is user active?
+          default: true
+        is_confirmed:
+          title: Is Confirmed
+          type: boolean
+          description: Is user confirmed?
+          default: false
+        mfa_enabled:
+          title: Mfa Enabled
+          type: boolean
+          description: Is MFA enabled for user?
+          default: false
+    UsersResponse:
+      title: UsersResponse
+      required:
+        - total
+        - items
+      type: object
+      properties:
+        total:
+          title: Total
+          type: integer
+          description: Total count of users
+        items:
+          title: Items
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResponse'
+          description: List of users
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string

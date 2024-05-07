@@ -1,10 +1,9 @@
-#
 # Test different iterations of dotastats spec
 #
 import pytest
 
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 from tests.cases import get_test_case_path
+from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 
 
 @pytest.mark.skip

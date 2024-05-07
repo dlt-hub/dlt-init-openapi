@@ -52,7 +52,7 @@ paths:
 
   
   #
-  # Simple collection, match by path var (which is not defined)
+  # Simple collection, match by path var (which is not defined as path var)
   #
   /users/:
     get:

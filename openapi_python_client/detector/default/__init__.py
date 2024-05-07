@@ -287,6 +287,8 @@ class DefaultDetector(BaseDetector):
                 current_node = current_node[part]  # type: ignore
             current_node[ENDPOINT_MARKER] = endpoint
 
+        print(tree)
+
         def find_nearest_list_parent(path: str) -> Optional[Endpoint]:
             parts = get_path_parts(path)
             while parts:

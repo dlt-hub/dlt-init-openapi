@@ -6,12 +6,13 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 import openapi_schema_pydantic as osp
 
 from openapi_python_client.detector.base_detector import BaseDetector
+from openapi_python_client.detector.default.primary_key import detect_primary_key_by_name
 from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, is_var_part
+from openapi_python_client.utils.paths import get_path_parts, is_path_var
 
 from .const import (
     RE_CURSOR_PARAM,
@@ -39,6 +40,7 @@ class DefaultDetector(BaseDetector):
         # discover parent child relationship
         self.detect_parent_child_relationships(open_api.endpoints)
 
+        # detect the mapping for mapping parent result values onto child path
         self.detect_transformer_settings(open_api.endpoints)
 
     def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
@@ -72,28 +74,36 @@ class DefaultDetector(BaseDetector):
 
             # with this info we can more safely detect the response payload
             if endpoint.detected_response:
-                path_suggests_list = not is_var_part(get_path_parts(endpoint.path)[-1])
+                path_suggests_list = not is_path_var(get_path_parts(endpoint.path)[-1])
                 expect_list = (endpoint.detected_pagination is not None) or path_suggests_list
                 endpoint.detected_response.detected_payload = self.detect_response_payload(
                     endpoint.detected_response, expect_list=expect_list
                 )
-                self.detect_primary_key(endpoint.detected_response)
+                self.detect_primary_key(endpoint.detected_response, endpoint.path)
 
-    def detect_primary_key(self, response: Response) -> None:
-        """detect the primary key from the payload
-        TODO: we need way more primary key detection based on schema name etc."""
+    def detect_primary_key(self, response: Response, path: str) -> None:
+        """detect the primary key from the payload"""
         if not response.detected_payload:
             return
+        schema = response.detected_payload.schema
 
+        # first, try to detect primary key by name, all props that are string, int or untyped are candidates
+        primary_key_candidates = [
+            prop.name
+            for prop in schema.all_properties
+            if (not prop.schema.types or set(prop.schema.types) & {"string", "integer"})
+        ]
+        response.detected_primary_key = detect_primary_key_by_name(primary_key_candidates, schema.name, path)
+        if response.detected_primary_key:
+            return
+
+        # now try to do additional heuristics based on descriptions
         description_paths = []
         uuid_paths = []
 
-        for prop in response.detected_payload.schema.all_properties:
+        for prop in schema.all_properties:
             if prop.schema.types and (not set(prop.schema.types) & {"string", "integer"}):
                 continue
-            if prop.name.lower() == "id":
-                response.detected_primary_key = prop.name
-                return
             elif prop.schema.description and RE_UNIQUE_KEY.search(prop.schema.description):
                 description_paths.append(prop.name)
             elif prop.schema.type_format == "uuid":
@@ -112,7 +122,7 @@ class DefaultDetector(BaseDetector):
         for status_code, response_ref in endpoint.osp_operation.responses.items() or []:
             if status_code in ["200", "default"]:
                 main_ref = response_ref
-                break
+                break  # this will always be the right one
             if str(status_code).startswith("2") and not main_ref:
                 main_ref = response_ref
 
@@ -134,27 +144,26 @@ class DefaultDetector(BaseDetector):
     def detect_response_payload(self, response: Response, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
         payload: Optional[DataPropertyPath] = None
-        content_schema = response.schema
 
         # try to discover payload path and schema
-        if content_schema:
+        if response.schema:
             if expect_list:
-                if content_schema.is_list:
-                    payload = DataPropertyPath((), content_schema)
+                if response.schema.is_list:
+                    payload = DataPropertyPath((), response.schema)
                 else:
-                    payload = content_schema.nested_properties.find_property(
+                    payload = response.schema.nested_properties.find_property(
                         RE_MATCH_ALL, "array", allow_unknown_types=False
                     )
 
             # either no list expected or no list found..
             if not payload:
                 payload_path: List[str] = []
-                while len(content_schema.properties) == 1 and content_schema.properties[0].is_object:
+                while len(response.schema.properties) == 1 and response.schema.properties[0].is_object:
                     # Schema contains only a single object property. The payload may be inside.
-                    prop = content_schema.properties[0]
+                    prop = response.schema.properties[0]
                     payload_path.append(prop.name)
-                    content_schema = prop.schema
-                payload = DataPropertyPath(tuple(payload_path), content_schema)
+                    response.schema = prop.schema
+                payload = DataPropertyPath(tuple(payload_path), response.schema)
 
         return payload
 
@@ -284,6 +293,3 @@ class DefaultDetector(BaseDetector):
             endpoint.detected_parent = find_nearest_list_parent(endpoint.path)
             if endpoint.detected_parent:
                 endpoint.detected_parent.detected_children.append(endpoint)
-
-    def detect_primary_keys(self, endpoints: EndpointCollection) -> None:
-        pass

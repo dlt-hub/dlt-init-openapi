@@ -9,7 +9,7 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, is_var_part, table_names_from_paths
+from openapi_python_client.utils.paths import get_path_parts, is_path_var, table_names_from_paths
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 
@@ -71,7 +71,7 @@ class Endpoint:
     @property
     def is_list(self) -> bool:
         """if we know the payload, we can discover from there, if not assume list if last path part is not arg"""
-        return self.payload.is_list if self.payload else (not is_var_part(self.path_parts[-1]))
+        return self.payload.is_list if self.payload else (not is_path_var(self.path_parts[-1]))
 
     @property
     def parent(self) -> Optional["Endpoint"]:

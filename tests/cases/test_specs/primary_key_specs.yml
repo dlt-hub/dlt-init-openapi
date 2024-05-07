@@ -48,6 +48,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pokemon'
 
+  /primary_key_by_modelname_id/:
+    get:
+      operationId: primary_key_by_modelname_id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyModel'
+
+
+  /primary_key_by_path_component/user/{some_value}:
+    get:
+      operationId: primary_key_by_path_component
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                  name:
+                  user_id:
+
+
+  /primary_key_by_path_variable/all_the_people/{person_id}:
+    get:
+      operationId: primary_key_by_path_variable
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                  name:
+                  person_id:
+
+  /primary_key_from_pluralized_path_component/accounts:
+    get:
+      operationId: primary_key_from_pluralized_path_component
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                  name:
+                  person_id:
+                  account_id:
+
+  /no_primary_key/:
+    get:
+      operationId: no_primary_key
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  age:
+                  name:
+
  
 components:
   schemas:
@@ -55,6 +128,13 @@ components:
       type: object
       properties:
         id:
+          type: integer
+        name: 
+          type: string
+    MyModel:
+      type: object
+      properties:
+        mymodel_id:
           type: integer
         name: 
           type: string

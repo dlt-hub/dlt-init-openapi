@@ -8,6 +8,9 @@ servers:
 
 paths:
 
+  #
+  # Simple collection
+  #
   /collection/:
     get:
       operationId: collections

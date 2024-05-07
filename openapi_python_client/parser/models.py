@@ -107,11 +107,16 @@ class SchemaWrapper:
     @property
     def all_properties(self) -> List["Property"]:
         """All properties of root model and any/oneOf schemas in union"""
+        return list(self.all_properties_map.values())
+
+    @property
+    def all_properties_map(self) -> Dict[str, "Property"]:
+        """All properties of root model and any/oneOf schemas in union"""
         props = {p.name: p for p in self.properties}
         for child in self.any_of + self.one_of:
             for prop in child.all_properties:
                 props[prop.name] = prop
-        return list(props.values())
+        return props
 
     @property
     def is_object(self) -> bool:
@@ -350,6 +355,7 @@ class NestedProperties:
         return None
 
     def discover_nested_properties(self, schema: SchemaWrapper, path: Tuple[str, ...] = ()) -> None:
+        """Traverse into full property tree and build a map of path to prop for better detection later"""
         self.all_properties[path] = schema
         if schema.is_object:
             self.object_properties[path] = schema

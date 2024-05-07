@@ -29,5 +29,24 @@ def test_primary_key_reference(transformers: Dict[str, Any]) -> None:
 
 
 def test_primary_key_no_type(transformers: Dict[str, Any]) -> None:
-    print(transformers["primary_key_no_type"])
     assert transformers["primary_key_no_type"]["primary_key"] == "id"
+
+
+def test_primary_key_by_modelname_id(transformers: Dict[str, Any]) -> None:
+    assert transformers["primary_key_by_modelname_id"]["primary_key"] == "mymodel_id"
+
+
+def test_no_primary_key(transformers: Dict[str, Any]) -> None:
+    assert transformers["no_primary_key"].get("primary_key") is None
+
+
+def test_primary_key_by_path_component(transformers: Dict[str, Any]) -> None:
+    assert transformers["primary_key_by_path_component"]["primary_key"] == "user_id"
+
+
+def test_primary_key_by_path_variable(transformers: Dict[str, Any]) -> None:
+    assert transformers["primary_key_by_path_variable"]["primary_key"] == "person_id"
+
+
+def test_primary_key_from_pluralized_path_component(transformers: Dict[str, Any]) -> None:
+    assert transformers["primary_key_from_pluralized_path_component"]["primary_key"] == "account_id"

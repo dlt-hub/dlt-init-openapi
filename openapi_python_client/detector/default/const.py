@@ -5,7 +5,11 @@ import re
 #
 MAX_RECURSION_DEPTH = 6
 
-# unique key
+# primary key
+PRIMAY_KEY_NAMES = ["id", "pk", "unique", "identifier", "primary_key"]
+PRIMARY_KEY_SUFFIXES = ["id", "pk"]
+PRIMARY_KEY_WORD_SEPARATORS = ["", "-", "_"]
+
 RE_UNIQUE_KEY = re.compile(r"\b(unique|id|identifier)\b", re.IGNORECASE)
 
 # pagination
@@ -15,6 +19,7 @@ RE_TOTAL_PROPERTY = re.compile(r"(?i)(total|count)", re.IGNORECASE)
 RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)", re.IGNORECASE)
 RE_NEXT_PROPERTY = re.compile(r"(?i)(next|next_url|more)", re.IGNORECASE)
 RE_MATCH_ALL = re.compile(r".*", re.IGNORECASE)
+
 # content path discovery
 
 

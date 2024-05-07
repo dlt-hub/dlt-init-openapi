@@ -2,7 +2,15 @@ from typing import List, Tuple
 
 import pytest
 
-from openapi_python_client.utils.paths import find_longest_common_prefix, table_names_from_paths
+from openapi_python_client.utils.paths import (
+    find_longest_common_prefix,
+    get_non_var_path_parts,
+    get_path_parts,
+    get_path_var_name,
+    get_path_var_names,
+    is_path_var,
+    table_names_from_paths,
+)
 
 
 def test_table_names_from_paths_prefixed() -> None:
@@ -73,3 +81,34 @@ def test_table_names_from_paths_no_prefix() -> None:
 def test_find_longest_common_prefix(paths: List[Tuple[str, ...]], expected: Tuple[str, ...]) -> None:
     result = find_longest_common_prefix(paths)
     assert result == expected
+
+
+def test_get_path_parts() -> None:
+    assert get_path_parts("") == []
+    assert get_path_parts("/hello//") == ["hello"]
+    assert get_path_parts("this/is/my/path") == ["this", "is", "my", "path"]
+    assert get_path_parts(" ") == [" "]
+    assert get_path_parts("/") == [""]
+
+
+def test_is_path_var() -> None:
+    assert is_path_var("{hello}") is True
+    assert is_path_var("{hello") is False
+    assert is_path_var("hello") is False
+    assert is_path_var("  {hello}  ") is True
+
+
+def test_get_path_var_name() -> None:
+    assert get_path_var_name("no var") is None
+    assert get_path_var_name("{my_var}") == "my_var"
+    assert get_path_var_name("  {my_var  }") == "my_var"
+
+
+def test_get_path_var_names() -> None:
+    assert get_path_var_names("hello/my/path") == []
+    assert get_path_var_names("hello/{var1}/my/path/{var2}") == ["var1", "var2"]
+
+
+def test_get_non_var_path_parts() -> None:
+    assert get_non_var_path_parts("hello/my/path") == ["hello", "my", "path"]
+    assert get_non_var_path_parts("hello/{var1}/my/path/{var2}") == ["hello", "my", "path"]

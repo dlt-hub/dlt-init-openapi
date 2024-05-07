@@ -1,5 +1,5 @@
 import os.path
-from typing import Dict, Iterable, List, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 
 def table_names_from_paths(paths: Iterable[str]) -> Dict[str, str]:
@@ -95,10 +95,29 @@ def find_longest_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, .
 
 def get_path_parts(path: str) -> List[str]:
     """convert path into parts"""
+    if not path:
+        return []
     return path.strip("/").split("/")
 
 
-def is_var_part(part: str) -> bool:
+def is_path_var(part: str) -> bool:
     """check if a part is path var"""
     part = part.strip()
     return len(part) > 1 and part[0] == "{" and part[-1] == "}"
+
+
+def get_path_var_name(part: str) -> Optional[str]:
+    """extract var name from path part"""
+    if not is_path_var(part):
+        return None
+    return part.strip()[1:-1].strip()
+
+
+def get_path_var_names(path: str) -> List[str]:
+    """get all path var names in order"""
+    return [get_path_var_name(part) for part in get_path_parts(path) if is_path_var(part)]
+
+
+def get_non_var_path_parts(path: str) -> List[str]:
+    """get all parts of a path that are not vars"""
+    return [part for part in get_path_parts(path) if not is_path_var(part)]

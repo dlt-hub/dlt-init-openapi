@@ -19,24 +19,27 @@ def detect_primary_key_by_name(
     if path_vars := paths.get_path_var_names(path):
         probable_names.append(path_vars[-1])
 
-    # gather some words from model name and url and create variations
+    # gather some base words from model name and url and create variations
     words = []
 
     # model name is a good hint
     if model_name:
-        words.extend(get_word_variations(model_name))
+        words.append(model_name)
 
     # last non path var element is a good basename
-    # TODO: maybe only take if we think this is a collection endpoint?
+    # TODO: maybe only take if we think this is not collection endpoint?
     if non_var_parts := paths.get_non_var_path_parts(path):
-        words.extend(get_word_variations(non_var_parts[-1]))
+        words.append(non_var_parts[-1])
 
     # build primary key candidates
     for word in words:
-        for suffix in PRIMARY_KEY_SUFFIXES:
-            for separator in PRIMARY_KEY_WORD_SEPARATORS:
-                probable_names.append(f"{word}{separator}{suffix}")
-                probable_names.append(f"{suffix}{separator}{word}")
+        for word_variation in get_word_variations(word):
+            for suffix in PRIMARY_KEY_SUFFIXES:
+                for separator in PRIMARY_KEY_WORD_SEPARATORS:
+                    probable_names.append(f"{word_variation}{separator}{suffix}")
+                    probable_names.append(f"{suffix}{separator}{word_variation}")
+
+    # TODO: resolve camelcasing / snakecasing differences
 
     for pname in probable_names:
         for candidate in candidates:

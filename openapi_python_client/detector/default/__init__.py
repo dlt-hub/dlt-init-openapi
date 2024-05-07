@@ -12,7 +12,7 @@ from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, is_path_var
+from openapi_python_client.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list
 
 from .const import (
     RE_CURSOR_PARAM,
@@ -45,20 +45,32 @@ class DefaultDetector(BaseDetector):
 
     def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
         for endpoint in endpoints.endpoints:
-            if not endpoint.parent or not endpoint.path_parameters or not endpoint.parent.payload:
+            if not endpoint.parent or not endpoint.parent.payload:
                 continue
+            ppayload = endpoint.parent.payload
 
-            # TODO: figure out which one actually is the last path param
-            param = list(endpoint.path_parameters.values())[-1]
-            prop = param.find_input_property(endpoint.parent.payload.schema, fallback="id")
+            # Find the actual last param name in the path
+            if not (path_params := get_path_var_names(endpoint.path)):
+                continue
+            param_name = path_params[-1]
 
-            if not prop:
+            # try to match the path var to a property on the parent payload
+            input_prop = None
+            for prop in ppayload.schema.all_properties:
+                if prop.name.lower() == param_name.lower():
+                    input_prop = prop
+
+            # fall back to primary key detected on the parent payload
+            if not input_prop and endpoint.parent.primary_key:
+                input_prop = ppayload.schema.all_properties_map[endpoint.parent.primary_key]
+
+            # could not detect :(
+            if not input_prop:
                 continue
 
             endpoint.detected_transformer_settings = TransformerSetting(
-                parent_endpoint=endpoint.parent,
-                parent_property=prop,
-                path_parameter=param,
+                parent_property=DataPropertyPath((input_prop.name,), input_prop.schema),
+                path_parameter_name=param_name,
             )
 
     def detect_paginators_and_responses(self, endpoints: EndpointCollection) -> None:
@@ -74,8 +86,7 @@ class DefaultDetector(BaseDetector):
 
             # with this info we can more safely detect the response payload
             if endpoint.detected_response:
-                path_suggests_list = not is_path_var(get_path_parts(endpoint.path)[-1])
-                expect_list = (endpoint.detected_pagination is not None) or path_suggests_list
+                expect_list = (endpoint.detected_pagination is not None) or path_looks_like_list(endpoint.path)
                 endpoint.detected_response.detected_payload = self.detect_response_payload(
                     endpoint.detected_response, expect_list=expect_list
                 )

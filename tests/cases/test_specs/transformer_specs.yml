@@ -9,7 +9,7 @@ servers:
 paths:
 
   #
-  # Simple collection
+  # Simple collection, match by primary key
   #
   /collection/:
     get:
@@ -49,3 +49,44 @@ paths:
                   id:
                     type: integer
                     example: 3
+
+  
+  #
+  # Simple collection, match by path var (which is not defined)
+  #
+  /users/:
+    get:
+      operationId: users
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      example: 3
+                    name: 
+                      type: string
+
+
+  /users/{user_id}:
+    get:
+      operationId: single_user
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 3
+
+  

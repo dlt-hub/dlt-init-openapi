@@ -9,6 +9,7 @@ from openapi_python_client.utils.paths import (
     get_path_var_name,
     get_path_var_names,
     is_path_var,
+    path_looks_like_list,
     table_names_from_paths,
 )
 
@@ -112,3 +113,9 @@ def test_get_path_var_names() -> None:
 def test_get_non_var_path_parts() -> None:
     assert get_non_var_path_parts("hello/my/path") == ["hello", "my", "path"]
     assert get_non_var_path_parts("hello/{var1}/my/path/{var2}") == ["hello", "my", "path"]
+
+
+def test_path_looks_like_list() -> None:
+    assert path_looks_like_list("") is False
+    assert path_looks_like_list("hello/{var1}/my/path/{var2}") is False
+    assert path_looks_like_list("hello/{var1}/my/path/") is True

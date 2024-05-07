@@ -121,3 +121,11 @@ def get_path_var_names(path: str) -> List[str]:
 def get_non_var_path_parts(path: str) -> List[str]:
     """get all parts of a path that are not vars"""
     return [part for part in get_path_parts(path) if not is_path_var(part)]
+
+
+def path_looks_like_list(path: str) -> bool:
+    """check to see if we think the path may be a list endpoint"""
+    if not (parts := get_path_parts(path)):
+        return False
+    # if the last path part is not var, this could be a list
+    return not is_path_var(parts[-1])

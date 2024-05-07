@@ -35,3 +35,20 @@ def test_simple_transformer(transformers: Dict[str, Any]) -> None:
             "params": {"collection_id": {"type": "resolve", "resource": "collections", "field": "id"}},
         },
     }
+
+
+def test_match_by_path_var_only(transformers: Dict[str, Any]) -> None:
+    assert transformers["users"] == {
+        "name": "users",
+        "primary_key": "user_id",
+        "endpoint": {"data_selector": "$", "path": "/users/"},
+    }
+    assert transformers["single_user"] == {
+        "name": "single_user",
+        "primary_key": "user_id",
+        "endpoint": {
+            "data_selector": "$",
+            "path": "/users/{user_id}",
+            "params": {"user_id": {"type": "resolve", "resource": "users", "field": "user_id"}},
+        },
+    }

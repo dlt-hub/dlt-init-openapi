@@ -9,20 +9,19 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, is_path_var, table_names_from_paths
+from openapi_python_client.utils.paths import get_path_parts, path_looks_like_list, table_names_from_paths
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 
 
 @dataclass
 class TransformerSetting:
-    parent_endpoint: Endpoint
-    path_parameter: Parameter
+    path_parameter_name: str
     parent_property: DataPropertyPath
 
     @property
     def path_params_mapping(self) -> Dict[str, str]:
-        return {self.path_parameter.name: self.parent_property.json_path}
+        return {self.path_parameter_name: self.parent_property.json_path}
 
 
 @dataclass
@@ -64,14 +63,12 @@ class Endpoint:
 
     @property
     def payload(self) -> Optional[DataPropertyPath]:
-        if not self.detected_response:
-            return None
-        return self.detected_response.detected_payload
+        return self.detected_response.detected_payload if self.detected_response else None
 
     @property
     def is_list(self) -> bool:
         """if we know the payload, we can discover from there, if not assume list if last path part is not arg"""
-        return self.payload.is_list if self.payload else (not is_path_var(self.path_parts[-1]))
+        return self.payload.is_list if self.payload else path_looks_like_list(self.path)
 
     @property
     def parent(self) -> Optional["Endpoint"]:

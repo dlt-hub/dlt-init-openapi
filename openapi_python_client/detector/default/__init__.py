@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.detectors.base_detector import BaseDetector
+from openapi_python_client.detector.base_detector import BaseDetector
 from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser

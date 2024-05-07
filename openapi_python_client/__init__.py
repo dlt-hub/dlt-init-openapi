@@ -255,7 +255,7 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     openapi.parse()
     log.info("Parsing completed")
     log.info("Running detector")
-    from openapi_python_client.detectors.default import DefaultDetector
+    from openapi_python_client.detector.default import DefaultDetector
 
     detector = DefaultDetector()
     detector.run(openapi)

@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import pytest
 
-from openapi_python_client.parser.paths import find_longest_common_prefix, table_names_from_paths
+from openapi_python_client.utils.paths import find_longest_common_prefix, table_names_from_paths
 
 
 def test_table_names_from_paths_prefixed() -> None:

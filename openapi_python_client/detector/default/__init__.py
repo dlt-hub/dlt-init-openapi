@@ -11,7 +11,7 @@ from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.parser.paths import get_path_parts, is_var_part
+from openapi_python_client.utils.paths import get_path_parts, is_var_part
 
 from .const import (
     RE_CURSOR_PARAM,

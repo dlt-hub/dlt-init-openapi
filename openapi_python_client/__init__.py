@@ -11,7 +11,7 @@ from typing import Optional
 
 from jinja2 import BaseLoader, ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 
-from openapi_python_client import utils
+from openapi_python_client.utils import misc
 
 from .config import Config
 from .parser.openapi_parser import OpenapiParser
@@ -31,9 +31,9 @@ class MetaType(str, Enum):
 
 
 TEMPLATE_FILTERS = {
-    "snakecase": utils.snake_case,
-    "kebabcase": utils.kebab_case,
-    "pascalcase": utils.pascal_case,
+    "snakecase": misc.snake_case,
+    "kebabcase": misc.kebab_case,
+    "pascalcase": misc.pascal_case,
     "any": any,
 }
 
@@ -77,7 +77,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
             keep_trailing_newline=True,
         )
 
-        project_name_base: str = config.project_name_override or f"{utils.kebab_case(openapi.info.title).lower()}"
+        project_name_base: str = config.project_name_override or f"{misc.kebab_case(openapi.info.title).lower()}"
         self.project_name = project_name_base + config.project_name_suffix
         self.package_name: str = config.package_name_override or self.project_name
 
@@ -89,15 +89,15 @@ class Project:  # pylint: disable=too-many-instance-attributes
         self.project_dir /= self.project_name
 
         self.package_dir: Path = self.project_dir / self.package_name
-        self.package_description: str = utils.remove_string_escapes(
+        self.package_description: str = misc.remove_string_escapes(
             f"A pipeline to load data from {self.openapi.info.title}"
         )
         self.version: str = config.package_version_override or openapi.info.version
 
         self.env.filters.update(TEMPLATE_FILTERS)
         self.env.globals.update(
-            utils=utils,
-            class_name=lambda x: utils.ClassName(x, config.field_prefix),
+            utils=misc,
+            class_name=lambda x: misc.ClassName(x, config.field_prefix),
             package_name=self.package_name,
             package_dir=self.package_dir,
             package_description=self.package_description,

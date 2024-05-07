@@ -6,7 +6,7 @@ import referencing
 import referencing.jsonschema
 
 from openapi_python_client.parser.config import Config
-from openapi_python_client.utils import ClassName
+from openapi_python_client.utils.misc import ClassName
 
 TComponentClass = Union[
     osp.Schema,

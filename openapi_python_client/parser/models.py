@@ -10,7 +10,7 @@ from dlt.common.utils import digest128
 
 from openapi_python_client.parser.properties.converter import convert
 from openapi_python_client.parser.types import DataType, TOpenApiType
-from openapi_python_client.utils import unique_list
+from openapi_python_client.utils.misc import unique_list
 
 if TYPE_CHECKING:
     from openapi_python_client.parser.context import OpenapiContext

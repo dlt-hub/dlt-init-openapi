@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, Iterable, Optional
 
 from dateutil.parser import isoparse
 
-from ... import utils
+from ...utils import misc
 from ..errors import ValidationError
 
 
@@ -58,7 +58,7 @@ def convert_chain(type_strings: Iterable[str], value: Any) -> Optional[Any]:
 
 def _convert_string(value: Any) -> Optional[str]:
     if isinstance(value, str):
-        value = utils.remove_string_escapes(value)
+        value = misc.remove_string_escapes(value)
     return repr(value)
 
 

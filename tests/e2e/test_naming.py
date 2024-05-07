@@ -5,7 +5,7 @@ from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
 def test_model_naming() -> None:
     auth_case = get_naming_case_path("entity_naming_spec.yml")
     source_dict = get_dict_from_open_api(auth_case, force_operation_naming=False)
-    assert [r["name"] for r in source_dict["resources"]] == ["Pokemon", "MyModel", "dog"]  # type: ignore
+    assert [r["name"] for r in source_dict["resources"]] == ["MyModel", "Pokemon", "dog"]  # type: ignore
     get_source_from_open_api(auth_case)
 
 

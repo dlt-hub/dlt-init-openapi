@@ -56,6 +56,9 @@ class DefaultDetector(BaseDetector):
         # finally detect resource names
         self.detect_resource_names(open_api.endpoints)
 
+        # and sort resources by table name
+        open_api.endpoints.endpoints.sort(key=lambda e: e.detected_table_name)
+
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""
 
@@ -73,6 +76,7 @@ class DefaultDetector(BaseDetector):
                 if len(parts):
                     name = parts[-1]
             endpoint.detected_resource_name = name
+            endpoint.detected_table_name = name
 
         if resource_names_are_disctinct() and not self.force_operation_naming:
             return
@@ -81,6 +85,8 @@ class DefaultDetector(BaseDetector):
         path_table_names = table_names_from_paths([e.path for e in endpoints.endpoints])
         for e in endpoints.endpoints:
             e.detected_resource_name = path_table_names[e.path]
+            if not e.detected_table_name:
+                e.detected_table_name = path_table_names[e.path]
         if resource_names_are_disctinct() and not self.force_operation_naming:
             return
 

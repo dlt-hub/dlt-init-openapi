@@ -112,8 +112,8 @@ class Project:  # pylint: disable=too-many-instance-attributes
     def build(self) -> None:
         """Create the project from templates"""
         if self.endpoint_filter:
-            endpoint_names = self.endpoint_filter(self.openapi.endpoints)
-            self.openapi.endpoints.set_names_to_render(endpoint_names)
+            render, deselect = self.endpoint_filter(self.openapi.endpoints)
+            self.openapi.endpoints.set_names_to_render(render, deselect)
         if self.meta == MetaType.NONE:
             print(f"Generating {self.package_name}")
         else:

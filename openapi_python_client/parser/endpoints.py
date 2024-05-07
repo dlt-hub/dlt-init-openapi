@@ -53,6 +53,7 @@ class Endpoint:
     detected_pagination: Optional[Pagination] = None
     detected_response: Optional[Response] = None
     detected_resource_name: Optional[str] = None
+    detected_table_name: Optional[str] = None
     detected_parent: Optional["Endpoint"] = None
     detected_children: List["Endpoint"] = field(default_factory=list)
     detected_transformer_settings: Optional[TransformerSetting] = None
@@ -141,24 +142,28 @@ class Endpoint:
 @dataclass
 class EndpointCollection:
     endpoints: List[Endpoint]
-    names_to_render: Optional[Set[str]] = None
+    names_to_render: Set[str] = field(default_factory=set)
+    names_to_deselect: Set[str] = field(default_factory=set)
 
     @property
     def all_endpoints_to_render(self) -> List[Endpoint]:
-        """get all endpoints we want to render
-        TODO: render parent child relationships correctly
-        """
+        """get all endpoints we want to render"""
         if not self.names_to_render:
             return self.endpoints
         return [e for e in self.endpoints if e.detected_resource_name in self.names_to_render]
+
+    @property
+    def all_endpoints_for_selector(self) -> List[Endpoint]:
+        pass
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
         """Endpoints by path"""
         return {ep.path: ep for ep in self.endpoints}
 
-    def set_names_to_render(self, names: Set[str]) -> None:
-        self.names_to_render = names
+    def set_names_to_render(self, render: Set[str], deselect: Set[str]) -> None:
+        self.names_to_render = render
+        self.names_to_deselect = deselect
 
     @classmethod
     def from_context(cls, context: OpenapiContext) -> "EndpointCollection":

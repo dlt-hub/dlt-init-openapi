@@ -30,6 +30,9 @@ def {{ source_name }}(
             "name": "{{ endpoint.detected_resource_name }}",
             {% if endpoint.primary_key %}
             "primary_key": "{{ endpoint.primary_key }}",
+            {% if endpoint.detected_resource_name in endpoint_collection.names_to_deselect %}
+            "selected": False,
+            {% endif %}
             {% endif %}
             "endpoint": {
                 "data_selector": "{{ endpoint.data_json_path }}",

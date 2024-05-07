@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 import openapi_schema_pydantic as osp
 
 from openapi_python_client.detector.base_detector import BaseDetector
+from openapi_python_client.detector.default import utils
 from openapi_python_client.detector.default.primary_key import detect_primary_key_by_name
 from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
@@ -24,7 +25,7 @@ from .const import (
     RE_UNIQUE_KEY,
 )
 
-Tree = Dict[str, Union["Endpoint", "Tree"]]
+Tree = Dict[str, Union["str", "Tree"]]
 
 
 class DefaultDetector(BaseDetector):
@@ -272,37 +273,43 @@ class DefaultDetector(BaseDetector):
         return None
 
     def detect_parent_child_relationships(self, endpoints: EndpointCollection) -> None:
-        """detect parent child relationships based on path
-        TODO: also discover /pokemons -> /pokemon/{id}
-        """
+        """detect parent child relationships based on path"""
         ENDPOINT_MARKER = "<endpoint>"
+
+        # save a map
+        endpoint_map = endpoints.endpoints_by_path
+
+        # determine if we can use normalized path parts, this means we singularize all
+        # non param parts to be able to detect a relationship like /pokemons -> /pokemon/{id}
+        singularized_paths = {"/".join(utils.singularized_path_parts(p)) for p in endpoint_map.keys()}
+        can_singularize = len(singularized_paths) == len(endpoint_map.keys())
 
         # build endpoint tree
         tree: Tree = {}
         for endpoint in endpoints.endpoints:
             current_node = tree
-            for part in endpoint.path_parts:
+            parts = utils.singularized_path_parts(endpoint.path) if can_singularize else get_path_parts(endpoint.path)
+            for part in parts:
                 if part not in current_node:
                     current_node[part] = {}
                 current_node = current_node[part]  # type: ignore
-            current_node[ENDPOINT_MARKER] = endpoint
+            current_node[ENDPOINT_MARKER] = endpoint.path
 
-        print(tree)
-
-        def find_nearest_list_parent(path: str) -> Optional[Endpoint]:
-            parts = get_path_parts(path)
+        def find_nearest_list_parent(endpoint: Endpoint) -> Optional[Endpoint]:
+            parts = utils.singularized_path_parts(endpoint.path) if can_singularize else get_path_parts(endpoint.path)
             while parts:
                 current_node = tree
                 parts.pop()
                 for part in parts:
                     current_node = current_node[part]  # type: ignore[assignment]
-                if parent_endpoint := current_node.get(ENDPOINT_MARKER):
-                    if cast(Endpoint, parent_endpoint).is_list:
-                        return cast(Endpoint, parent_endpoint)
+                if parent_endpoint_path := cast(str, current_node.get(ENDPOINT_MARKER)):
+                    found_endpoint = endpoint_map[parent_endpoint_path]
+                    if found_endpoint.is_list:
+                        return found_endpoint
             return None
 
         # link endpoints
         for endpoint in endpoints.endpoints:
-            endpoint.detected_parent = find_nearest_list_parent(endpoint.path)
+            endpoint.detected_parent = find_nearest_list_parent(endpoint)
             if endpoint.detected_parent:
                 endpoint.detected_parent.detected_children.append(endpoint)

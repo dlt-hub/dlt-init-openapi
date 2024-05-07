@@ -89,4 +89,43 @@ paths:
                     type: integer
                     example: 3
 
+
+  #
+  # Simple collection,test matching singularized paths
+  #
+  /invoices/:
+    get:
+      operationId: invoices
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    invoice_id:
+                      type: integer
+                      example: 3
+                    name: 
+                      type: string
+
+
+  /invoice/{invoice_id}:
+    get:
+      operationId: single_invoice
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invoice_id:
+                    type: integer
+                    example: 3
+
   

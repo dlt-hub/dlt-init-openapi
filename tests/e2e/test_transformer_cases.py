@@ -52,3 +52,20 @@ def test_match_by_path_var_only(transformers: Dict[str, Any]) -> None:
             "params": {"user_id": {"type": "resolve", "resource": "users", "field": "user_id"}},
         },
     }
+
+
+def test_match_singularized_path(transformers: Dict[str, Any]) -> None:
+    assert transformers["invoices"] == {
+        "name": "invoices",
+        "primary_key": "invoice_id",
+        "endpoint": {"data_selector": "$", "path": "/invoices/"},
+    }
+    assert transformers["single_invoice"] == {
+        "name": "single_invoice",
+        "primary_key": "invoice_id",
+        "endpoint": {
+            "data_selector": "$",
+            "path": "/invoice/{invoice_id}",
+            "params": {"invoice_id": {"type": "resolve", "resource": "invoices", "field": "invoice_id"}},
+        },
+    }

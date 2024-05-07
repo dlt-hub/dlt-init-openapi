@@ -11,7 +11,7 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Tuple[Set[s
     prev_table_name = ""
     for endpoint in endpoints.all_endpoints_to_render:
         if prev_table_name != endpoint.detected_table_name:
-            choices.append(questionary.Separator(f"\n{endpoint.detected_resource_name} endpoints:\n"))
+            choices.append(questionary.Separator(f"\n{endpoint.detected_table_name} endpoints:\n"))
         prev_table_name = endpoint.detected_table_name
         text = [
             ("bold", str(endpoint.detected_resource_name)),

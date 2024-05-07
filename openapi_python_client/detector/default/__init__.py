@@ -180,7 +180,7 @@ class DefaultDetector(BaseDetector):
         """Get main response and pagination for endpoint"""
 
         # find main response in list of responses
-        main_ref: Union[osp.Reference, osp.Response]
+        main_ref: Union[osp.Reference, osp.Response] = None
         for status_code, response_ref in endpoint.osp_operation.responses.items() or []:
             if status_code in ["200", "default"]:
                 main_ref = response_ref

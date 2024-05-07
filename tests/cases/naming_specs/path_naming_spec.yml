@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: 'pagination'
+  version: 1.0.0
+  description: 'test naming by entity name'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+
+  # model collission so name is built from path
+  /pokemon_1234/:
+    get:
+      operationId: pokemon_1234
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+
+  # test resolution from model ref
+  /my_model_1234/{hello}/other_component:
+    get:
+      operationId: my_model_1234
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+
+
+  # test resolution by path component
+  /dogs/:
+    get:
+      operationId: dogs
+      responses:
+        '200':
+          description: OK
+
+
+ 
+components:
+  schemas:
+    Pokemon:
+      title: RealPokemon
+      type: object
+      properties:
+        id:
+          type: integer
+        name: 
+          type: string
+

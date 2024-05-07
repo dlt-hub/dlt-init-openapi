@@ -9,7 +9,7 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_var_names, path_looks_like_list, table_names_from_paths
+from openapi_python_client.utils.paths import get_path_var_names, path_looks_like_list
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 
@@ -49,14 +49,10 @@ class Endpoint:
     path_description: Optional[str] = None
     """Description applying to all methods of the path"""
 
-    # inferred values
-    path_table_name: Optional[str] = None
-    """Table name inferred from path"""
-
     # detected values
     detected_pagination: Optional[Pagination] = None
     detected_response: Optional[Response] = None
-    detected_resource_name: Optional[str] = None  # TODO
+    detected_resource_name: Optional[str] = None
     detected_parent: Optional["Endpoint"] = None
     detected_children: List["Endpoint"] = field(default_factory=list)
     detected_transformer_settings: Optional[TransformerSetting] = None
@@ -86,10 +82,6 @@ class Endpoint:
     @property
     def pagination_args(self) -> Optional[Dict[str, Union[str, int]]]:
         return self.detected_pagination.paginator_config if self.detected_pagination else None
-
-    @property
-    def table_name(self) -> str:
-        return self.payload.name if (self.payload and self.payload.name) else self.path_table_name
 
     @property
     def data_json_path(self) -> str:
@@ -122,7 +114,6 @@ class Endpoint:
         method: TMethod,
         path: str,
         osp_operation: osp.Operation,
-        path_table_name: str,
         path_level_parameters: List[Parameter],
         path_summary: Optional[str],
         path_description: Optional[str],
@@ -139,7 +130,6 @@ class Endpoint:
             path=path,
             osp_operation=osp_operation,
             parameters=all_params,
-            path_table_name=path_table_name,
             operation_id=osp_operation.operationId or f"{method}_{path}",
             summary=osp_operation.summary,
             description=osp_operation.description,
@@ -160,7 +150,7 @@ class EndpointCollection:
         """
         if not self.names_to_render:
             return self.endpoints
-        return [e for e in self.endpoints if e.operation_id in self.names_to_render]
+        return [e for e in self.endpoints if e.detected_resource_name in self.names_to_render]
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
@@ -173,8 +163,6 @@ class EndpointCollection:
     @classmethod
     def from_context(cls, context: OpenapiContext) -> "EndpointCollection":
         endpoints: list[Endpoint] = []
-        endpoint_paths = list(context.spec.paths)
-        path_table_names = table_names_from_paths(endpoint_paths)
         for path, path_item in context.spec.paths.items():
             for op_name in context.config.include_methods:
                 if not (operation := getattr(path_item, op_name)):
@@ -184,7 +172,6 @@ class EndpointCollection:
                         method=cast(TMethod, op_name.upper()),
                         path=path,
                         osp_operation=operation,
-                        path_table_name=path_table_names[path],
                         path_level_parameters=[
                             Parameter.from_reference(param, context) for param in path_item.parameters or []
                         ],

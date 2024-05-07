@@ -249,6 +249,7 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     custom_template_path: Optional[Path] = None,
     file_encoding: str = "utf-8",
     endpoint_filter: Optional[TEndpointFilter] = None,
+    force_operation_naming: bool = True,
 ) -> Project:
     openapi = OpenapiParser(url or path, config=config)
     log.info("Parse spec")
@@ -257,7 +258,7 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     log.info("Running detector")
     from openapi_python_client.detector.default import DefaultDetector
 
-    detector = DefaultDetector()
+    detector = DefaultDetector(force_operation_naming=force_operation_naming)
     detector.run(openapi)
     return Project(
         openapi=openapi,

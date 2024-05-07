@@ -15,23 +15,21 @@ def table_names_from_paths(paths: Iterable[str]) -> Dict[str, str]:
     # Remove common prefix for endpoints. For example  all paths might
     # start with /api/v2 and we don't want this to be part of the name
     paths = list(paths)
-    if not paths:
+    if not (paths := list(paths)):
         return {}
-    if len(paths) > 1:
-        api_prefix = os.path.commonpath(paths)
-        norm_paths = [p.removeprefix(api_prefix) for p in paths]
-    else:
-        norm_paths = paths
+
+    # normalize paths
+    api_prefix = os.path.commonpath(paths)
+    norm_paths = [p.removeprefix(api_prefix) for p in paths]
 
     # Get all path components without slashes and without {parameters}
-    split_paths = [[p for p in path.split("/") if p and not p.startswith("{")] for path in norm_paths]
+    split_paths = [get_non_var_path_parts(path) for path in norm_paths]
 
     return {key: "_".join(value) for key, value in zip(paths, split_paths)}
 
 
 def find_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, ...]:
-    paths = list(paths)
-    if not paths:
+    if not (paths := list(paths)):
         return ()
 
     common_prefix = list(paths[0])
@@ -46,13 +44,6 @@ def find_common_prefix(paths: Iterable[Tuple[str, ...]]) -> Tuple[str, ...]:
                 # As soon as a mismatch is found, break the loop
                 break
         common_prefix = new_prefix
-
-    # for path in paths[1:]:
-    #     # Compare the current common prefix with the next path
-    #     # Truncate the common prefix or keep it as is
-    #     common_prefix = [
-    #         common_prefix[i] for i in range(min(len(common_prefix), len(path))) if common_prefix[i] == path[i]
-    #     ]
 
     return tuple(common_prefix)
 

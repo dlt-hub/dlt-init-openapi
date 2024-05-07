@@ -15,7 +15,7 @@ LOCAL_DIR = "tests/_local/"
 
 
 def get_source_or_dict_from_open_api(
-    case: str, rt: Literal["source", "dict"] = "source", base_url: str = "base_url"
+    case: str, rt: Literal["source", "dict"] = "source", base_url: str = "base_url", force_operation_naming: bool = True
 ) -> Union[DltSource, RESTAPIConfig]:
     """
     This function renders the source into a string and returns the extracted
@@ -34,7 +34,7 @@ Oauth20Credentials = Any
     config.project_name_override = "test"
     config.package_name_override = "test"
     project = _get_project_for_url_or_path(
-        url=None, path=case, custom_template_path="../openapi_python_client/template", config=config  # type: ignore
+        url=None, path=case, custom_template_path="../openapi_python_client/template", config=config, force_operation_naming=force_operation_naming  # type: ignore
     )
     source = project._render_source()
 
@@ -66,12 +66,17 @@ Oauth20Credentials = Any
     return cast(DltSource, module.test_source())
 
 
-def get_source_from_open_api(case: str, base_url: str = "base_url") -> DltSource:
-    return cast(DltSource, get_source_or_dict_from_open_api(case, "source", base_url))
+def get_source_from_open_api(case: str, base_url: str = "base_url", force_operation_naming: bool = False) -> DltSource:
+    return cast(
+        DltSource,
+        get_source_or_dict_from_open_api(case, "source", base_url, force_operation_naming=force_operation_naming),
+    )
 
 
-def get_dict_from_open_api(case: str, validate: bool = True) -> RESTAPIConfig:
-    api_dict = cast(RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict"))
+def get_dict_from_open_api(case: str, validate: bool = True, force_operation_naming: bool = True) -> RESTAPIConfig:
+    api_dict = cast(
+        RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict", force_operation_naming=force_operation_naming)
+    )
     api_dict["client"]["base_url"] = "something"
     if validate:
         validate_dict(RESTAPIConfig, api_dict, path=".")

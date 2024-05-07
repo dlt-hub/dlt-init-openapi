@@ -27,7 +27,7 @@ def {{ source_name }}(
         [
         {% for endpoint in endpoint_collection.all_endpoints_to_render %}
         {
-            "name": "{{ endpoint.operation_id }}",
+            "name": "{{ endpoint.detected_resource_name }}",
             {% if endpoint.primary_key %}
             "primary_key": "{{ endpoint.primary_key }}",
             {% endif %}
@@ -40,7 +40,7 @@ def {{ source_name }}(
                     {% for key, value in endpoint.transformer.path_params_mapping.items()%}
                     "{{key}}": {
                         "type": "resolve",
-                        "resource": "{{endpoint.parent.operation_id }}",
+                        "resource": "{{endpoint.parent.detected_resource_name }}",
                         "field": "{{value}}",
                     },
                     {% endfor %}

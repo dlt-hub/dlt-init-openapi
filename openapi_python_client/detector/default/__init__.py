@@ -13,7 +13,12 @@ from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list
+from openapi_python_client.utils.paths import (
+    get_path_parts,
+    get_path_var_names,
+    path_looks_like_list,
+    table_names_from_paths,
+)
 
 from .const import (
     RE_CURSOR_PARAM,
@@ -31,6 +36,10 @@ Tree = Dict[str, Union["str", "Tree"]]
 class DefaultDetector(BaseDetector):
     context: OpenapiContext
 
+    def __init__(self, force_operation_naming: bool = True) -> None:
+        # forces naming to fallback to operation naming for testing
+        self.force_operation_naming = force_operation_naming
+
     def run(self, open_api: OpenapiParser) -> None:
         """Run the detector"""
         self.context = open_api.context
@@ -43,6 +52,41 @@ class DefaultDetector(BaseDetector):
 
         # detect the mapping for mapping parent result values onto child path
         self.detect_transformer_settings(open_api.endpoints)
+
+        # finally detect resource names
+        self.detect_resource_names(open_api.endpoints)
+
+    def detect_resource_names(self, endpoints: EndpointCollection) -> None:
+        """iterate all endpoints and find a strategy to select the right resource name"""
+
+        def resource_names_are_disctinct() -> bool:
+            """checks wether detected resource names are unique across all endpoints"""
+            return len(endpoints.endpoints) == len({e.detected_resource_name for e in endpoints.endpoints})
+
+        # best strategy is to use the entity name as resource name
+        for endpoint in endpoints.endpoints:
+            # try to use the name of the payload
+            name = endpoint.payload.name if endpoint.payload else None
+            # try to use the singularized last path element
+            if not name:
+                parts = utils.singularized_path_parts(endpoint.path)
+                if len(parts):
+                    name = parts[-1]
+            endpoint.detected_resource_name = name
+
+        if resource_names_are_disctinct() and not self.force_operation_naming:
+            return
+
+        # now we try to build resource names from the path
+        path_table_names = table_names_from_paths([e.path for e in endpoints.endpoints])
+        for e in endpoints.endpoints:
+            e.detected_resource_name = path_table_names[e.path]
+        if resource_names_are_disctinct() and not self.force_operation_naming:
+            return
+
+        # last resort, we use the operation id, this should not happen really though
+        for endpoint in endpoints.endpoints:
+            endpoint.detected_resource_name = endpoint.operation_id
 
     def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
         for endpoint in endpoints.endpoints:
@@ -109,7 +153,7 @@ class DefaultDetector(BaseDetector):
         if response.detected_primary_key:
             return
 
-        # now try to do additional heuristics based on descriptions
+        # now try to do additional heuristics based on descriptions and prop type
         description_paths = []
         uuid_paths = []
 

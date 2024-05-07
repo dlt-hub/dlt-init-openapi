@@ -16,7 +16,7 @@ def test_simple_poke_load() -> None:
     }
 
     # source should also work
-    dltsource = get_source_from_open_api(simple_poke, base_url="https://pokeapi.co/")
+    dltsource = get_source_from_open_api(simple_poke, base_url="https://pokeapi.co/", force_operation_naming=True)
 
     # this will actually hit the pokeapi
     dltsource.resources["pokemon_list"].add_limit(15)

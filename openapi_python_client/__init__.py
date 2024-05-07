@@ -161,7 +161,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
             # Remove default server
             first_server = None
 
-        config_template = self.env.get_template("dlt_config.toml.jinja")
+        config_template = self.env.get_template("dlt_config.toml.j2")
         config_path = config_dir / "config.toml"
         config_path.write_text(
             config_template.render(
@@ -180,7 +180,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
 
         # README.md
         readme = self.project_dir / "README.md"
-        readme_template = self.env.get_template("README.md.jinja")
+        readme_template = self.env.get_template("README.md.j2")
         readme.write_text(
             readme_template.render(),
             encoding=self.file_encoding,
@@ -188,16 +188,16 @@ class Project:  # pylint: disable=too-many-instance-attributes
 
         # .gitignore
         git_ignore_path = self.project_dir / ".gitignore"
-        git_ignore_template = self.env.get_template(".gitignore.jinja")
+        git_ignore_template = self.env.get_template(".gitignore.j2")
         git_ignore_path.write_text(git_ignore_template.render(), encoding=self.file_encoding)
 
         # requirements.txt
         requirements_path = self.project_dir / "requirements.txt"
-        requirements_template = self.env.get_template("requirements.txt.jinja")
+        requirements_template = self.env.get_template("requirements.txt.j2")
         requirements_path.write_text(requirements_template.render(), encoding=self.file_encoding)
 
     def _build_pyproject_toml(self, *, use_poetry: bool) -> None:
-        template = "pyproject.toml.jinja"
+        template = "pyproject.toml.j2"
         pyproject_template = self.env.get_template(template)
         pyproject_path = self.project_dir / "pyproject.toml"
         pyproject_path.write_text(
@@ -206,7 +206,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
         )
 
     def _build_setup_py(self) -> None:
-        template = self.env.get_template("setup.py.jinja")
+        template = self.env.get_template("setup.py.j2")
         path = self.project_dir / "setup.py"
         path.write_text(
             template.render(),
@@ -221,7 +221,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
         )
 
     def _render_source(self) -> str:
-        template = self.env.get_template("source.py.jinja")
+        template = self.env.get_template("source.py.j2")
         return template.render(
             source_name=self.source_name,
             endpoint_collection=self.openapi.endpoints,
@@ -232,7 +232,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
     def _build_pipeline(self) -> None:
         module_path = self.project_dir / "pipeline.py"
 
-        template = self.env.get_template("pipeline.py.jinja")
+        template = self.env.get_template("pipeline.py.j2")
         module_path.write_text(
             template.render(
                 package_name=self.package_name, source_name=self.source_name, dataset_name=self.dataset_name

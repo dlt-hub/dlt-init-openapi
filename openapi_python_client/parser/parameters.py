@@ -18,7 +18,6 @@ class Parameter:
     osp_parameter: osp.Parameter
     required: bool
     location: TParamIn
-    explode: bool
     style: Optional[str] = None
 
     @property
@@ -79,6 +78,5 @@ class Parameter:
             schema=schema,
             location=cast(TParamIn, location),
             required=required,
-            explode=osp_parameter.explode or False,
             style=osp_parameter.style,
         )

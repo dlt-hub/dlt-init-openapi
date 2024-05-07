@@ -9,7 +9,7 @@ from openapi_python_client.parser.context import OpenapiContext
 from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
 from openapi_python_client.parser.pagination import Pagination
 from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_parts, path_looks_like_list, table_names_from_paths
+from openapi_python_client.utils.paths import get_path_var_names, path_looks_like_list, table_names_from_paths
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 
@@ -63,6 +63,7 @@ class Endpoint:
 
     @property
     def payload(self) -> Optional[DataPropertyPath]:
+        """gets payload dataproperty path if detected"""
         return self.detected_response.detected_payload if self.detected_response else None
 
     @property
@@ -79,40 +80,12 @@ class Endpoint:
         return self.detected_response.detected_primary_key if self.detected_response else None
 
     @property
-    def path_parts(self) -> List[str]:
-        return get_path_parts(self.path)
-
-    @property
-    def path_parameters(self) -> Dict[str, Parameter]:
-        return {p.name: p for p in self.parameters.values() if p.location == "path"}
-
-    @property
     def list_all_parameters(self) -> List[Parameter]:
         return list(self.parameters.values())
-
-    def positional_arguments(self) -> List[Parameter]:
-        include_path_params = not self.transformer
-        ret = (p for p in self.parameters.values() if p.required and p.default is None)
-        # exclude pagination params
-        if self.detected_pagination:
-            ret = (p for p in ret if p.name not in self.detected_pagination.param_names)
-        if not include_path_params:  # TODO, we should render the ones that are not in the transformer
-            ret = (p for p in ret if p.location != "path")
-        return list(ret)
-
-    def keyword_arguments(self) -> List[Parameter]:
-        ret = (p for p in self.parameters.values() if not p.required)
-        # exclude pagination params
-        if self.detected_pagination:
-            ret = (p for p in ret if p.name not in self.detected_pagination.param_names)
-        return list(ret)
 
     @property
     def pagination_args(self) -> Optional[Dict[str, Union[str, int]]]:
         return self.detected_pagination.paginator_config if self.detected_pagination else None
-
-    def all_arguments(self) -> List[Parameter]:
-        return self.positional_arguments() + self.keyword_arguments()
 
     @property
     def table_name(self) -> str:
@@ -125,6 +98,23 @@ class Endpoint:
     @property
     def transformer(self) -> Optional[TransformerSetting]:
         return self.detected_transformer_settings
+
+    @property
+    def unresolvable_path_param_names(self) -> List[str]:
+        """returns a list of path param names with params that are resolvable via the parent excluded"""
+        params = get_path_var_names(self.path)
+        transformer_param = self.transformer.path_parameter_name if self.transformer else None
+        return [p for p in params if p != transformer_param]
+
+    @property
+    def unresolvable_query_param_names(self) -> List[str]:
+        """returns a list of required query param names with params that are used by the paginator excluded"""
+        paginator_params = self.detected_pagination.param_names if self.detected_pagination else []
+        query_param_names = []
+        for param in self.list_all_parameters:
+            if param.name not in paginator_params and param.location == "query" and param.required:
+                query_param_names.append(param.name)
+        return query_param_names
 
     @classmethod
     def from_operation(
@@ -177,15 +167,6 @@ class EndpointCollection:
         """Endpoints by path"""
         return {ep.path: ep for ep in self.endpoints}
 
-    @property
-    def root_endpoints(self) -> List[Endpoint]:
-        """Endpoints we can run without path params"""
-        return [e for e in self.all_endpoints_to_render if not e.path_parameters]
-
-    @property
-    def transformer_endpoints(self) -> List[Endpoint]:
-        return [e for e in self.all_endpoints_to_render if e.transformer]
-
     def set_names_to_render(self, names: Set[str]) -> None:
         self.names_to_render = names
 
@@ -200,14 +181,16 @@ class EndpointCollection:
                     continue
                 endpoints.append(
                     Endpoint.from_operation(
-                        cast(TMethod, op_name.upper()),
-                        path,
-                        operation,
-                        path_table_names[path],
-                        [Parameter.from_reference(param, context) for param in path_item.parameters or []],
-                        path_item.summary,
-                        path_item.description,
-                        context,
+                        method=cast(TMethod, op_name.upper()),
+                        path=path,
+                        osp_operation=operation,
+                        path_table_name=path_table_names[path],
+                        path_level_parameters=[
+                            Parameter.from_reference(param, context) for param in path_item.parameters or []
+                        ],
+                        path_summary=path_item.summary,
+                        path_description=path_item.description,
+                        context=context,
                     )
                 )
         return cls(endpoints=endpoints)

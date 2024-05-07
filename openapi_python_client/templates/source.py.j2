@@ -34,14 +34,22 @@ def {{ source_name }}(
             "endpoint": {
                 "data_selector": "{{ endpoint.data_json_path }}",
                 "path": "{{endpoint.path }}",
-                {% if endpoint.transformer %}
+                {% if endpoint.transformer or endpoint.unresolvable_path_param_names or endpoint.unresolvable_query_param_names %}
                 "params": {
+                    {% if endpoint.transformer %}
                     {% for key, value in endpoint.transformer.path_params_mapping.items()%}
                     "{{key}}": {
                         "type": "resolve",
                         "resource": "{{endpoint.parent.operation_id }}",
                         "field": "{{value}}",
                     },
+                    {% endfor %}
+                    {% endif %}
+                    {% for param_name in endpoint.unresolvable_path_param_names %}
+                    "{{param_name}}": "FILL_ME_IN", # TODO: fill in required path parameter
+                    {% endfor %}
+                    {% for param_name in endpoint.unresolvable_query_param_names %}
+                    "{{param_name}}": "FILL_ME_IN", # TODO: fill in required query parameter
                     {% endfor %}
                 },
                 {% endif %}

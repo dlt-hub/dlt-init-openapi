@@ -1,0 +1,53 @@
+openapi: 3.0.2
+info:
+  title: API Teamgpt
+  version: 0.1.0
+paths:
+  "/api/companies/{uuid}/filesystem_objects":
+    get:
+      tags:
+        - FilesystemObject
+      summary: Get Filesystem Objects
+      operationId: get_filesystem_objects_api_companies__uuid__filesystem_objects_get
+      parameters:
+        - required: true
+          schema:
+            title: Uuid
+            type: string
+          name: uuid
+          in: path
+        - required: false
+          schema:
+            title: Page
+            minimum: 1
+            type: integer
+            default: 1
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Page Size
+            maximum: 100
+            minimum: 1
+            type: integer
+            default: 10
+          name: page_size
+          in: query
+        - required: false
+          schema:
+            title: Parent Directory
+            type: string
+          name: parent_directory
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: >-
+                  Response Get Filesystem Objects Api Companies  Uuid 
+                  Filesystem Objects Get
+                type: object
+servers:
+  - url: "https://api-teamgpt.workhub.ai"

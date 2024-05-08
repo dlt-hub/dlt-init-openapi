@@ -1,0 +1,552 @@
+openapi: 3.0.2
+info:
+  title: DALICC API
+  description: Data Licenses Clearance Center API
+  version: "1.0"
+paths:
+  "/licenselibrary/license/{license_id}":
+    get:
+      tags:
+        - licenselibrary
+      summary: Get License By Id
+      description: >-
+        Get the machine-readable representation of the license from the DALICC
+        license library.
+
+
+        The range of the license URIs can be listed via the
+        **licenselibrary/list** endpoint.
+
+
+        Parameters:
+
+        * _license\_id_: (type: _string_) 
+            * E.g.: **Apache-2.0**, **0BSD**, **MIT**, **MS-PL**, **CC-BY-NC-SA-4.0**, **CC-BY-3.0-NL**, **CC-BY-4.0**
+      operationId: get_license_by_id_licenselibrary_license__license_id__get
+      parameters:
+        - required: true
+          schema:
+            title: License Id
+          name: license_id
+          in: path
+        - required: false
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/LicenseFormat"
+            default: json-ld
+          name: format
+          in: query
+        - required: false
+          schema:
+            title: Download
+            type: boolean
+            default: false
+          name: download
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /licenselibrary/list:
+    get:
+      tags:
+        - licenselibrary
+      summary: List Licenses In The License Library
+      description: >-
+        Get the list of the licenses (_URI_ and _title_) stored in the license
+        library.
+
+
+        *  Parameters:
+            * _keyword_: (type: _string_) Title of the license contains _keyword_.
+            * _skip_: (type: _int_) Offsets the results by given value for paging.
+            * _limit_: (type: _int_) Limits the number of returned results.
+      operationId: list_licenses_in_the_license_library_licenselibrary_list_get
+      parameters:
+        - required: false
+          schema:
+            title: Keyword
+            type: string
+          name: keyword
+          in: query
+        - required: false
+          schema:
+            title: Skip
+            type: integer
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 10
+          name: limit
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /licenselibrary/facetedsearch:
+    post:
+      tags:
+        - licenselibrary
+      summary: Faceted Search
+      description: >-
+        Search for licenses that satisfy certain criteria.
+
+
+        Request body:
+
+        * request[**"target"**][...]: (type: _TargetState_) **"yes" / "no"**
+
+        * request[**"actions"**][...]: (type: _ActionState_) **"na" /
+        "permitted" / "prohibited"**
+
+        * request[**"duties"**][...]: (type: _DutyState_) **"na" / "required"**
+
+        * request[**"license_wide_duties"**][...]: (type: _DutyState_) **"na" /
+        "required"**
+
+
+        Parameters:
+
+        * _skip_: (type: _int_) Offsets the results by given value for paging.
+
+        * _limit_: (type: _int_) Limits the number of returned results.
+      operationId: faceted_search_licenselibrary_facetedsearch_post
+      parameters:
+        - required: false
+          schema:
+            title: Skip
+            type: integer
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: string
+            default: 10
+          name: limit
+          in: query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicenseSearch"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /licenselibrary/composer:
+    post:
+      tags:
+        - licenselibrary
+      summary: License Composer
+      description: >-
+        Please get in touch at info@dalicc.net to receive the usage instructions
+        and your personalized access token.
+  /dependencygraph/list:
+    get:
+      tags:
+        - dependencygraph
+      summary: Get Dependency Graph
+      description: Get the statements in the dependency graph.
+      operationId: get_dependency_graph_dependencygraph_list_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+  /compatibilitycheck/:
+    post:
+      tags:
+        - compatibilitycheck
+      summary: Compatibility
+      description: >-
+        Compatibility check of multiple (2 or more) licenses that returns the
+        conflicting statements.
+
+
+        Request body:
+
+        * request["licenses"][...]: (type: _licenseURI_)
+            * E.g. 1: {"licenses": ["https://dalicc.net/licenselibrary/StatisticsCanadaOpenLicenceAgreement","https://dalicc.net/licenselibrary/UkOpenGovernmentLicenseForPublicSectorInformation"]}
+            * E.g. 2: {"licenses": ["https://dalicc.net/licenselibrary/Apache-2.0", "https://dalicc.net/licenselibrary/MIT", "https://dalicc.net/licenselibrary/StatisticsCanadaOpenLicenceAgreement"]}
+      operationId: compatibility_compatibilitycheck__post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LicensesJSON"
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/githublicensechecker/dependencies/{owner}/{name}":
+    get:
+      tags:
+        - githublicensechecker
+      summary: Repository Dependencies
+      operationId: >-
+        repository_dependencies_githublicensechecker_dependencies__owner___name__get
+      parameters:
+        - required: true
+          schema:
+            title: Owner
+            type: string
+          name: owner
+          in: path
+        - required: true
+          schema:
+            title: Name
+            type: string
+          name: name
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /githublicensechecker/dependencies:
+    get:
+      tags:
+        - githublicensechecker
+      summary: Repository Dependencies By Url
+      operationId: repository_dependencies_by_url_githublicensechecker_dependencies_get
+      parameters:
+        - required: true
+          schema:
+            title: Github Url
+            type: string
+          name: github_url
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/githublicensechecker/check/{owner}/{name}":
+    get:
+      tags:
+        - githublicensechecker
+      summary: Check Repository Dependencies
+      operationId: >-
+        check_repository_dependencies_githublicensechecker_check__owner___name__get
+      parameters:
+        - required: true
+          schema:
+            title: Owner
+            type: string
+          name: owner
+          in: path
+        - required: true
+          schema:
+            title: Name
+            type: string
+          name: name
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /githublicensechecker/check:
+    get:
+      tags:
+        - githublicensechecker
+      summary: Check Repository Dependencies By Url
+      operationId: check_repository_dependencies_by_url_githublicensechecker_check_get
+      parameters:
+        - required: true
+          schema:
+            title: Github Url
+            type: string
+          name: github_url
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "404":
+          description: Not found
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    ActionState:
+      title: ActionState
+      enum:
+        - permitted
+        - na
+        - prohibited
+      description: An enumeration.
+    ActionsSearch:
+      title: ActionsSearch
+      type: object
+      properties:
+        reproduce:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        distribute:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        modify:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        derive:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        commercial_use:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        charge_distribution_fee:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+        change_license:
+          allOf:
+            - $ref: "#/components/schemas/ActionState"
+          default: na
+    DutiesSearch:
+      title: DutiesSearch
+      type: object
+      properties:
+        distribute_duty_attribution:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        distribute_duty_notice:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        distribute_duty_source_code:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        modify_duty_rename:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        modify_duty_attribution:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        modify_duty_modification_notice:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        modify_duty_notice:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        modify_duty_source_code:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        derive_duty_rename:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        derive_duty_attribution:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        derive_duty_modification_notice:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        derive_duty_notice:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        derive_duty_source_code:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+        change_license_duty_compliant_license:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+    DutyState:
+      title: DutyState
+      enum:
+        - required
+        - na
+      description: An enumeration.
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+    LicenseFormat:
+      title: LicenseFormat
+      enum:
+        - json-ld
+        - ttl
+        - rdf-xml
+      description: An enumeration.
+    LicenseSearch:
+      title: LicenseSearch
+      required:
+        - target
+        - actions
+        - duties
+        - license_wide_duties
+      type: object
+      properties:
+        target:
+          $ref: "#/components/schemas/TargetSearch"
+        actions:
+          $ref: "#/components/schemas/ActionsSearch"
+        duties:
+          $ref: "#/components/schemas/DutiesSearch"
+        license_wide_duties:
+          $ref: "#/components/schemas/LicenseWideDutiesSearch"
+    LicenseWideDutiesSearch:
+      title: LicenseWideDutiesSearch
+      type: object
+      properties:
+        share_alike:
+          allOf:
+            - $ref: "#/components/schemas/DutyState"
+          default: na
+    LicensesJSON:
+      title: LicensesJSON
+      type: object
+      properties:
+        licenses:
+          title: Licenses
+          type: array
+          items: {}
+          default: []
+    TargetSearch:
+      title: TargetSearch
+      type: object
+      properties:
+        creativework:
+          allOf:
+            - $ref: "#/components/schemas/TargetState"
+          default: "yes"
+        dataset:
+          allOf:
+            - $ref: "#/components/schemas/TargetState"
+          default: "yes"
+        software:
+          allOf:
+            - $ref: "#/components/schemas/TargetState"
+          default: "yes"
+    TargetState:
+      title: TargetState
+      enum:
+        - "yes"
+        - "no"
+      description: An enumeration.
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string

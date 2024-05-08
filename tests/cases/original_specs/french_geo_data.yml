@@ -1,0 +1,1484 @@
+openapi: 3.0.1
+info:
+  title: API Géo
+  version: "1.1"
+servers:
+- url: https://geo.api.gouv.fr/
+paths:
+  /communes:
+    get:
+      tags:
+      - Communes
+      summary: Recherche des communes
+      parameters:
+      - name: codePostal
+        in: query
+        description: Code postal associé
+        schema:
+          type: string
+      - name: lat
+        in: query
+        description: Latitude (en degrés)
+        schema:
+          type: number
+          format: float
+      - name: lon
+        in: query
+        description: Longitude (en degrés)
+        schema:
+          type: number
+          format: float
+      - name: nom
+        in: query
+        description: Nom de la commune
+        schema:
+          type: string
+      - name: boost
+        in: query
+        description: Mode de boost de la recherche par nom
+        schema:
+          type: string
+      - name: code
+        in: query
+        description: Code de la commune
+        schema:
+          type: string
+      - name: siren
+        in: query
+        description: Code SIREN de la commune
+        schema:
+          type: string
+      - name: codeEpci
+        in: query
+        description: Code de l'EPCI associé
+        schema:
+          type: string
+      - name: codeDepartement
+        in: query
+        description: Code du département associé
+        schema:
+          type: string
+      - name: codeRegion
+        in: query
+        description: Code de la région associée
+        schema:
+          type: string
+      - name: codeParent
+        in: query
+        description: Code de la commune si on a un arrondissement
+        schema:
+          type: string
+      - name: ancienCode
+        in: query
+        description: Code INSEE ancien de la commune
+        schema:
+          type: string
+      - name: zone
+        in: query
+        description: "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+          \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+          \ le comportement historique."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - metro
+            - drom
+            - com
+      - name: type
+        in: query
+        description: "Type permettant de filtrer si on retourne les communes, les\
+          \ arrondissements ou les 2. Par défaut à commune-actuelle."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - commune-actuelle
+            - arrondissement-municipal
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeParent
+            - codesPostaux
+            - siren
+            - centre
+            - surface
+            - contour
+            - mairie
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+            - population
+            - anciensCodes
+            - deleguees
+            - associees
+            - zone
+          default: "[\"nom\",\"code\",\"codesPostaux\",\"siren\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\",\"population\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - mairie
+          - bbox
+      responses:
+        "200":
+          description: Liste de communes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /communes/{code}:
+    get:
+      tags:
+      - Communes
+      summary: Récupérer les informations concernant une commune
+      parameters:
+      - name: code
+        in: path
+        description: Code INSEE de la commune
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeParent
+            - codesPostaux
+            - siren
+            - centre
+            - surface
+            - contour
+            - mairie
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+            - population
+            - anciensCodes
+            - deleguees
+            - associees
+            - zone
+          default: "[\"nom\",\"code\",\"codesPostaux\",\"siren\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\",\"population\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - mairie
+          - bbox
+      responses:
+        "200":
+          description: Informations concernant une commune
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Commune introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /communes_associees_deleguees:
+    get:
+      tags:
+      - Communes associées et déléguées
+      summary: Recherche des communes associées et/ou déléguées
+      parameters:
+      - name: lat
+        in: query
+        description: Latitude (en degrés)
+        schema:
+          type: number
+          format: float
+      - name: lon
+        in: query
+        description: Longitude (en degrés)
+        schema:
+          type: number
+          format: float
+      - name: nom
+        in: query
+        description: Nom de la commune
+        schema:
+          type: string
+      - name: code
+        in: query
+        description: Code de la commune
+        schema:
+          type: string
+      - name: codeEpci
+        in: query
+        description: Code de l'EPCI associé
+        schema:
+          type: string
+      - name: codeDepartement
+        in: query
+        description: Code du département associé
+        schema:
+          type: string
+      - name: codeRegion
+        in: query
+        description: Code de la région associée
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: "Type permettant de filtrer si on retourne les communes, les\
+          \ arrondissements ou les 2. Par défaut à commune-actuelle."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - commune-associee
+            - commune-deleguee
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - type
+            - chefLieu
+            - centre
+            - surface
+            - contour
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+          default: "[\"nom\",\"code\",\"type\",\"chefLieu\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - bbox
+      responses:
+        "200":
+          description: Liste de communes associées et/ou déléguées
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /communes_associees_deleguees/{code}:
+    get:
+      tags:
+      - Communes associées et déléguées
+      summary: Récupérer les informations concernant une commune associée ou déléguée
+      parameters:
+      - name: code
+        in: path
+        description: Code INSEE de la commune associée ou déléguée
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - type
+            - chefLieu
+            - centre
+            - surface
+            - contour
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+          default: "[\"nom\",\"code\",\"type\",\"chefLieu\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - bbox
+      responses:
+        "200":
+          description: Informations concernant une commune associée ou déléguée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Commune associée ou déléguée introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /epcis:
+    get:
+      tags:
+      - EPCI
+      summary: Recherche des EPCI
+      parameters:
+      - name: nom
+        in: query
+        description: Nom de l'EPCI
+        schema:
+          type: string
+      - name: boost
+        in: query
+        description: Mode de boost de la recherche par nom
+        schema:
+          type: string
+      - name: codeEpci
+        in: query
+        description: Code de l'EPCI associé
+        schema:
+          type: string
+      - name: codeDepartement
+        in: query
+        description: Code du département associé
+        schema:
+          type: string
+      - name: codeRegion
+        in: query
+        description: Code de la région associée
+        schema:
+          type: string
+      - name: zone
+        in: query
+        description: "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+          \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+          \ le comportement historique."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - metro
+            - drom
+            - com
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - population
+            - financement
+            - type
+            - codesRegions
+            - codesDepartements
+            - centre
+            - surface
+            - contour
+            - bbox
+            - zone
+          default: "[\"nom\",\"code\",\"codesRegions\",\"codesDepartements\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - bbox
+      responses:
+        "200":
+          description: Liste des EPCI
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Epci'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /epcis/{code}:
+    get:
+      tags:
+      - EPCI
+      summary: Récupérer les informations concernant un EPCI
+      parameters:
+      - name: code
+        in: path
+        description: Code INSEE de l'EPCI
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - population
+            - financement
+            - type
+            - codesRegions
+            - codesDepartements
+            - centre
+            - surface
+            - contour
+            - bbox
+            - zone
+          default: "[\"nom\",\"code\",\"codesRegions\",\"codesDepartements\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - bbox
+      responses:
+        "200":
+          description: Informations concernant une commune
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Epci'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: EPCI introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /epcis/{code}/communes:
+    get:
+      tags:
+      - EPCI
+      - Communes
+      summary: Renvoi les communes d'un EPCI
+      parameters:
+      - name: code
+        in: path
+        description: Code de l'EPCI
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeParent
+            - codesPostaux
+            - siren
+            - centre
+            - surface
+            - contour
+            - mairie
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+            - population
+            - anciensCodes
+            - deleguees
+            - associees
+            - zone
+          default: "[\"nom\",\"code\",\"codesPostaux\",\"siren\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\",\"population\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - mairie
+          - bbox
+      responses:
+        "200":
+          description: Liste des communes de l'EPCI
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: EPCI introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /departements:
+    get:
+      tags:
+      - Départements
+      summary: Recherche des départements
+      parameters:
+      - name: code
+        in: query
+        description: Code du département
+        schema:
+          type: string
+      - name: codeRegion
+        in: query
+        description: Code région associé
+        schema:
+          type: string
+      - name: nom
+        in: query
+        description: Nom du département
+        schema:
+          type: string
+      - name: zone
+        in: query
+        description: "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+          \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+          \ le comportement historique."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - metro
+            - drom
+            - com
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeRegion
+            - region
+            - zone
+          default: "[\"nom\",\"code\",\"codeRegion\"]"
+      responses:
+        "200":
+          description: Le ou les départements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Departement'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /departements/{code}:
+    get:
+      tags:
+      - Départements
+      summary: Récupérer les informations concernant un département
+      parameters:
+      - name: code
+        in: path
+        description: Code du département
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeRegion
+            - region
+            - zone
+          default: "[\"nom\",\"code\",\"codeRegion\"]"
+      responses:
+        "200":
+          description: Informations concernant un département
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Departement'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Département introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /departements/{code}/communes:
+    get:
+      tags:
+      - Départements
+      - Communes
+      summary: Renvoi les communes d'un département
+      parameters:
+      - name: code
+        in: path
+        description: Code du département
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - codeParent
+            - codesPostaux
+            - siren
+            - centre
+            - surface
+            - contour
+            - mairie
+            - bbox
+            - codeEpci
+            - epci
+            - codeDepartement
+            - departement
+            - codeRegion
+            - region
+            - population
+            - anciensCodes
+            - deleguees
+            - associees
+            - zone
+          default: "[\"nom\",\"code\",\"codesPostaux\",\"siren\",\"codeEpci\",\"codeDepartement\"\
+            ,\"codeRegion\",\"population\"]"
+      - name: format
+        in: query
+        description: Format de réponse attendu
+        schema:
+          type: string
+          default: json
+          enum:
+          - json
+          - geojson
+      - name: geometry
+        in: query
+        description: Géométrie à utiliser pour la sortie géographique
+        schema:
+          type: string
+          default: centre
+          enum:
+          - centre
+          - contour
+          - mairie
+          - bbox
+      responses:
+        "200":
+          description: Liste des communes du département
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Commune'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Département introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /regions:
+    get:
+      tags:
+      - Régions
+      summary: Recherche des régions
+      parameters:
+      - name: code
+        in: query
+        description: Code de la région
+        schema:
+          type: string
+      - name: nom
+        in: query
+        description: Nom de la région
+        schema:
+          type: string
+      - name: zone
+        in: query
+        description: "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+          \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+          \ le comportement historique."
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - metro
+            - drom
+            - com
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - zone
+          default: "[\"nom\",\"code\"]"
+      responses:
+        "200":
+          description: La ou les régions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Region'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /regions/{code}:
+    get:
+      tags:
+      - Régions
+      summary: Récupérer les informations concernant une région
+      parameters:
+      - name: code
+        in: path
+        description: Code de la région
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - zone
+          default: "[\"nom\",\"code\"]"
+      responses:
+        "200":
+          description: Informations concernant la région
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Region'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Région introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /regions/{code}/departements:
+    get:
+      tags:
+      - Départements
+      - Régions
+      summary: Renvoi les départements d'une région
+      parameters:
+      - name: code
+        in: path
+        description: Code de la région
+        required: true
+        schema:
+          type: string
+      - name: fields
+        in: query
+        description: Liste des champs souhaités dans la réponse
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - nom
+            - code
+            - zone
+          default: "[\"nom\",\"code\"]"
+      responses:
+        "200":
+          description: Liste des départements de la région
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Departement'
+        "400":
+          description: Erreur. Requête mal formée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Département introuvable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Code HTTP de l'erreur
+        message:
+          type: string
+          description: Libellé de l'erreur
+        description:
+          type: string
+          description: Explication
+    Commune:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code INSEE de la commune
+        nom:
+          type: string
+          description: Nom de la commune
+        codesPostaux:
+          type: array
+          description: Liste des codes postaux associés à la commune
+          items:
+            type: string
+        siren:
+          type: string
+          description: Code SIREN de la commune
+        codeEpci:
+          type: string
+          description: Code de l'EPCI associé à la commune
+        codeDepartement:
+          type: string
+          description: Code du département associé à la commune
+        codeRegion:
+          type: string
+          description: Code de la région associée à la commune
+        epci:
+          $ref: '#/components/schemas/Epci'
+        departement:
+          $ref: '#/components/schemas/Departement'
+        region:
+          $ref: '#/components/schemas/Region'
+        associees:
+          type: array
+          description: Liste des codes postaux associés à la commune
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              nom:
+                type: string
+        deleguees:
+          type: array
+          description: Liste des codes postaux associés à la commune
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              nom:
+                type: string
+        population:
+          type: integer
+          description: Population municipale
+        anciensCodes:
+          type: array
+          description: Liste des anciens codes INSEE associés à la commune
+          items:
+            type: string
+        surface:
+          type: number
+          description: "Surface de la commune, en hectares"
+          format: float
+        centre:
+          type: object
+          properties: {}
+          description: Centre de la commune (Point GeoJSON)
+        contour:
+          type: object
+          properties: {}
+          description: Contour de la commune (Polygon GeoJSON)
+        mairie:
+          type: object
+          properties: {}
+          description: "Mairie principale de la commune (Point GeoJSON). Pour les\
+            \ COM et les communes mortes pour la France, on retourne le centre."
+        bbox:
+          type: object
+          properties: {}
+          description: Rectangle englobant la commune (Polygon GeoJSON)
+    CommuneAssocieeDeleguee:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code INSEE de la commune associée ou déléguée
+        nom:
+          type: string
+          description: Nom de la commune associée ou déléguée
+        codeEpci:
+          type: string
+          description: Code de l'EPCI associé à la commune associée ou déléguée
+        codeDepartement:
+          type: string
+          description: Code du département associé à la commune associée ou déléguée
+        codeRegion:
+          type: string
+          description: Code de la région associée à la commune associée ou déléguée
+        epci:
+          $ref: '#/components/schemas/Epci'
+        departement:
+          $ref: '#/components/schemas/Departement'
+        region:
+          $ref: '#/components/schemas/Region'
+        surface:
+          type: number
+          description: "Surface de la commune associée ou déléguée, en hectares"
+          format: float
+        centre:
+          type: object
+          properties: {}
+          description: Centre de la commune associée ou déléguée (Point GeoJSON)
+        contour:
+          type: object
+          properties: {}
+          description: Contour de la commune associée ou déléguée (Polygon GeoJSON)
+        bbox:
+          type: object
+          properties: {}
+          description: Rectangle englobant la commune associée ou déléguée (Polygon
+            GeoJSON)
+    Epci:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code SIREN de l'EPCI
+        nom:
+          type: string
+          description: Nom de l'EPCI
+        type:
+          type: string
+          description: "Type de l'EPCI, soit communauté d'agglomération (CA), soit\
+            \ communauté de communes (CC), soit communauté urbaine (CU), soit métropole\
+            \ de Lyon (MET69), soit métropole (METRO)"
+        financement:
+          type: string
+          description: "Financement de l'EPCI, soit fiscalité additionnelle (FA),\
+            \ soit en fiscalité professionnelle unique (FPU)"
+        codesDepartements:
+          type: array
+          description: Liste des départements de l'EPCI
+          items:
+            type: string
+        codesRegions:
+          type: array
+          description: Liste des régions de l'EPCI
+          items:
+            type: string
+        population:
+          type: integer
+          description: Population municipale
+        surface:
+          type: number
+          description: "Surface de l'EPCI, en hectares"
+          format: float
+        centre:
+          type: object
+          properties: {}
+          description: Centre de l'EPCI (Point GeoJSON)
+        contour:
+          type: object
+          properties: {}
+          description: Contour de l'EPCI (Polygon GeoJSON)
+        bbox:
+          type: object
+          properties: {}
+          description: Rectangle englobant la commune (Polygon GeoJSON)
+    Departement:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code du département
+        nom:
+          type: string
+          description: Nom du département
+        codeRegion:
+          type: string
+          description: Code de la région
+        region:
+          $ref: '#/components/schemas/Region'
+    Region:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code de la région
+        nom:
+          type: string
+          description: Nom de la région
+  parameters:
+    communeFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - nom
+          - code
+          - codeParent
+          - codesPostaux
+          - siren
+          - centre
+          - surface
+          - contour
+          - mairie
+          - bbox
+          - codeEpci
+          - epci
+          - codeDepartement
+          - departement
+          - codeRegion
+          - region
+          - population
+          - anciensCodes
+          - deleguees
+          - associees
+          - zone
+        default: "[\"nom\",\"code\",\"codesPostaux\",\"siren\",\"codeEpci\",\"codeDepartement\"\
+          ,\"codeRegion\",\"population\"]"
+    communeAssocieeDelegueeFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - nom
+          - code
+          - type
+          - chefLieu
+          - centre
+          - surface
+          - contour
+          - bbox
+          - codeEpci
+          - epci
+          - codeDepartement
+          - departement
+          - codeRegion
+          - region
+        default: "[\"nom\",\"code\",\"type\",\"chefLieu\",\"codeEpci\",\"codeDepartement\"\
+          ,\"codeRegion\"]"
+    epciFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - nom
+          - code
+          - population
+          - financement
+          - type
+          - codesRegions
+          - codesDepartements
+          - centre
+          - surface
+          - contour
+          - bbox
+          - zone
+        default: "[\"nom\",\"code\",\"codesRegions\",\"codesDepartements\"]"
+    departementFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - nom
+          - code
+          - codeRegion
+          - region
+          - zone
+        default: "[\"nom\",\"code\",\"codeRegion\"]"
+    regionFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - nom
+          - code
+          - zone
+        default: "[\"nom\",\"code\"]"
+    formatParam:
+      name: format
+      in: query
+      description: Format de réponse attendu
+      schema:
+        type: string
+        default: json
+        enum:
+        - json
+        - geojson
+    communeGeometryParam:
+      name: geometry
+      in: query
+      description: Géométrie à utiliser pour la sortie géographique
+      schema:
+        type: string
+        default: centre
+        enum:
+        - centre
+        - contour
+        - mairie
+        - bbox
+    communeAssocieeDelegueeGeometryParam:
+      name: geometry
+      in: query
+      description: Géométrie à utiliser pour la sortie géographique
+      schema:
+        type: string
+        default: centre
+        enum:
+        - centre
+        - contour
+        - bbox
+    typeCommune:
+      name: type
+      in: query
+      description: "Type permettant de filtrer si on retourne les communes, les arrondissements\
+        \ ou les 2. Par défaut à commune-actuelle."
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - commune-actuelle
+          - arrondissement-municipal
+    typeCommuneAssocieeDeleguee:
+      name: type
+      in: query
+      description: "Type permettant de filtrer si on retourne les communes, les arrondissements\
+        \ ou les 2. Par défaut à commune-actuelle."
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - commune-associee
+          - commune-deleguee
+    zoneParam:
+      name: zone
+      in: query
+      description: "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+        \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+        \ le comportement historique."
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+          - metro
+          - drom
+          - com
+    epciGeometryParam:
+      name: geometry
+      in: query
+      description: Géométrie à utiliser pour la sortie géographique
+      schema:
+        type: string
+        default: centre
+        enum:
+        - centre
+        - contour
+        - bbox
+    limitParam:
+      name: limit
+      in: query
+      description: Nombre d'éléments à retourner
+      schema:
+        type: integer
+        format: int32
+        default: 0

@@ -1,0 +1,965 @@
+openapi: 3.1.0
+info:
+  title: PLUPP Open Pollen API
+  description: >+
+    ## Open Pollen API
+
+    This API delivers pollen forecasts to the end user.
+
+
+    ### Usage
+
+    The core stable data sets of the API are `pollen-types`,
+    `pollen-level-definitions` and `regions`. All other data sets are expected
+    to be updated regularly.
+
+
+    Using `pollen-types`, `pollen-level-definitions` and `regions` one can use
+    the other endpoints to filter the available data sets.
+
+
+    #### ID mapping
+
+    The following table describes how to map the IDs of different types to API
+    endpoint query parameters.
+
+
+    | Endpoint | Type ID | Query parameter / API ID |
+
+    |:---------|:--------|:-------------------------|
+
+    |pollen-types|PollenType.id|pollen_id|
+
+    |regions|Region.id|region_id|
+
+
+
+    #### Forecasts
+
+    Forecasts are created to predict pollen levels for a specified period. While
+    a new forecast may not be issued daily, each forecast provides daily
+    pollen-level predictions for its entire duration, by
+    pollen-level-definitions.
+
+
+    **Data Absence Policy** If a day lacks data, this means that there is no
+    forecast covering that day. Users should interpret this as a day with no
+    available pollen-level data. This method of data representation simplifies
+    understanding and ensures clarity in interpreting the forecast.
+
+
+    **Overlapping Forecasts:** In cases where forecasts overlap, the most recent
+    forecast is always prioritized as the current and relevant prediction. This
+    ensures that users have access to the most up-to-date and accurate pollen
+    level predictions.
+
+
+
+    #### Pollen count
+
+    Pollen count represents the amount of pollen particles counted over the span
+    of a day for a given date, region and pollen type. 
+
+
+    **Technical error:** A technical error in the pollen counts represents an
+    instance with no data and is not equal to the value 0 (zero). This should be
+    taken into consideration when viewing data and producing graphs.
+
+
+
+    #### Usage examples
+
+
+    ##### Getting the latest forecast for a specific region
+
+    To be able to get a forecast for a specific region start by checking the
+    `/regions` endpoint to get the list of available regions:
+
+
+    ```
+
+    https://api.pollenrapporten.se/v1/regions
+
+    ```
+
+    In the list of regions identify the one that is relevant for you, for
+    example:
+
+    ```
+
+    {
+        "id": "00000000-0000-4000-8000-0000499602e5",
+        "name": "Kristianstad",
+        "forecasts": "https://api.pollenrapporten.se/v1/forecasts?region_id=00000000-0000-4000-8000-0000499602e5&current=true"
+    },
+
+    ```
+
+    The URL to get the latest forecast for a specific region is included in the
+    response sent by the `/regions` endpoint and can be found in the parameter
+    "forecasts".
+
+
+    ##### Getting latest forecast for a given date range
+
+    To receive the latest forecast for a given date range you can make a request
+    to the `/forecasts` endpoint and its parameters. For example:
+
+
+    ```
+
+    https://api.pollenrapporten.se/v1/forecasts?start_date=2023-12-10&end_date=2023-12-12&current=true
+
+    ```
+
+
+    **Explanation:** Adding the parameters `start_date` and `end_date`in the
+    format YYYY-MM-DD in the URL will filter a date range. All forecast items in
+    the range will have a `startDate` of 2023-12-10 or earlier and an `endDate`
+    of 2023-12-12 or later.  
+
+    Adding `current=true` to the URL will pick the latest of all forecasts
+    within the given date range.
+
+
+    ##### Getting latest forecast for all regions
+
+    To receive all regions' latest forecast use the `/forecasts` endpoint and
+    add the parameter `current=true` like this:
+
+
+    ```
+
+    https://api.pollenrapporten.se/v1/forecasts?current=true
+
+    ```
+
+
+    ##### Getting pollen count without technical errors
+
+    For most usecases when the goal is to produce a visualization of the pollen
+    count data it may be preferred to use only the pollen count entries with a
+    `dailyCount` value. This can easily be achieved by filtering on the status
+    of `technical_error` using the following example.
+
+
+    ```
+
+    http://localhost:8000/v1/pollen_count?offset=0&limit=100&has_technical_error=false
+
+    ```
+
+
+    ### Support
+
+    For any technical issues you can contact
+    [elin.ohlsson@nrm.se](mailto:elin.ohlsson@nrm.se). For other questions or
+    feedback you can contact [bjorn.gedda@nrm.se](mailto:bjorn.gedda@nrm.se).
+
+
+
+
+  version: 0.1.0
+paths:
+  /v1/pollen-types:
+    get:
+      summary: List Pollen
+      description: >-
+        List all available pollen types.
+
+
+        A pollen type entry contains all the information needed to present a
+        specific pollen type. A pollen type can be references using a
+        `pollen_id`.
+
+
+        The ID of a pollen type, as `pollen_id`, is used to filter other
+        endpoints such as `forecast`.
+      operationId: list_pollen_v1_pollen_types_get
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_PollenType_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /v1/pollen-level-definitions:
+    get:
+      summary: List Pollen Level Defintiion
+      description: >-
+        List all available pollen level definitions.
+
+
+        A pollen level definition can be used to describe a `PollenLevelValue`
+        found in a `PollenLevel` from `forecast`.
+      operationId: list_pollen_level_defintiion_v1_pollen_level_definitions_get
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_PollenLevelDefinition_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /v1/regions:
+    get:
+      summary: List Region
+      description: >-
+        List all regions.
+
+
+        Regions are used to identify a limited area to which a forecast is
+        related. Regions can be large or small depending on the use case.
+
+
+        The `id` of region can be used as `region_id` in other endpoints such as
+        `forecasts`
+      operationId: list_region_v1_regions_get
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_Region_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /v1/forecasts:
+    get:
+      summary: Find Forecast
+      description: >-
+        List forecasts filtering on a selection of parameters
+
+
+        To fetch only current data for each region use the parameter
+        `current=true`
+      operationId: find_forecast_v1_forecasts_get
+      parameters:
+        - name: region_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: A region ID references a region found in the endpoint `/regions`
+            examples:
+              - 7caf2040-827e-4a04-bd26-f4215059eae0
+            title: Region Id
+          description: A region ID references a region found in the endpoint `/regions`
+        - name: pollen_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: >-
+              A pollen ID references a pollen type from the endpoint
+              `/pollen-types`
+            examples:
+              - 8492032d-802a-420d-b8aa-b049e0d13eb0
+            title: Pollen Id
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+        - name: current
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            description: >-
+              If current is true only the latest matching forecasts for each
+              region will be fetched
+            title: Current
+          description: >-
+            If current is true only the latest matching forecasts for each
+            region will be fetched
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: date
+              - type: "null"
+            description: "The start of date range. If not set, the filter is not applied."
+            title: Start Date
+          description: "The start of date range. If not set, the filter is not applied."
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: date
+              - type: "null"
+            description: "The end of date range. If not set, the filter is not applied."
+            title: End Date
+          description: "The end of date range. If not set, the filter is not applied."
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_Forecast_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /v1/pollen-count:
+    get:
+      summary: Get Pollen Count
+      description: List a filtered set of daily pollen counts
+      operationId: get_pollen_count_v1_pollen_count_get
+      parameters:
+        - name: region_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: A region ID references a region found in the endpoint `/regions`
+            examples:
+              - 7caf2040-827e-4a04-bd26-f4215059eae0
+            title: Region Id
+          description: A region ID references a region found in the endpoint `/regions`
+        - name: pollen_id
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: uuid
+              - type: "null"
+            description: >-
+              A pollen ID references a pollen type from the endpoint
+              `/pollen-types`
+            examples:
+              - 8492032d-802a-420d-b8aa-b049e0d13eb0
+            title: Pollen Id
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+        - name: has_technical_error
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            title: Has Technical Error
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: date
+              - type: "null"
+            description: "The start of date range. If not set, the filter is not applied."
+            title: Start Date
+          description: "The start of date range. If not set, the filter is not applied."
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: date
+              - type: "null"
+            description: "The end of date range. If not set, the filter is not applied."
+            title: End Date
+          description: "The end of date range. If not set, the filter is not applied."
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_PollenCount_"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    Forecast:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+          description: >-
+            A forecast ID references a forecast found in the endpoint
+            `/forecasts`
+          examples:
+            - 2f9f626e-bd38-443b-a146-cb9b6c53ea5b
+        regionId:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Regionid
+          description: A region ID references a region found in the endpoint `/regions`
+          examples:
+            - 7caf2040-827e-4a04-bd26-f4215059eae0
+        startDate:
+          type: string
+          format: date
+          title: Startdate
+        endDate:
+          type: string
+          format: date
+          title: Enddate
+        text:
+          type: string
+          title: Text
+        images:
+          items:
+            $ref: "#/components/schemas/ForecastImage"
+          type: array
+          title: Images
+        levelSeries:
+          items:
+            $ref: "#/components/schemas/PollenLevel"
+          type: array
+          title: Levelseries
+      type: object
+      required:
+        - id
+        - regionId
+        - startDate
+        - endDate
+        - text
+        - images
+        - levelSeries
+      title: Forecast
+    ForecastImage:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+        pollenId:
+          anyOf:
+            - anyOf:
+                - type: string
+                  format: uuid
+                - type: "null"
+              description: >-
+                A pollen ID references a pollen type from the endpoint
+                `/pollen-types`
+              examples:
+                - 8492032d-802a-420d-b8aa-b049e0d13eb0
+            - type: "null"
+          title: Pollenid
+        url:
+          type: string
+          minLength: 1
+          format: uri
+          title: Url
+      type: object
+      required:
+        - id
+        - pollenId
+        - url
+      title: ForecastImage
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PaginatedData_Forecast_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/Forecast"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[Forecast]"
+    PaginatedData_PollenCount_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/PollenCount"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[PollenCount]"
+    PaginatedData_PollenLevelDefinition_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/PollenLevelDefinition"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[PollenLevelDefinition]"
+    PaginatedData_PollenType_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/PollenType"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[PollenType]"
+    PaginatedData_Region_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/Region"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[Region]"
+    PaginationLink:
+      properties:
+        href:
+          anyOf:
+            - type: string
+              maxLength: 2083
+              minLength: 1
+              format: uri
+            - type: "null"
+          title: Href
+          description: Link to another page
+        rel:
+          type: string
+          enum:
+            - self
+            - last
+            - first
+            - next
+            - prev
+          title: Rel
+          description: An indication of how the link relates to the current page
+      type: object
+      required:
+        - href
+        - rel
+      title: PaginationLink
+    PaginationMeta:
+      properties:
+        totalRecords:
+          type: integer
+          title: Totalrecords
+          description: The total number of items available
+        offset:
+          type: integer
+          title: Offset
+          description: The starting index of listed items
+        limit:
+          type: integer
+          title: Limit
+          description: The maximum number of items to be fetched
+        count:
+          type: integer
+          title: Count
+          description: The number of items fetched
+      type: object
+      required:
+        - totalRecords
+        - offset
+        - limit
+        - count
+      title: PaginationMeta
+    PollenCount:
+      properties:
+        pollenId:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Pollenid
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+          examples:
+            - 8492032d-802a-420d-b8aa-b049e0d13eb0
+        regionId:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Regionid
+          description: A region ID references a region found in the endpoint `/regions`
+          examples:
+            - 7caf2040-827e-4a04-bd26-f4215059eae0
+        dailyCount:
+          anyOf:
+            - type: integer
+            - type: "null"
+          title: Dailycount
+        technicalError:
+          type: boolean
+          title: Technicalerror
+        date:
+          type: string
+          format: date-time
+          title: Date
+          description: Time in UTC
+      type: object
+      required:
+        - pollenId
+        - regionId
+        - dailyCount
+        - technicalError
+        - date
+      title: PollenCount
+      description: |-
+        A pollen count entry is a daily measurement of the pollen count
+        for a given pollen type and region.
+
+        `Technical error`: A technical error in the pollen counts represents an
+        instance with no data and is not equal to the value 0 (zero).
+        This should be taken into consideration when viewing data and
+        producing graphs.
+    PollenLevel:
+      properties:
+        pollenId:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Pollenid
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+          examples:
+            - 8492032d-802a-420d-b8aa-b049e0d13eb0
+        level:
+          $ref: "#/components/schemas/PollenLevelValue"
+        time:
+          type: string
+          format: date-time
+          title: Time
+          description: Time in UTC
+      type: object
+      required:
+        - pollenId
+        - level
+        - time
+      title: PollenLevel
+    PollenLevelDefinition:
+      properties:
+        level:
+          $ref: "#/components/schemas/PollenLevelValue"
+        name:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Name
+          description: Name of a pollen value definition
+          examples:
+            - Inga halter
+            - Låga
+            - Låga till måttliga
+            - Måttliga
+            - Måttliga till höga
+            - Höga
+            - Höga till mycket höga
+            - Mycket höga
+      type: object
+      required:
+        - level
+        - name
+      title: PollenLevelDefinition
+    PollenLevelValue:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+      title: PollenLevelValue
+    PollenType:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+          examples:
+            - 8492032d-802a-420d-b8aa-b049e0d13eb0
+        name:
+          type: string
+          title: Name
+        forecasts:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Forecasts
+          description: URL to a forecast pollen filtering
+          examples:
+            - >-
+              http://localhost:8000/forecast/?pollen_id=3fa85f64-5717-4562-b3fc-2c963f66afa6&current=true
+      type: object
+      required:
+        - id
+        - name
+        - forecasts
+      title: PollenType
+    Region:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+          description: A region ID references a region found in the endpoint `/regions`
+          examples:
+            - 7caf2040-827e-4a04-bd26-f4215059eae0
+        name:
+          type: string
+          title: Name
+        forecasts:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Forecasts
+          description: URL to a forecast region filtering
+          examples:
+            - >-
+              http://localhost:8000/forecast/?region_id=3fa85f64-5717-4562-b3fc-2c963f66afa6&current=true
+      type: object
+      required:
+        - id
+        - name
+        - forecasts
+      title: Region
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError

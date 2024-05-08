@@ -18,15 +18,13 @@ def test_simple_zoom_load() -> None:
     #   field required (type=value_error.missing)
     # paths -> /contacts -> get -> responses -> 200 -> $ref
     #   field required (type=value_error.missing)
+
+    # uses next_page_token query parameter for pagination
     assert source["resources"][0] == {
         "name": "get_accounts",
-        "endpoint": {"path": "/accounts", "data_selector": "$"},
-        # FIXME: No paginator resolved
-        # parameters:
-        # - name: next_page_token
-        #   in: query
-        #   required: false
-        #   schema:
-        #     type: string
-        "paginator": {},
+        "endpoint": {
+            "path": "/accounts",
+            "data_selector": "$",
+            "paginator": {},
+        },
     }

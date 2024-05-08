@@ -11,16 +11,12 @@ def test_simple_french_geo_data_load() -> None:
     source = get_dict_by_case("extracted", "french_geo_data_with_pagination.yml")
     assert len(source["resources"]) == 1
 
+    # use page query parameter
     assert source["resources"][0] == {
-        "name": "get_regions",
-        "endpoint": {"path": "/regions", "data_selector": "$"},
-        # FIXME: No paginator resolved
-        # parameters:
-        # - name: page
-        #   in: query
-        #   description: "Page number, zero indexed. Each page returns up to 1000 entries."
-        #   required: false
-        #   schema:
-        #     type: integer
-        "paginator": {},
+        "name": "Region",
+        "endpoint": {
+            "data_selector": "$",
+            "path": "/regions",
+            "paginator": {},
+        },
     }

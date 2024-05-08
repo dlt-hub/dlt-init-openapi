@@ -1,6 +1,4 @@
-import codecs
 import pathlib
-from distutils.dir_util import copy_tree
 from typing import Optional
 
 import typer
@@ -53,7 +51,6 @@ _meta_option = typer.Option(
 )
 
 CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
-REST_API_SOURCE_LOCATION = "./sources/sources/rest_api"
 
 
 # pylint: disable=too-many-arguments
@@ -62,8 +59,6 @@ def init(
     source: str = typer.Argument(None, help="A name of data source for which to generate a pipeline"),
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
     path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
-    meta: MetaType = _meta_option,
-    file_encoding: str = typer.Option("utf-8", help="Encoding used when writing generated"),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
 ) -> None:
@@ -77,23 +72,12 @@ def init(
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    try:
-        codecs.getencoder(file_encoding)
-    except LookupError as err:
-        typer.secho(f"Unknown encoding : {file_encoding}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from err
-
     config = _process_config(config_path)
     config.project_name_override = source
     config.package_name_override = source
-    project = create_new_client(
+    create_new_client(
         url=url,
         path=path,
-        meta=meta,
-        custom_template_path=None,
-        file_encoding=file_encoding,
         config=config,
         endpoint_filter=questionary_endpoint_selection if interactive else None,
     )
-    # copy rest api source into project dir
-    copy_tree(REST_API_SOURCE_LOCATION, str(project.project_dir / "rest_api"))

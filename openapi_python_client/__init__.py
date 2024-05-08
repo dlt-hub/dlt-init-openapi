@@ -1,20 +1,15 @@
 """ Generate modern Python clients from OpenAPI """
 
 import logging
-import shutil
-import subprocess
 from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
-from subprocess import CalledProcessError
 from typing import Optional
 
-from jinja2 import BaseLoader, ChoiceLoader, Environment, FileSystemLoader, PackageLoader
-
-from openapi_python_client.utils import misc
-
 from .config import Config
+from .detector.base_detector import BaseDetector
 from .parser.openapi_parser import OpenapiParser
+from .renderer.base_renderer import BaseRenderer
 from .typing import TEndpointFilter
 
 log = logging.getLogger(__name__)
@@ -30,241 +25,56 @@ class MetaType(str, Enum):
     SETUP = "setup"
 
 
-TEMPLATE_FILTERS = {
-    "snakecase": misc.snake_case,
-    "kebabcase": misc.kebab_case,
-    "pascalcase": misc.pascal_case,
-    "any": any,
-}
-
-
 class Project:  # pylint: disable=too-many-instance-attributes
     """Represents a Python project (the top level file-tree) to generate"""
-
-    openapi: OpenapiParser
 
     def __init__(
         self,
         *,
         openapi: OpenapiParser,
-        meta: MetaType,
+        detector: BaseDetector,
+        renderer: BaseRenderer,
         config: Config,
-        custom_template_path: Optional[Path] = None,
-        file_encoding: str = "utf-8",
         endpoint_filter: Optional[TEndpointFilter] = None,
     ) -> None:
         self.openapi = openapi
-        self.meta: MetaType = meta
-        self.file_encoding = file_encoding
+        self.detector = detector
+        self.renderer = renderer
         self.config = config
-
-        package_loader = PackageLoader(__package__)
-        loader: BaseLoader
-        if custom_template_path is not None:
-            loader = ChoiceLoader(
-                [
-                    FileSystemLoader(str(custom_template_path)),
-                    package_loader,
-                ]
-            )
-        else:
-            loader = package_loader
-        self.env: Environment = Environment(
-            loader=loader,
-            trim_blocks=True,
-            lstrip_blocks=True,
-            extensions=["jinja2.ext.loopcontrols"],
-            keep_trailing_newline=True,
-        )
-
-        project_name_base: str = config.project_name_override or f"{misc.kebab_case(openapi.info.title).lower()}"
-        self.project_name = project_name_base + config.project_name_suffix
-        self.package_name: str = config.package_name_override or self.project_name
-
-        self.package_name = self.package_name.replace("-", "_")
-        self.source_name: str = self.package_name + "_source"
-        self.dataset_name: str = self.package_name + config.dataset_name_suffix
-        self.project_dir: Path = Path.cwd()
-        # if meta != MetaType.NONE:
-        self.project_dir /= self.project_name
-
-        self.package_dir: Path = self.project_dir / self.package_name
-        self.package_description: str = misc.remove_string_escapes(
-            f"A pipeline to load data from {self.openapi.info.title}"
-        )
-        self.version: str = config.package_version_override or openapi.info.version
-
-        self.env.filters.update(TEMPLATE_FILTERS)
-        self.env.globals.update(
-            utils=misc,
-            class_name=lambda x: misc.ClassName(x, config.field_prefix),
-            package_name=self.package_name,
-            package_dir=self.package_dir,
-            package_description=self.package_description,
-            package_version=self.version,
-            project_name=self.project_name,
-            project_dir=self.project_dir,
-            openapi=self.openapi,
-            endpoints=self.openapi.endpoints,
-        )
         self.endpoint_filter = endpoint_filter
 
-    def build(self) -> None:
-        """Create the project from templates"""
+    def parse(self) -> None:
+        log.info("Parse spec")
+        self.openapi.parse()
+        log.info("Parsing completed")
+
+    def detect(self) -> None:
+        log.info("Detecting parsed output")
+        self.detector.run(self.openapi)
+        log.info("Detecting completed")
+
+    def render(self, dry: bool = False) -> None:
         if self.endpoint_filter:
             render, deselect = self.endpoint_filter(self.openapi.endpoints)
             self.openapi.endpoints.set_names_to_render(render, deselect)
-        if self.meta == MetaType.NONE:
-            print(f"Generating {self.package_name}")
-        else:
-            print(f"Generating {self.project_name}")
-            self.project_dir.mkdir()
-        self._create_package()
-        self._build_metadata()
-        self._build_dlt_config()
-        self._build_source()
-        self._build_pipeline()
-        self._run_post_hooks()
-
-    def _run_post_hooks(self) -> None:
-        for command in self.config.post_hooks:
-            self._run_command(command)
-
-    def _run_command(self, cmd: str) -> None:
-        cmd_name = cmd.split(" ")[0]
-        command_exists = shutil.which(cmd_name)
-        if not command_exists:
-            log.warning("Skipping integration: %s is not in PATH", cmd_name)
-            return
-        cwd = self.package_dir if self.meta == MetaType.NONE else self.project_dir
-        try:
-            subprocess.run(cmd, cwd=cwd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-        except CalledProcessError as err:
-            raise RuntimeError("{}failed\n{}".format(cmd_name, err.stderr.decode() or err.output.decode())) from err
-
-    def _create_package(self) -> None:
-        self.project_dir.mkdir(exist_ok=True)
-        self.package_dir.mkdir()
-
-        if self.meta != MetaType.NONE:
-            pytyped = self.package_dir / "py.typed"
-            pytyped.write_text("# Marker file for PEP 561", encoding=self.file_encoding)
-
-    def _build_dlt_config(self) -> None:
-        config_dir = self.project_dir / ".dlt"
-        config_dir.mkdir()
-
-        servers = self.openapi.info.servers
-        first_server = servers[0] if servers else None
-        other_servers = servers[1:]
-        if first_server and first_server.url == "/" and not first_server.description:
-            # Remove default server
-            first_server = None
-
-        config_template = self.env.get_template("dlt_config.toml.j2")
-        config_path = config_dir / "config.toml"
-        config_path.write_text(
-            config_template.render(
-                first_server=first_server, other_servers=other_servers, source_name=self.source_name
-            ),
-            encoding=self.file_encoding,
-        )
-
-    def _build_metadata(self) -> None:
-        if self.meta == MetaType.NONE:
-            return
-
-        self._build_pyproject_toml(use_poetry=self.meta == MetaType.POETRY)
-        if self.meta == MetaType.SETUP:
-            self._build_setup_py()
-
-        # README.md
-        readme = self.project_dir / "README.md"
-        readme_template = self.env.get_template("README.md.j2")
-        readme.write_text(
-            readme_template.render(),
-            encoding=self.file_encoding,
-        )
-
-        # .gitignore
-        git_ignore_path = self.project_dir / ".gitignore"
-        git_ignore_template = self.env.get_template(".gitignore.j2")
-        git_ignore_path.write_text(git_ignore_template.render(), encoding=self.file_encoding)
-
-        # requirements.txt
-        requirements_path = self.project_dir / "requirements.txt"
-        requirements_template = self.env.get_template("requirements.txt.j2")
-        requirements_path.write_text(requirements_template.render(), encoding=self.file_encoding)
-
-    def _build_pyproject_toml(self, *, use_poetry: bool) -> None:
-        template = "pyproject.toml.j2"
-        pyproject_template = self.env.get_template(template)
-        pyproject_path = self.project_dir / "pyproject.toml"
-        pyproject_path.write_text(
-            pyproject_template.render(use_poetry=use_poetry),
-            encoding=self.file_encoding,
-        )
-
-    def _build_setup_py(self) -> None:
-        template = self.env.get_template("setup.py.j2")
-        path = self.project_dir / "setup.py"
-        path.write_text(
-            template.render(),
-            encoding=self.file_encoding,
-        )
-
-    def _build_source(self) -> None:
-        module_path = self.package_dir / "__init__.py"
-        module_path.write_text(
-            self._render_source(),
-            encoding=self.file_encoding,
-        )
-
-    def _render_source(self) -> str:
-        template = self.env.get_template("source.py.j2")
-        return template.render(
-            source_name=self.source_name,
-            endpoint_collection=self.openapi.endpoints,
-            imports=[],
-            credentials=self.openapi.credentials,
-        )
-
-    def _build_pipeline(self) -> None:
-        module_path = self.project_dir / "pipeline.py"
-
-        template = self.env.get_template("pipeline.py.j2")
-        module_path.write_text(
-            template.render(
-                package_name=self.package_name, source_name=self.source_name, dataset_name=self.dataset_name
-            ),
-            encoding=self.file_encoding,
-        )
+        self.renderer.run(self.openapi, dry=dry)
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     url: Optional[str],
     path: Optional[Path],
-    meta: MetaType = MetaType.POETRY,
     config: Config = Config(),
-    custom_template_path: Optional[Path] = None,
-    file_encoding: str = "utf-8",
     endpoint_filter: Optional[TEndpointFilter] = None,
     force_operation_naming: bool = True,
 ) -> Project:
-    openapi = OpenapiParser(url or path, config=config)
-    log.info("Parse spec")
-    openapi.parse()
-    log.info("Parsing completed")
     log.info("Running detector")
     from openapi_python_client.detector.default import DefaultDetector
+    from openapi_python_client.renderer.default import DefaultRenderer
 
-    detector = DefaultDetector(force_operation_naming=force_operation_naming)
-    detector.run(openapi)
     return Project(
-        openapi=openapi,
-        custom_template_path=custom_template_path,
-        meta=meta,
-        file_encoding=file_encoding,
+        openapi=OpenapiParser(config, url or path),
+        detector=DefaultDetector(config, force_operation_naming=force_operation_naming),
+        renderer=DefaultRenderer(config),
         config=config,
         endpoint_filter=endpoint_filter,
     )
@@ -274,10 +84,7 @@ def create_new_client(
     *,
     url: Optional[str] = None,
     path: Optional[Path] = None,
-    meta: MetaType = MetaType.POETRY,
     config: Config = Config(),
-    custom_template_path: Optional[Path] = None,
-    file_encoding: str = "utf-8",
     endpoint_filter: Optional[TEndpointFilter] = None,
 ) -> Project:
     """
@@ -289,11 +96,10 @@ def create_new_client(
     project = _get_project_for_url_or_path(
         url=url,
         path=path,
-        custom_template_path=custom_template_path,
-        meta=meta,
-        file_encoding=file_encoding,
         config=config,
         endpoint_filter=endpoint_filter,
     )
-    project.build()
+    project.parse()
+    project.detect()
+    project.render()
     return project

@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 
 import openapi_schema_pydantic as osp
 
+from openapi_python_client.config import Config
 from openapi_python_client.detector.base_detector import BaseDetector
 from openapi_python_client.detector.default import utils
 from openapi_python_client.detector.default.primary_key import detect_primary_key_by_name
@@ -36,9 +37,10 @@ Tree = Dict[str, Union["str", "Tree"]]
 class DefaultDetector(BaseDetector):
     context: OpenapiContext
 
-    def __init__(self, force_operation_naming: bool = True) -> None:
+    def __init__(self, config: Config, force_operation_naming: bool = True) -> None:
         # forces naming to fallback to operation naming for testing
         self.force_operation_naming = force_operation_naming
+        self.config = config
 
     def run(self, open_api: OpenapiParser) -> None:
         """Run the detector"""

@@ -7,8 +7,8 @@ from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
 
 from openapi_python_client import _get_project_for_url_or_path
-from openapi_python_client.cli import REST_API_SOURCE_LOCATION
 from openapi_python_client.config import Config
+from openapi_python_client.renderer.default import REST_API_SOURCE_LOCATION
 from sources.sources.rest_api.typing import EndpointResource, RESTAPIConfig
 from tests.cases import case_path
 
@@ -36,10 +36,15 @@ Oauth20Credentials = Any
     config = Config()
     config.project_name_override = "test"
     config.package_name_override = "test"
+
+    # get project and render source into string
     project = _get_project_for_url_or_path(
-        url=None, path=case, custom_template_path="../openapi_python_client/template", config=config, force_operation_naming=force_operation_naming  # type: ignore
+        url=None, path=case, config=config, force_operation_naming=force_operation_naming  # type: ignore
     )
-    source = project._render_source()
+    project.parse()
+    project.detect()
+    project.render(dry=True)
+    source = project.renderer._render_source()  # type: ignore
 
     if rt == "dict":
         source = source.replace('@dlt.source(name="test_source", max_table_nesting=2)', "")

@@ -26,7 +26,7 @@ class OpenapiParser:
     credentials: Optional[CredentialsProperty] = None
     context: OpenapiContext
 
-    def __init__(self, spec_file: Union[Path, str], config: Config = Config()) -> None:
+    def __init__(self, config: Config, spec_file: Union[Path, str]) -> None:
         self.spec_file = spec_file
         # self.context = OpenapiContext(config=config)
         self.config = config

@@ -10,7 +10,6 @@ from .config import Config
 from .detector.base_detector import BaseDetector
 from .parser.openapi_parser import OpenapiParser
 from .renderer.base_renderer import BaseRenderer
-from .typing import TEndpointFilter
 
 log = logging.getLogger(__name__)
 
@@ -35,13 +34,11 @@ class Project:  # pylint: disable=too-many-instance-attributes
         detector: BaseDetector,
         renderer: BaseRenderer,
         config: Config,
-        endpoint_filter: Optional[TEndpointFilter] = None,
     ) -> None:
         self.openapi = openapi
         self.detector = detector
         self.renderer = renderer
         self.config = config
-        self.endpoint_filter = endpoint_filter
 
     def parse(self) -> None:
         log.info("Parse spec")
@@ -54,18 +51,18 @@ class Project:  # pylint: disable=too-many-instance-attributes
         log.info("Detecting completed")
 
     def render(self, dry: bool = False) -> None:
-        if self.endpoint_filter:
-            render, deselect = self.endpoint_filter(self.openapi.endpoints)
-            self.openapi.endpoints.set_names_to_render(render, deselect)
+        log.info("Rendering project")
+        if self.config.endpoint_filter:
+            filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
+            self.openapi.endpoints.set_names_to_render(filtered_endpoints)
         self.renderer.run(self.openapi, dry=dry)
+        log.info("Rendering complete")
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     url: Optional[str],
     path: Optional[Path],
     config: Config = Config(),
-    endpoint_filter: Optional[TEndpointFilter] = None,
-    force_operation_naming: bool = True,
 ) -> Project:
     log.info("Running detector")
     from openapi_python_client.detector.default import DefaultDetector
@@ -73,10 +70,9 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
 
     return Project(
         openapi=OpenapiParser(config, url or path),
-        detector=DefaultDetector(config, force_operation_naming=force_operation_naming),
+        detector=DefaultDetector(config),
         renderer=DefaultRenderer(config),
         config=config,
-        endpoint_filter=endpoint_filter,
     )
 
 
@@ -85,19 +81,17 @@ def create_new_client(
     url: Optional[str] = None,
     path: Optional[Path] = None,
     config: Config = Config(),
-    endpoint_filter: Optional[TEndpointFilter] = None,
 ) -> Project:
     """
     Generate the client library
 
     Returns:
-         A list containing any errors encountered when generating.
+        The project.
     """
     project = _get_project_for_url_or_path(
         url=url,
         path=path,
         config=config,
-        endpoint_filter=endpoint_filter,
     )
     project.parse()
     project.detect()

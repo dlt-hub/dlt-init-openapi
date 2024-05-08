@@ -3,7 +3,6 @@ from typing import Optional
 
 import typer
 
-from openapi_python_client import MetaType
 from openapi_python_client.cli.cli_endpoint_selection import questionary_endpoint_selection
 from openapi_python_client.config import Config
 
@@ -21,7 +20,6 @@ def _version_callback(value: bool) -> None:
 def _process_config(path: Optional[pathlib.Path]) -> Config:
     if not path:
         return Config()
-
     try:
         return Config.load_from_path(path=path)
     except Exception as err:
@@ -44,11 +42,6 @@ custom_template_path_options = {
     "readable": True,
     "resolve_path": True,
 }
-
-_meta_option = typer.Option(
-    MetaType.NONE,
-    help="The type of metadata you want to generate.",
-)
 
 CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
 
@@ -75,9 +68,9 @@ def init(
     config = _process_config(config_path)
     config.project_name_override = source
     config.package_name_override = source
+    config.endpoint_filter = questionary_endpoint_selection if interactive else None
     create_new_client(
         url=url,
         path=path,
         config=config,
-        endpoint_filter=questionary_endpoint_selection if interactive else None,
     )

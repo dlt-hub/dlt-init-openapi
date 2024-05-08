@@ -18,7 +18,10 @@ TType = Literal["artificial", "original", "extracted"]
 
 
 def get_source_or_dict_from_open_api(
-    case: str, rt: Literal["source", "dict"] = "source", base_url: str = "base_url", force_operation_naming: bool = True
+    case: str,
+    rt: Literal["source", "dict"] = "source",
+    base_url: str = "base_url",
+    name_resources_by_operation: bool = True,
 ) -> Union[DltSource, RESTAPIConfig]:
     """
     This function renders the source into a string and returns the extracted
@@ -33,14 +36,12 @@ from typing import Any
 Oauth20Credentials = Any
 """
 
-    config = Config()
+    config = Config(name_resources_by_operation=name_resources_by_operation)
     config.project_name_override = "test"
     config.package_name_override = "test"
 
     # get project and render source into string
-    project = _get_project_for_url_or_path(
-        url=None, path=case, config=config, force_operation_naming=force_operation_naming  # type: ignore
-    )
+    project = _get_project_for_url_or_path(url=None, path=case, config=config)  # type: ignore
     project.parse()
     project.detect()
     project.render(dry=True)
@@ -74,18 +75,21 @@ Oauth20Credentials = Any
     return cast(DltSource, module.test_source())
 
 
-def get_source(case: str, base_url: str = "base_url", force_operation_naming: bool = False) -> DltSource:
+def get_source(case: str, base_url: str = "base_url", name_resources_by_operation: bool = False) -> DltSource:
     """Creates source for case path and returns it"""
     return cast(
         DltSource,
-        get_source_or_dict_from_open_api(case, "source", base_url, force_operation_naming=force_operation_naming),
+        get_source_or_dict_from_open_api(
+            case, "source", base_url, name_resources_by_operation=name_resources_by_operation
+        ),
     )
 
 
-def get_dict_by_path(case: str, validate: bool = True, force_operation_naming: bool = False) -> RESTAPIConfig:
+def get_dict_by_path(case: str, validate: bool = True, name_resources_by_operation: bool = False) -> RESTAPIConfig:
     """Renders dict for case path and returns it"""
     api_dict = cast(
-        RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict", force_operation_naming=force_operation_naming)
+        RESTAPIConfig,
+        get_source_or_dict_from_open_api(case, "dict", name_resources_by_operation=name_resources_by_operation),
     )
     api_dict["client"]["base_url"] = "something"
     if validate:
@@ -94,16 +98,18 @@ def get_dict_by_path(case: str, validate: bool = True, force_operation_naming: b
 
 
 def get_dict_by_case(
-    type: TType, case: str, validate: bool = True, force_operation_naming: bool = False
+    type: TType, case: str, validate: bool = True, name_resources_by_operation: bool = False
 ) -> RESTAPIConfig:
     """Renders dict for case path and returns it"""
     path = case_path(type, case)
-    return get_dict_by_path(path, validate=validate, force_operation_naming=force_operation_naming)
+    return get_dict_by_path(path, validate=validate, name_resources_by_operation=name_resources_by_operation)
 
 
-def get_indexed_resources(type: TType, case: str, force_operation_naming: bool = False) -> Dict[str, EndpointResource]:
+def get_indexed_resources(
+    type: TType, case: str, name_resources_by_operation: bool = False
+) -> Dict[str, EndpointResource]:
     """get all found resources indexed by name"""
-    rendered_dict = get_dict_by_case(type, case, force_operation_naming=force_operation_naming)
+    rendered_dict = get_dict_by_case(type, case, name_resources_by_operation=name_resources_by_operation)
     return {entry["name"]: entry for entry in rendered_dict["resources"]}  # type: ignore
 
 

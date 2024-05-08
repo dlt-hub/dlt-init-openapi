@@ -7,7 +7,7 @@ from tests.e2e.utils import get_indexed_resources
 
 @pytest.fixture(scope="module")
 def resources() -> Dict[str, Any]:
-    return get_indexed_resources("artificial", "primary_key.yml", force_operation_naming=True)
+    return get_indexed_resources("artificial", "primary_key.yml", name_resources_by_operation=True)
 
 
 def test_primary_key_no_reference(resources: Dict[str, Any]) -> None:

@@ -1,11 +1,11 @@
-from typing import List, Set, Tuple
+from typing import List, Set
 
 import questionary
 
 from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection
 
 
-def questionary_endpoint_selection(endpoints: EndpointCollection) -> Tuple[Set[str], Set[str]]:
+def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:
     """Endpoint selection with questionary. Returns a Set of endpoint names and a set of endpoints to deselect"""
     choices: List[questionary.Choice] = []
     prev_table_name = ""
@@ -24,16 +24,5 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Tuple[Set[s
         "Which resources would you like to generate?", choices
     ).ask()
 
-    # traverse ancestry chain and find all parents that also need to be rendered
-    selected_names = set()
-    render_names = set()
-    for ep in selected_endpoints:
-        render_names.add(ep.detected_resource_name)
-        selected_names.add(ep.detected_resource_name)
-        while ep.transformer and ep.parent:
-            render_names.add(ep.parent.detected_resource_name)
-            ep = ep.parent
-
-    # we also need to mark the resources that should be rendered, but marked as deselected
-    # this is the second var
-    return render_names, (render_names - selected_names)
+    # return resource names of selected endpoints
+    return {e.detected_resource_name for e in selected_endpoints}

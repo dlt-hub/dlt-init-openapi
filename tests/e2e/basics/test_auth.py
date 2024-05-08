@@ -2,7 +2,7 @@ from tests.e2e.utils import get_dict_by_case
 
 
 def test_bearer_auth() -> None:
-    source_dict = get_dict_by_case("artificial", "auth/bearer_token_auth.yml", force_operation_naming=True)
+    source_dict = get_dict_by_case("artificial", "auth/bearer_token_auth.yml", name_resources_by_operation=True)
     assert source_dict["client"]["auth"] == {"type": "http", "scheme": "bearer", "token": "SECRET_VALUE"}
 
 

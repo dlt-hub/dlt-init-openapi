@@ -9,7 +9,7 @@ DEFAULT_VALUE = "FILL_ME_IN"
 
 @pytest.fixture(scope="module")
 def resources() -> Dict[str, Any]:
-    return get_indexed_resources("artificial", "params.yml", force_operation_naming=True)
+    return get_indexed_resources("artificial", "params.yml", name_resources_by_operation=True)
 
 
 def test_simple_unresolvable_path_params(resources: Dict[str, Any]) -> None:

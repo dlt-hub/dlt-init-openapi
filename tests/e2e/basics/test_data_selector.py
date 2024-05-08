@@ -7,7 +7,7 @@ from tests.e2e.utils import get_indexed_resources
 
 @pytest.fixture(scope="module")
 def data_selectors() -> Dict[str, str]:
-    resources = get_indexed_resources("artificial", "data_selector.yml", force_operation_naming=True)
+    resources = get_indexed_resources("artificial", "data_selector.yml", name_resources_by_operation=True)
     return {name: resource.get("endpoint").get("data_selector") for name, resource in resources.items()}  # type: ignore
 
 

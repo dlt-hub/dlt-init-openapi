@@ -37,9 +37,7 @@ Tree = Dict[str, Union["str", "Tree"]]
 class DefaultDetector(BaseDetector):
     context: OpenapiContext
 
-    def __init__(self, config: Config, force_operation_naming: bool = True) -> None:
-        # forces naming to fallback to operation naming for testing
-        self.force_operation_naming = force_operation_naming
+    def __init__(self, config: Config) -> None:
         self.config = config
 
     def run(self, open_api: OpenapiParser) -> None:
@@ -80,7 +78,7 @@ class DefaultDetector(BaseDetector):
             endpoint.detected_resource_name = name
             endpoint.detected_table_name = name
 
-        if resource_names_are_disctinct() and not self.force_operation_naming:
+        if resource_names_are_disctinct() and not self.config.name_resources_by_operation:
             return
 
         # now we try to build resource names from the path
@@ -89,7 +87,7 @@ class DefaultDetector(BaseDetector):
             e.detected_resource_name = path_table_names[e.path]
             if not e.detected_table_name:
                 e.detected_table_name = path_table_names[e.path]
-        if resource_names_are_disctinct() and not self.force_operation_naming:
+        if resource_names_are_disctinct() and not self.config.name_resources_by_operation:
             return
 
         # last resort, we use the operation id, this should not happen really though

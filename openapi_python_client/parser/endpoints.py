@@ -161,9 +161,27 @@ class EndpointCollection:
         """Endpoints by path"""
         return {ep.path: ep for ep in self.endpoints}
 
-    def set_names_to_render(self, render: Set[str], deselect: Set[str]) -> None:
-        self.names_to_render = render
-        self.names_to_deselect = deselect
+    @property
+    def endpoints_by_detected_resource_name(self) -> Dict[str, Endpoint]:
+        """Endpoints by path"""
+        return {ep.detected_resource_name: ep for ep in self.endpoints}
+
+    def set_names_to_render(self, names: Set[str]) -> None:
+        selected_names = set()
+        render_names = set()
+
+        # traverse ancestry chain and make sure parent endpoints are also marked for rendering
+        # but deselected
+        for name in names:
+            ep = self.endpoints_by_detected_resource_name[name]
+            render_names.add(ep.detected_resource_name)
+            selected_names.add(ep.detected_resource_name)
+            while ep.transformer and ep.parent:
+                render_names.add(ep.parent.detected_resource_name)
+                ep = ep.parent
+
+        self.names_to_render = render_names
+        self.names_to_deselect = render_names - selected_names
 
     @classmethod
     def from_context(cls, context: OpenapiContext) -> "EndpointCollection":

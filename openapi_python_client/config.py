@@ -6,6 +6,8 @@ from typing import Dict, List, Optional
 import yaml
 from pydantic import BaseModel
 
+from .typing import TEndpointFilter
+
 
 class ClassOverride(BaseModel):
     """An override of a single generated class.
@@ -40,6 +42,10 @@ class Config(BaseModel):
     default_openapi_title: str = "openapi"  # Fallback title when openapi info.title is missing or empty
     project_name_suffix: str = "-pipeline"
     dataset_name_suffix: str = "_data"
+    endpoint_filter: Optional[TEndpointFilter] = None
+    """filter for endpoint rendering"""
+    name_resources_by_operation: bool = False
+    """always name resources by operation id, useful for testing"""
 
     @staticmethod
     def load_from_path(path: Path) -> "Config":

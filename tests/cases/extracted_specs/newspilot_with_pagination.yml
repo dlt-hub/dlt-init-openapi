@@ -1,0 +1,285 @@
+openapi: 3.0.2
+info:
+  title: News Pilot
+  description: This documentation is a technical introduction into the NewsPilot
+  version: v1.150.79
+paths:
+  /api/articles/:
+    get:
+      tags:
+        - Articles
+      summary: Search Articles
+      description: Get list of minimized articles according to filters
+      operationId: search_articles_api_articles__get
+      parameters:
+        - required: false
+          schema:
+            title: Query
+            type: string
+          name: query
+          in: query
+        - required: false
+          schema:
+            title: Page
+            type: integer
+            default: 0
+          name: page
+          in: query
+        - required: false
+          schema:
+            title: Articles Per Page
+            type: integer
+            default: 10
+          name: articles_per_page
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  current_date:
+                    title: Current Date
+                    type: string
+                    example: "2020-07-30T12:53:31.219177"
+                  total_items:
+                    title: Total Items
+                    type: int
+                    example: 2
+                  total_pages:
+                    title: Total Pages
+                    type: int
+                    example: 1
+                  items:
+                    title: Items
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 3-11479039
+                        title:
+                          type: string
+                          example: Article title
+                        lead:
+                          type: string
+                          example: Article lead first sentence...
+                        thumbnail:
+                          type: string
+                          example: "https://img2.rtve.es/css/generica_rtve.jpg"
+                        organisation:
+                          type: string
+                          example: Yle
+                        publication_date:
+                          type: string
+                          example: "2020-08-04T12:53:30+00:00"
+components:
+  schemas:
+    QueryOperatorEnum:
+      title: QueryOperatorEnum
+      enum:
+        - AND
+        - OR
+      type: string
+      description: An enumeration.
+    VersionedArticle:
+      title: VersionedArticle
+      required:
+        - id
+        - organisation
+        - original_language
+        - url
+        - publication_date
+        - versions
+      type: object
+      properties:
+        _id:
+          title: " Id"
+          type: string
+          description: MongoDB internal id
+          example: ObjectId('616e9314a4a552f3345ee88e')
+        id:
+          title: Id
+          type: string
+          description: Internal provider id
+          example: article_id
+        organisation:
+          title: Organisation
+          type: string
+          description: Provider organization name
+          example: BBC
+        original_language:
+          allOf:
+            - $ref: "#/components/schemas/LanguageEnum"
+          description: Article original language
+          example: en
+        url:
+          title: Url
+          maxLength: 2083
+          minLength: 1
+          type: string
+          description: Url to the article
+          format: uri
+          example: "https://some.website/article.html"
+        categories:
+          title: Categories
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+          description: List of article categories
+          example:
+            - news
+            - local
+        tags:
+          title: Tags
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+          description: List of article tags
+          example:
+            - news
+            - local
+        author:
+          title: Author
+          type: string
+          description: Name of the author of the article
+          example: Some Author
+        publication_date:
+          title: Publication Date
+          type: string
+          description: Datetime of article publication
+          format: date-time
+          example: "2020-07-08T20:50:43Z"
+        modification_date:
+          title: Modification Date
+          type: string
+          description: Datetime of model's modification time
+          format: date-time
+          example: "2020-07-08T20:50:43Z"
+        expiration_date:
+          title: Expiration Date
+          type: string
+          description: Datetime of article expiration
+          format: date-time
+          example: "2020-07-08T20:50:43Z"
+        longest_media_duration:
+          title: Longest Media Duration
+          type: integer
+          description: Duration of the longest media section
+        contains_media:
+          title: Contains Media
+          type: boolean
+          description: Whether the article contains any media sections
+          default: false
+        contains_video:
+          title: Contains Video
+          type: boolean
+          description: Whether the article contains video media section
+          default: false
+          example: "True"
+        contains_audio:
+          title: Contains Audio
+          type: boolean
+          description: Whether the article contains audio media section
+          default: false
+          example: "True"
+        versions:
+          title: Versions
+          type: array
+          items:
+            $ref: "#/components/schemas/ArticleVersion"
+          description: Available versions of the article
+        languages:
+          type: array
+          items:
+            $ref: "#/components/schemas/LanguageEnum"
+          description: List of available languages
+          example:
+            - en
+            - de
+            - fr
+        editorial_requests:
+          title: Editorial Requests
+          type: array
+          items:
+            $ref: "#/components/schemas/EditorialRequest"
+          description: List of editorial requests.
+          example:
+            - user:
+                id: "1234567"
+                name: Pawel Glimos
+              date: "2024-05-08T10:20:10.917623"
+        editorial_requests_count:
+          title: Editorial Requests Count
+          type: integer
+        score:
+          title: Score
+          type: number
+        topics:
+          title: Topics
+          type: array
+          items:
+            $ref: "#/components/schemas/VersionTopics"
+          description: List of article topics
+        topics_flat:
+          title: Topics Flat
+          type: array
+          items:
+            type: string
+          description: List of flatten topics for elasticsearch
+        summary:
+          title: Summary
+          allOf:
+            - $ref: "#/components/schemas/Summary"
+          description: Summary of an article
+        recoboxes:
+          title: Recoboxes
+          type: array
+          items:
+            type: string
+          description: List of recoboxes' uuids that contain given article.
+        editorial_selection_recoboxes:
+          title: Editorial Selection Recoboxes
+          type: array
+          items:
+            type: string
+          description: >-
+            List of editorial selection recoboxes' uuids that contain given
+            article.
+        metadata:
+          $ref: "#/components/schemas/Metadata"
+        favourites:
+          title: Favourites
+          type: array
+          items:
+            type: string
+          description: List of favourites lists uuids.
+        series:
+          title: Series
+          type: string
+          description: "If an article is a part of a series, the series id"
+        matrix_thread_id:
+          title: Matrix Thread Id
+          type: string
+          description: Matrix thread id used for identifying conversation thread.
+        public_service_algorithm:
+          $ref: "#/components/schemas/PublicServiceAlgorithmValues"
+        psa:
+          title: Psa
+          type: array
+          items:
+            $ref: "#/components/schemas/PSAValue"
+        matrix_room:
+          $ref: "#/components/schemas/MatrixRoom"
+        drafts:
+          title: Drafts
+          type: array
+          items:
+            type: object
+      description: |-
+        What we store in DB
+        Contains array of immutable ArticleVersions

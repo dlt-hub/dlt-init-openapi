@@ -1,0 +1,146 @@
+openapi: 3.1.0
+info:
+  title: PLUPP Open Pollen API
+  description: Open Pollen API
+  version: 0.1.0
+paths:
+  /v1/pollen-types:
+    get:
+      summary: List Pollen
+      description: List all available pollen types.
+      operationId: list_pollen_v1_pollen_types_get
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The starting index of listed items
+            default: 0
+            title: Offset
+          description: The starting index of listed items
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of items to be fetched
+            default: 100
+            title: Limit
+          description: The maximum number of items to be fetched
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedData_PollenType_"
+components:
+  schemas:
+    PaginatedData_PollenType_:
+      properties:
+        _meta:
+          allOf:
+            - $ref: "#/components/schemas/PaginationMeta"
+          description: Meta data for the current page
+        _links:
+          items:
+            $ref: "#/components/schemas/PaginationLink"
+          type: array
+          title: " Links"
+          description: Links to other pages in the pagination
+        items:
+          items:
+            $ref: "#/components/schemas/PollenType"
+          type: array
+          title: Items
+          description: The list of items in the current page
+      type: object
+      required:
+        - _meta
+        - _links
+        - items
+      title: "PaginatedData[PollenType]"
+    PaginationLink:
+      properties:
+        href:
+          anyOf:
+            - type: string
+              maxLength: 2083
+              minLength: 1
+              format: uri
+            - type: "null"
+          title: Href
+          description: Link to another page
+        rel:
+          type: string
+          enum:
+            - self
+            - last
+            - first
+            - next
+            - prev
+          title: Rel
+          description: An indication of how the link relates to the current page
+      type: object
+      required:
+        - href
+        - rel
+      title: PaginationLink
+    PaginationMeta:
+      properties:
+        totalRecords:
+          type: integer
+          title: Totalrecords
+          description: The total number of items available
+        offset:
+          type: integer
+          title: Offset
+          description: The starting index of listed items
+        limit:
+          type: integer
+          title: Limit
+          description: The maximum number of items to be fetched
+        count:
+          type: integer
+          title: Count
+          description: The number of items fetched
+      type: object
+      required:
+        - totalRecords
+        - offset
+        - limit
+        - count
+      title: PaginationMeta
+    PollenType:
+      properties:
+        id:
+          anyOf:
+            - type: string
+              format: uuid
+            - type: "null"
+          title: Id
+          description: >-
+            A pollen ID references a pollen type from the endpoint
+            `/pollen-types`
+          examples:
+            - 8492032d-802a-420d-b8aa-b049e0d13eb0
+        name:
+          type: string
+          title: Name
+        forecasts:
+          type: string
+          maxLength: 2083
+          minLength: 1
+          format: uri
+          title: Forecasts
+          description: URL to a forecast pollen filtering
+          examples:
+            - >-
+              http://localhost:8000/forecast/?pollen_id=3fa85f64-5717-4562-b3fc-2c963f66afa6&current=true
+      type: object
+      required:
+        - id
+        - name
+        - forecasts
+      title: PollenType

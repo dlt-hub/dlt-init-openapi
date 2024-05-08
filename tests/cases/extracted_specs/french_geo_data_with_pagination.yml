@@ -1,0 +1,98 @@
+openapi: 3.0.1
+info:
+  title: "API Géo"
+  version: "1.1"
+  description: "French Geo Data"
+servers:
+  - url: https://geo.api.gouv.fr/
+paths:
+  /regions:
+    get:
+      tags:
+        - Régions
+      summary: Recherche des régions
+      parameters:
+        - name: code
+          in: query
+          description: Code de la région
+          schema:
+            type: string
+        - name: nom
+          in: query
+          description: Nom de la région
+          schema:
+            type: string
+        - name: zone
+          in: query
+          description:
+            "Zone permettant de filtrer à la métropole, aux DROM et aux COM.\
+            \ Défaut à metro,drom sauf pour les communes à metro,drom,com pour conserver\
+            \ le comportement historique."
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - metro
+                - drom
+                - com
+        - name: fields
+          in: query
+          description: Liste des champs souhaités dans la réponse
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - nom
+                - code
+                - zone
+            default: '["nom","code"]'
+      responses:
+        "200":
+          description: La ou les régions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Region"
+components:
+  schemas:
+    Region:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Code de la région
+        nom:
+          type: string
+          description: Nom de la région
+  parameters:
+    regionFieldsParam:
+      name: fields
+      in: query
+      description: Liste des champs souhaités dans la réponse
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - nom
+            - code
+            - zone
+        default: '["nom","code"]'
+    limitParam:
+      name: limit
+      in: query
+      description: Nombre d'éléments à retourner
+      schema:
+        type: integer
+        format: int32
+        default: 0

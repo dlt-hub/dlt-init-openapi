@@ -1,0 +1,39 @@
+openapi: 3.0.2
+info:
+  title: DALICC API
+  description: Data Licenses Clearance Center API
+  version: '1.0'
+paths:
+  /licenselibrary/list:
+    get:
+      tags:
+        - licenselibrary
+      summary: List Licenses In The License Library
+      operationId: list_licenses_in_the_license_library_licenselibrary_list_get
+      parameters:
+        - required: false
+          schema:
+            title: Keyword
+            type: string
+          name: keyword
+          in: query
+        - required: false
+          schema:
+            title: Skip
+            type: integer
+            default: 0
+          name: skip
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 10
+          name: limit
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}

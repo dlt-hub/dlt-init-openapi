@@ -4,7 +4,7 @@ from typing import Optional
 import typer
 
 from openapi_python_client import MetaType
-from openapi_python_client.cli_endpoint_selection import questionary_endpoint_selection
+from openapi_python_client.cli.cli_endpoint_selection import questionary_endpoint_selection
 from openapi_python_client.config import Config
 
 app = typer.Typer()
@@ -63,7 +63,7 @@ def init(
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
-    from . import create_new_client
+    from openapi_python_client import create_new_client
 
     if not url and not path:
         typer.secho("You must either provide --url or --path", fg=typer.colors.RED)

@@ -1,7 +1,7 @@
 import importlib
 import os
 from distutils.dir_util import copy_tree, remove_tree
-from typing import Literal, Union, cast
+from typing import Dict, Iterable, List, Literal, Union, cast
 
 from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
@@ -9,9 +9,12 @@ from dlt.extract.source import DltSource
 from openapi_python_client import _get_project_for_url_or_path
 from openapi_python_client.cli import REST_API_SOURCE_LOCATION
 from openapi_python_client.config import Config
-from sources.sources.rest_api.typing import RESTAPIConfig
+from sources.sources.rest_api.typing import EndpointResource, RESTAPIConfig
+from tests.cases import case_path
 
 LOCAL_DIR = "tests/_local/"
+
+TType = Literal["artificial", "original", "extracted"]
 
 
 def get_source_or_dict_from_open_api(
@@ -66,14 +69,16 @@ Oauth20Credentials = Any
     return cast(DltSource, module.test_source())
 
 
-def get_source_from_open_api(case: str, base_url: str = "base_url", force_operation_naming: bool = False) -> DltSource:
+def get_source(case: str, base_url: str = "base_url", force_operation_naming: bool = False) -> DltSource:
+    """Creates source for case path and returns it"""
     return cast(
         DltSource,
         get_source_or_dict_from_open_api(case, "source", base_url, force_operation_naming=force_operation_naming),
     )
 
 
-def get_dict_from_open_api(case: str, validate: bool = True, force_operation_naming: bool = True) -> RESTAPIConfig:
+def get_dict_by_path(case: str, validate: bool = True, force_operation_naming: bool = False) -> RESTAPIConfig:
+    """Renders dict for case path and returns it"""
     api_dict = cast(
         RESTAPIConfig, get_source_or_dict_from_open_api(case, "dict", force_operation_naming=force_operation_naming)
     )
@@ -81,3 +86,24 @@ def get_dict_from_open_api(case: str, validate: bool = True, force_operation_nam
     if validate:
         validate_dict(RESTAPIConfig, api_dict, path=".")
     return api_dict
+
+
+def get_dict_by_case(
+    type: TType, case: str, validate: bool = True, force_operation_naming: bool = False
+) -> RESTAPIConfig:
+    """Renders dict for case path and returns it"""
+    path = case_path(type, case)
+    return get_dict_by_path(path, validate=validate, force_operation_naming=force_operation_naming)
+
+
+def get_indexed_resources(type: TType, case: str, force_operation_naming: bool = False) -> Dict[str, EndpointResource]:
+    """get all found resources indexed by name"""
+    rendered_dict = get_dict_by_case(type, case, force_operation_naming=force_operation_naming)
+    return {entry["name"]: entry for entry in rendered_dict["resources"]}  # type: ignore
+
+
+def get_all_spec_paths() -> Iterable[str]:
+    for dirpath, dnames, fnames in os.walk("./tests/cases"):
+        for f in fnames:
+            if f.endswith("yml") or f.endswith("json"):
+                yield os.path.join(dirpath, f)

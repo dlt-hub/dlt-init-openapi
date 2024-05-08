@@ -2,22 +2,13 @@ from typing import Any, Dict
 
 import pytest
 
-from tests.cases import get_test_case_path
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")
 def data_selectors() -> Dict[str, str]:
-    case_path = get_test_case_path("content_path_specs.yml")
-    # validate that source will work
-    get_source_from_open_api(case_path)
-
-    # get dict and save paginator info into dict
-    rendered_dict = get_dict_from_open_api(case_path)
-    return {
-        entry["name"]: entry.get("endpoint").get("data_selector")  # type: ignore
-        for entry in rendered_dict["resources"]  # type: ignore
-    }
+    resources = get_indexed_resources("artificial", "data_selector.yml", force_operation_naming=True)
+    return {name: resource.get("endpoint").get("data_selector") for name, resource in resources.items()}  # type: ignore
 
 
 def test_unnested_collection_result(data_selectors: Dict[str, Any]) -> None:

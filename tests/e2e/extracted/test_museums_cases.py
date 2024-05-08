@@ -3,14 +3,12 @@
 #
 import pytest
 
-from tests.cases import get_test_case_path
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_dict_by_case
 
 
 @pytest.mark.skip
 def test_simple_museums_load() -> None:
-    museums_spec = get_test_case_path("museums_api_with_pagination.yml")
-    source = get_dict_from_open_api(museums_spec)
+    source = get_dict_by_case("extracted", "museums_api_with_pagination.yml")
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
@@ -24,15 +22,11 @@ def test_simple_museums_load() -> None:
         },
     }
 
-    # source should also work
-    dltsource = get_source_from_open_api(museums_spec, base_url="https://api.fake-museum-example.com/v1")
-    dltsource.resources["get_museum_hours"].add_limit(15)
-
 
 @pytest.mark.skip
 def test_simple_museums_pagination() -> None:
-    museums_spec = get_test_case_path("museums_api_events_with_pagination.yml")
-    source = get_dict_from_open_api(museums_spec)
+    source = get_dict_by_case("extracted", "museums_api_events_with_pagination.yml")
+
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
@@ -45,7 +39,3 @@ def test_simple_museums_pagination() -> None:
             "type": "offset",
         },
     }
-
-    # source should also work
-    dltsource = get_source_from_open_api(museums_spec, base_url="https://api.fake-museum-example.com/v1")
-    dltsource.resources["list_special_events"].add_limit(15)

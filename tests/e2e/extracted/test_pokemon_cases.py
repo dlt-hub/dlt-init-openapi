@@ -1,35 +1,25 @@
 #
 # Test different iterations of pokemon
 #
-from tests.cases import get_test_case_path
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_dict_by_case
 
 
 def test_simple_poke_load() -> None:
-    simple_poke = get_test_case_path("pokeapi_one_endpoint_no_paginator.yml")
-    source = get_dict_from_open_api(simple_poke)
+    source = get_dict_by_case("extracted", "pokeapi_one_endpoint_no_paginator.yml")
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
-        "name": "pokemon_list",
+        "name": "pokemon",
         "endpoint": {"path": "/api/v2/pokemon/", "data_selector": "$"},
     }
 
-    # source should also work
-    dltsource = get_source_from_open_api(simple_poke, base_url="https://pokeapi.co/", force_operation_naming=True)
-
-    # this will actually hit the pokeapi
-    dltsource.resources["pokemon_list"].add_limit(15)
-    # assert len(list(dltsource.resources["pokemon_list"])) == 300
-
 
 def test_paged_poke_load() -> None:
-    simple_poke = get_test_case_path("pokeapi_one_endpoint.yml")
-    source = get_dict_from_open_api(simple_poke)
+    source = get_dict_by_case("extracted", "pokeapi_one_endpoint.yml")
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
-        "name": "pokemon_list",
+        "name": "Pokemon",
         "primary_key": "id",
         "endpoint": {
             "path": "/api/v2/pokemon/",
@@ -45,13 +35,10 @@ def test_paged_poke_load() -> None:
         },
     }
 
-    # source should also work
-    get_source_from_open_api(simple_poke)
-
 
 def test_simple_child_table_poke_load() -> None:
-    simple_poke = get_test_case_path("pokeapi_parent_child_fixed.yml")
-    source = get_dict_from_open_api(simple_poke)
+    source = get_dict_by_case("extracted", "pokeapi_parent_child_fixed.yml")
+
     assert len(source["resources"]) == 2
 
     # root resource
@@ -87,6 +74,3 @@ def test_simple_child_table_poke_load() -> None:
             },
         },
     }
-
-    # building the source should also work
-    get_source_from_open_api(simple_poke)

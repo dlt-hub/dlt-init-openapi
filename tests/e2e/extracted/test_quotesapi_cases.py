@@ -3,14 +3,13 @@
 #
 import pytest
 
-from tests.cases import get_test_case_path
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_dict_by_case
 
 
 @pytest.mark.skip
 def test_simple_museums_load() -> None:
-    api_spec = get_test_case_path("quotesapi_simple_pagination.yml")
-    source = get_dict_from_open_api(api_spec)
+    source = get_dict_by_case("extracted", "quotesapi_simple_pagination.yml")
+
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
@@ -23,7 +22,3 @@ def test_simple_museums_load() -> None:
             "type": "offset",
         },
     }
-
-    # source should also work
-    dltsource = get_source_from_open_api(api_spec, base_url="https://quotes.rest")
-    dltsource.resources["get_quotelist"].add_limit(15)

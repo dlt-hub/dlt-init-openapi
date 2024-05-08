@@ -2,31 +2,21 @@ from typing import Any, Dict
 
 import pytest
 
-from tests.cases import get_test_case_path
-from tests.e2e.utils import get_dict_from_open_api, get_source_from_open_api
+from tests.e2e.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")
-def transformers() -> Dict[str, str]:
-    case_path = get_test_case_path("transformer_specs.yml")
-    # validate that source will work
-    get_source_from_open_api(case_path)
-
-    # get dict and save paginator info into dict
-    rendered_dict = get_dict_from_open_api(case_path)
-    return {
-        entry["name"]: entry  # type: ignore
-        for entry in rendered_dict["resources"]  # type: ignore
-    }
+def resources() -> Dict[str, Any]:
+    return get_indexed_resources("artificial", "transformer.yml", force_operation_naming=True)
 
 
-def test_simple_transformer(transformers: Dict[str, Any]) -> None:
-    assert transformers["collections"] == {
+def test_simple_transformer(resources: Dict[str, Any]) -> None:
+    assert resources["collections"] == {
         "name": "collections",
         "primary_key": "id",
         "endpoint": {"data_selector": "$", "path": "/collection/"},
     }
-    assert transformers["single_collection"] == {
+    assert resources["single_collection"] == {
         "name": "single_collection",
         "primary_key": "id",
         "endpoint": {
@@ -37,13 +27,13 @@ def test_simple_transformer(transformers: Dict[str, Any]) -> None:
     }
 
 
-def test_match_by_path_var_only(transformers: Dict[str, Any]) -> None:
-    assert transformers["users"] == {
+def test_match_by_path_var_only(resources: Dict[str, Any]) -> None:
+    assert resources["users"] == {
         "name": "users",
         "primary_key": "user_id",
         "endpoint": {"data_selector": "$", "path": "/users/"},
     }
-    assert transformers["single_user"] == {
+    assert resources["single_user"] == {
         "name": "single_user",
         "primary_key": "user_id",
         "endpoint": {
@@ -54,13 +44,13 @@ def test_match_by_path_var_only(transformers: Dict[str, Any]) -> None:
     }
 
 
-def test_match_singularized_path(transformers: Dict[str, Any]) -> None:
-    assert transformers["invoices"] == {
+def test_match_singularized_path(resources: Dict[str, Any]) -> None:
+    assert resources["invoices"] == {
         "name": "invoices",
         "primary_key": "invoice_id",
         "endpoint": {"data_selector": "$", "path": "/invoices/"},
     }
-    assert transformers["single_invoice"] == {
+    assert resources["single_invoice"] == {
         "name": "single_invoice",
         "primary_key": "invoice_id",
         "endpoint": {

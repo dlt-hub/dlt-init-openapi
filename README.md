@@ -34,6 +34,12 @@ poetry shell
 ```
 
 2. Init git submodules
+On fist use of the repo, fetch the **rest api** sources:
+```sh
+git submodule update --init --recursive
+```
+
+On subsequent uses, to get the most up to date source:
 ```sh
 git submodule update --recursive --remote
 ```

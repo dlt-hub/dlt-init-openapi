@@ -4,7 +4,9 @@ import logging
 from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
+
+from dlt_openapi.utils.misc import import_class_from_string
 
 from .config import Config
 from .detector.base_detector import BaseDetector
@@ -65,13 +67,14 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     config: Config = Config(),
 ) -> Project:
     log.info("Running detector")
-    from dlt_openapi.detector.default import DefaultDetector
-    from dlt_openapi.renderer.default import DefaultRenderer
+
+    renderer_cls = cast(BaseRenderer, import_class_from_string(config.renderer_class))
+    detector_cls = cast(BaseDetector, import_class_from_string(config.detector_class))
 
     return Project(
         openapi=OpenapiParser(config, url or path),
-        detector=DefaultDetector(config),
-        renderer=DefaultRenderer(config),
+        detector=detector_cls(config),  # type: ignore
+        renderer=renderer_cls(config),  # type: ignore
         config=config,
     )
 

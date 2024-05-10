@@ -36,6 +36,10 @@ class Config(BaseModel):
     """filter for endpoint rendering"""
     name_resources_by_operation: bool = False
     """always name resources by operation id, useful for testing"""
+    renderer_class: str = "dlt_openapi.renderer.default.DefaultRenderer"
+    """Which class to use for rendering"""
+    detector_class: str = "dlt_openapi.detector.default.DefaultDetector"
+    """Which class to use for detecting"""
 
     @staticmethod
     def load_from_path(path: Path) -> "Config":

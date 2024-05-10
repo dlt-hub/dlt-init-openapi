@@ -28,6 +28,7 @@ class TransformerSetting:
 class Response:
     osp_response: osp.Response
     schema: Optional[SchemaWrapper]
+    status_code: str
     # detected values
     detected_payload: Optional[DataPropertyPath] = None
     detected_primary_key: Optional[str] = None
@@ -41,6 +42,7 @@ class Endpoint:
     method: TMethod
     path: str
     parameters: Dict[str, Parameter]
+    responses: List[Response]
     operation_id: str
     summary: Optional[str] = None
     description: Optional[str] = None
@@ -51,7 +53,7 @@ class Endpoint:
 
     # detected values
     detected_pagination: Optional[Pagination] = None
-    detected_response: Optional[Response] = None
+    detected_data_response: Optional[Response] = None
     detected_resource_name: Optional[str] = None
     detected_table_name: Optional[str] = None
     detected_parent: Optional["Endpoint"] = None
@@ -61,7 +63,7 @@ class Endpoint:
     @property
     def payload(self) -> Optional[DataPropertyPath]:
         """gets payload dataproperty path if detected"""
-        return self.detected_response.detected_payload if self.detected_response else None
+        return self.detected_data_response.detected_payload if self.detected_data_response else None
 
     @property
     def is_list(self) -> bool:
@@ -74,7 +76,7 @@ class Endpoint:
 
     @property
     def primary_key(self) -> Optional[str]:
-        return self.detected_response.detected_primary_key if self.detected_response else None
+        return self.detected_data_response.detected_primary_key if self.detected_data_response else None
 
     @property
     def list_all_parameters(self) -> List[Parameter]:
@@ -126,10 +128,24 @@ class Endpoint:
             {p.name: p for p in (Parameter.from_reference(param, context) for param in osp_operation.parameters or [])}
         )
 
+        # get all responses
+        responses: List[Response] = []
+        for status_code, response_ref in osp_operation.responses.items() or []:
+            # find json content schema
+            response_schema = context.response_from_reference(response_ref)
+            content_schema: Optional[SchemaWrapper] = None
+            for content_type, media_type in (response_schema.content or {}).items():
+                if content_type.endswith("json") and media_type.media_type_schema:
+                    content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
+                    break
+
+            responses.append(Response(osp_response=response_schema, schema=content_schema, status_code=status_code))
+
         return cls(
             method=method,
             path=path,
             osp_operation=osp_operation,
+            responses=responses,
             parameters=all_params,
             operation_id=osp_operation.operationId or f"{method}_{path}",
             summary=osp_operation.summary,

@@ -1,6 +1,7 @@
 import builtins
 import re
 from email.message import Message
+from importlib import import_module
 from keyword import iskeyword
 from typing import Any, Dict, Iterable, List, Sequence, TypeVar
 
@@ -110,3 +111,23 @@ def count_by_length(items: Iterable[Sequence[Any]]) -> Dict[int, int]:
 
 def unique_list(items: Sequence[T]) -> List[T]:
     return list({k: None for k in items}.keys())
+
+
+def import_class_from_string(dotted_path: str) -> object:
+    """
+    Import a dotted module path and return the attribute/class designated by the
+    last name in the path. Raise ImportError if the import failed.
+    """
+    try:
+        module_path, class_name = dotted_path.rsplit(".", 1)
+    except ValueError:
+        msg = "%s doesn't look like a module path" % dotted_path
+        raise ImportError(msg)
+
+    module = import_module(module_path)
+
+    try:
+        return getattr(module, class_name)
+    except AttributeError:
+        msg = 'Module "%s" does not define a "%s" attribute/class' % (module_path, class_name)
+        raise ImportError(msg)

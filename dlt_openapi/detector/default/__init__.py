@@ -3,15 +3,13 @@ Default open source detector
 """
 from typing import Dict, List, Optional, Tuple, Union, cast
 
-import openapi_schema_pydantic as osp
-
 from dlt_openapi.config import Config
 from dlt_openapi.detector.base_detector import BaseDetector
 from dlt_openapi.detector.default import utils
 from dlt_openapi.detector.default.primary_key import detect_primary_key_by_name
 from dlt_openapi.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
-from dlt_openapi.parser.models import DataPropertyPath, SchemaWrapper
-from dlt_openapi.parser.openapi_parser import OpenapiContext, OpenapiParser
+from dlt_openapi.parser.models import DataPropertyPath
+from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.parser.pagination import Pagination
 from dlt_openapi.parser.parameters import Parameter
 from dlt_openapi.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list, table_names_from_paths
@@ -30,14 +28,11 @@ Tree = Dict[str, Union["str", "Tree"]]
 
 
 class DefaultDetector(BaseDetector):
-    context: OpenapiContext
-
     def __init__(self, config: Config) -> None:
         self.config = config
 
     def run(self, open_api: OpenapiParser) -> None:
         """Run the detector"""
-        self.context = open_api.context
 
         # discover stuff from responses
         self.detect_paginators_and_responses(open_api.endpoints)
@@ -125,18 +120,18 @@ class DefaultDetector(BaseDetector):
         # detections
         for endpoint in endpoints.endpoints:
             # first detect response
-            endpoint.detected_response = self.detect_response_and_pagination(endpoint)
+            endpoint.detected_data_response = self.detect_main_response(endpoint)
 
             # then detect pagination
             endpoint.detected_pagination = self.detect_pagination(endpoint)
 
             # with this info we can more safely detect the response payload
-            if endpoint.detected_response:
+            if endpoint.detected_data_response:
                 expect_list = (endpoint.detected_pagination is not None) or path_looks_like_list(endpoint.path)
-                endpoint.detected_response.detected_payload = self.detect_response_payload(
-                    endpoint.detected_response, expect_list=expect_list
+                endpoint.detected_data_response.detected_payload = self.detect_response_payload(
+                    endpoint.detected_data_response, expect_list=expect_list
                 )
-                self.detect_primary_key(endpoint.detected_response, endpoint.path)
+                self.detect_primary_key(endpoint.detected_data_response, endpoint.path)
 
     def detect_primary_key(self, response: Response, path: str) -> None:
         """detect the primary key from the payload"""
@@ -171,32 +166,19 @@ class DefaultDetector(BaseDetector):
         elif uuid_paths:
             response.detected_primary_key = uuid_paths[0]
 
-    def detect_response_and_pagination(self, endpoint: Endpoint) -> Optional[Response]:
+    def detect_main_response(self, endpoint: Endpoint) -> Optional[Response]:
         """Get main response and pagination for endpoint"""
 
         # find main response in list of responses
-        main_ref: Union[osp.Reference, osp.Response] = None
-        for status_code, response_ref in endpoint.osp_operation.responses.items() or []:
-            if status_code in ["200", "default"]:
-                main_ref = response_ref
+        main_response: Response = None
+        for response in endpoint.responses:
+            if response.status_code in ["200", "default"]:
+                main_response = response
                 break  # this will always be the right one
-            if str(status_code).startswith("2") and not main_ref:
-                main_ref = response_ref
+            if response.status_code.startswith("2") and not main_response:
+                main_response = response
 
-        # nothing found, return None
-        if not main_ref:
-            return None
-
-        # find json content schema
-        response_schema = self.context.response_from_reference(main_ref)
-        content_schema: Optional[SchemaWrapper] = None
-        for content_type, media_type in (response_schema.content or {}).items():
-            if content_type.endswith("json") and media_type.media_type_schema:
-                content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, self.context)
-                break
-
-        # build basic response, detect payload path later
-        return Response(osp_response=response_schema, schema=content_schema)
+        return main_response
 
     def detect_response_payload(self, response: Response, expect_list: bool) -> Optional[DataPropertyPath]:
         """Detect payload path in given schema"""
@@ -227,7 +209,7 @@ class DefaultDetector(BaseDetector):
     def detect_pagination(self, endpoint: Endpoint) -> Optional[Pagination]:
         """Detect pagination from discovered main response and params of an endpoint"""
 
-        response_schema = endpoint.detected_response.schema if endpoint.detected_response else None
+        response_schema = endpoint.detected_data_response.schema if endpoint.detected_data_response else None
         if not response_schema:
             return None
 

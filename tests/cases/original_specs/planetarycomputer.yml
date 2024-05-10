@@ -1,0 +1,652 @@
+# https://planetarycomputer.microsoft.com/api/stac/v1/docs
+openapi: 3.0.2
+info:
+  title: Microsoft Planetary Computer STAC API
+  description: >-
+    Searchable spatiotemporal metadata describing Earth science datasets hosted
+    by the Microsoft Planetary Computer
+  version: "1.2"
+servers:
+  - url: /api/stac/v1
+components:
+  schemas:
+    FilterLang:
+      title: FilterLang
+      enum:
+        - cql-json
+        - cql2-json
+        - cql2-text
+      type: string
+      description: >-
+        Choices for filter-lang value in a POST request.
+
+
+        Based on
+        https://github.com/radiantearth/stac-api-spec/tree/master/fragments/filter#queryables
+
+
+        Note the addition of cql2-json, which is used by the pgstac backend,
+
+        but is not included in the spec above.
+    GeometryCollection:
+      title: GeometryCollection
+      required:
+        - geometries
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: GeometryCollection
+          const: GeometryCollection
+        geometries:
+          title: Geometries
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/Point"
+              - $ref: "#/components/schemas/MultiPoint"
+              - $ref: "#/components/schemas/LineString"
+              - $ref: "#/components/schemas/MultiLineString"
+              - $ref: "#/components/schemas/Polygon"
+              - $ref: "#/components/schemas/MultiPolygon"
+      description: GeometryCollection Model
+    LineString:
+      title: LineString
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: LineString
+          const: LineString
+        coordinates:
+          title: Coordinates
+          minItems: 2
+          type: array
+          items:
+            anyOf:
+              - maxItems: 2
+                minItems: 2
+                type: array
+                items:
+                  type: number
+              - maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  type: number
+      description: LineString Model
+    MultiLineString:
+      title: MultiLineString
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiLineString
+          const: MultiLineString
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 2
+            type: array
+            items:
+              anyOf:
+                - maxItems: 2
+                  minItems: 2
+                  type: array
+                  items:
+                    type: number
+                - maxItems: 3
+                  minItems: 3
+                  type: array
+                  items:
+                    type: number
+      description: MultiLineString Model
+    MultiPoint:
+      title: MultiPoint
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiPoint
+          const: MultiPoint
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            anyOf:
+              - maxItems: 2
+                minItems: 2
+                type: array
+                items:
+                  type: number
+              - maxItems: 3
+                minItems: 3
+                type: array
+                items:
+                  type: number
+      description: MultiPoint Model
+    MultiPolygon:
+      title: MultiPolygon
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: MultiPolygon
+          const: MultiPolygon
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 1
+            type: array
+            items:
+              minItems: 4
+              type: array
+              items:
+                anyOf:
+                  - maxItems: 2
+                    minItems: 2
+                    type: array
+                    items:
+                      type: number
+                  - maxItems: 3
+                    minItems: 3
+                    type: array
+                    items:
+                      type: number
+      description: MultiPolygon Model
+    Point:
+      title: Point
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Point
+          const: Point
+        coordinates:
+          title: Coordinates
+          anyOf:
+            - maxItems: 2
+              minItems: 2
+              type: array
+              items:
+                type: number
+            - maxItems: 3
+              minItems: 3
+              type: array
+              items:
+                type: number
+      description: Point Model
+    Polygon:
+      title: Polygon
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Polygon
+          const: Polygon
+        coordinates:
+          title: Coordinates
+          minItems: 1
+          type: array
+          items:
+            minItems: 4
+            type: array
+            items:
+              anyOf:
+                - maxItems: 2
+                  minItems: 2
+                  type: array
+                  items:
+                    type: number
+                - maxItems: 3
+                  minItems: 3
+                  type: array
+                  items:
+                    type: number
+      description: Polygon Model
+    PostFieldsExtension:
+      title: PostFieldsExtension
+      type: object
+      properties:
+        include:
+          title: Include
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+          default: []
+        exclude:
+          title: Exclude
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+          default: []
+      description: |-
+        FieldsExtension.
+
+        Attributes:
+            include: set of fields to include.
+            exclude: set of fields to exclude.
+    SearchPostRequest:
+      title: SearchPostRequest
+      type: object
+      properties:
+        collections:
+          title: Collections
+          type: array
+          items:
+            type: string
+          extra: {}
+        ids:
+          title: Ids
+          type: array
+          items:
+            type: string
+          extra: {}
+        bbox:
+          title: Bbox
+          anyOf:
+            - maxItems: 4
+              minItems: 4
+              type: array
+              items:
+                anyOf:
+                  - type: number
+                  - type: integer
+            - maxItems: 6
+              minItems: 6
+              type: array
+              items:
+                anyOf:
+                  - type: number
+                  - type: integer
+          extra: {}
+        intersects:
+          title: Intersects
+          anyOf:
+            - $ref: "#/components/schemas/Point"
+            - $ref: "#/components/schemas/MultiPoint"
+            - $ref: "#/components/schemas/LineString"
+            - $ref: "#/components/schemas/MultiLineString"
+            - $ref: "#/components/schemas/Polygon"
+            - $ref: "#/components/schemas/MultiPolygon"
+            - $ref: "#/components/schemas/GeometryCollection"
+          extra: {}
+        datetime:
+          title: Datetime
+          type: string
+          extra: {}
+        limit:
+          title: Limit
+          maximum: 1000
+          minimum: 1
+          type: integer
+          default: 250
+          extra: {}
+        conf:
+          title: Conf
+          type: object
+          extra: {}
+        query:
+          title: Query
+          type: object
+          additionalProperties:
+            type: object
+          extra: {}
+        sortby:
+          title: Sortby
+          type: array
+          items:
+            $ref: "#/components/schemas/SortExtension"
+          extra: {}
+        fields:
+          title: Fields
+          allOf:
+            - $ref: "#/components/schemas/PostFieldsExtension"
+          default:
+            include: []
+            exclude: []
+          extra: {}
+        filter:
+          title: Filter
+          type: object
+          extra: {}
+        filter-crs:
+          title: Filter-Crs
+          type: string
+          extra: {}
+        filter-lang:
+          allOf:
+            - $ref: "#/components/schemas/FilterLang"
+          default: cql-json
+          extra: {}
+        token:
+          title: Token
+          type: string
+          extra: {}
+      description: |-
+        Search model.
+
+        Overrides the validation for datetime from the base request model.
+    SortDirections:
+      title: SortDirections
+      enum:
+        - asc
+        - desc
+      type: string
+      description: An enumeration.
+    SortExtension:
+      title: SortExtension
+      required:
+        - field
+        - direction
+      type: object
+      properties:
+        field:
+          title: Field
+          minLength: 1
+          type: string
+        direction:
+          $ref: "#/components/schemas/SortDirections"
+      description: >-
+        https://github.com/radiantearth/stac-api-spec/tree/master/extensions/sort#sort-api-extension
+paths:
+  /api/stac/v1/:
+    get:
+      summary: Landing Page
+      description: Endpoint.
+      operationId: Landing_Page__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  /api/stac/v1/conformance:
+    get:
+      summary: Conformance Classes
+      description: Endpoint.
+      operationId: Conformance_Classes_conformance_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  "/api/stac/v1/collections/{collection_id}/items/{item_id}":
+    get:
+      summary: Get Item
+      description: Endpoint.
+      operationId: Get_Item_collections__collection_id__items__item_id__get
+      parameters:
+        - description: Collection ID
+          required: true
+          schema:
+            title: Collection Id
+            type: string
+            description: Collection ID
+          name: collection_id
+          in: path
+        - description: Item ID
+          required: true
+          schema:
+            title: Item Id
+            type: string
+            description: Item ID
+          name: item_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/geo+json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  /api/stac/v1/search:
+    get:
+      summary: Search
+      description: Endpoint.
+      operationId: Search_search_get
+      parameters:
+        - required: false
+          schema:
+            title: Collections
+            type: string
+          name: collections
+          in: query
+        - required: false
+          schema:
+            title: Ids
+            type: string
+          name: ids
+          in: query
+        - required: false
+          schema:
+            title: Bbox
+            type: string
+          name: bbox
+          in: query
+        - required: false
+          schema:
+            title: Intersects
+            type: string
+          name: intersects
+          in: query
+        - required: false
+          schema:
+            title: Datetime
+            type: string
+          name: datetime
+          in: query
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 250
+          name: limit
+          in: query
+        - required: false
+          schema:
+            title: Query
+            type: string
+          name: query
+          in: query
+        - required: false
+          schema:
+            title: Sortby
+            type: string
+          name: sortby
+          in: query
+        - required: false
+          schema:
+            title: Fields
+            type: string
+          name: fields
+          in: query
+        - required: false
+          schema:
+            title: Filter
+            type: string
+          name: filter
+          in: query
+        - required: false
+          schema:
+            title: Token
+            type: string
+          name: token
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/geo+json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+    post:
+      summary: Search
+      description: Endpoint.
+      operationId: Search_search_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchPostRequest"
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/geo+json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  /api/stac/v1/collections:
+    get:
+      summary: Get Collections
+      description: Endpoint.
+      operationId: Get_Collections_collections_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  "/api/stac/v1/collections/{collection_id}":
+    get:
+      summary: Get Collection
+      description: Endpoint.
+      operationId: Get_Collection_collections__collection_id__get
+      parameters:
+        - description: Collection ID
+          required: true
+          schema:
+            title: Collection Id
+            type: string
+            description: Collection ID
+          name: collection_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  "/api/stac/v1/collections/{collection_id}/items":
+    get:
+      summary: Get Itemcollection
+      description: Endpoint.
+      operationId: Get_ItemCollection_collections__collection_id__items_get
+      parameters:
+        - description: Collection ID
+          required: true
+          schema:
+            title: Collection Id
+            type: string
+            description: Collection ID
+          name: collection_id
+          in: path
+        - required: false
+          schema:
+            title: Limit
+            type: integer
+            default: 10
+          name: limit
+          in: query
+        - required: false
+          schema:
+            title: Bbox
+            type: string
+          name: bbox
+          in: query
+        - required: false
+          schema:
+            title: Datetime
+            type: string
+          name: datetime
+          in: query
+        - required: false
+          schema:
+            title: Token
+            type: string
+          name: token
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/geo+json:
+              schema: {}
+      tags:
+        - STAC API v1.0.0-rc.1
+  /api/stac/v1/queryables:
+    get:
+      tags:
+        - Filter Extension
+        - STAC API v1.0.0-rc.1
+      summary: Queryables
+      description: Endpoint.
+      operationId: Queryables_queryables_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  "/api/stac/v1/collections/{collection_id}/queryables":
+    get:
+      tags:
+        - Filter Extension
+        - STAC API v1.0.0-rc.1
+      summary: Collection Queryables
+      description: Endpoint.
+      operationId: Collection_Queryables_collections__collection_id__queryables_get
+      parameters:
+        - description: Collection ID
+          required: true
+          schema:
+            title: Collection Id
+            type: string
+            description: Collection ID
+          name: collection_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}

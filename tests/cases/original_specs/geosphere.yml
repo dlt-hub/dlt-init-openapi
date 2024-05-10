@@ -1,0 +1,1944 @@
+# Public geo datasets https://dataset.api.hub.geosphere.at/v1/openapi-docs
+openapi: 3.0.2
+info:
+  title: FastAPI
+  version: 0.2.0
+servers:
+  - url: /v1
+paths:
+  /datasets:
+    get:
+      tags:
+        - all datasets
+      summary: View And Filter All Available Datasets
+      operationId: View_and_filter_all_available_datasets_datasets_get
+      parameters:
+        - required: false
+          schema:
+            $ref: "#/components/schemas/EndpointType"
+          name: type
+          in: query
+        - required: false
+          schema:
+            $ref: "#/components/schemas/EndpointMode"
+          name: mode
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response View And Filter All Available Datasets Datasets Get
+                type: object
+                additionalProperties:
+                  $ref: "#/components/schemas/Dataset"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/grid/historical/{resource_id}/metadata":
+    get:
+      tags:
+        - grid
+        - historical
+        - metadata
+      summary: Historical Grid Metadata
+      operationId: Historical_Grid_Metadata_grid_historical__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: inca-v1-1h-1km
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridHistoricalMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/grid/historical/{resource_id}/metadata/parameters":
+    get:
+      tags:
+        - grid
+        - historical
+        - metadata
+      summary: Historical Grid Parameter Metadata Csv
+      operationId: >-
+        Historical_Grid_Parameter_Metadata_CSV_grid_historical__resource_id__metadata_parameters_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: inca-v1-1h-1km
+          name: resource_id
+          in: path
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/grid/historical/{resource_id}":
+    get:
+      tags:
+        - grid
+        - historical
+      summary: Historical Grid Data
+      operationId: Historical_Grid_Data_grid_historical__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: inca-v1-1h-1km
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - RR
+          name: parameters
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: Start
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: start
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: End
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: end
+          in: query
+        - description: "Supply in format *south,west,north,east*"
+          required: true
+          schema:
+            title: Bbox
+            type: string
+            description: "Supply in format *south,west,north,east*"
+          example: "47.45,14.05,47.50,14.10"
+          name: bbox
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - netcdf
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridGeoJSONSerializer"
+            application/x-netcdf:
+              schema:
+                type: string
+                format: byte
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/grid/forecast/{resource_id}/metadata":
+    get:
+      tags:
+        - grid
+        - forecast
+        - metadata
+      summary: Grid Forecast Metadata
+      operationId: Grid_Forecast_Metadata_grid_forecast__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: nwp-v1-1h-2500m
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridForecastMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/grid/forecast/{resource_id}":
+    get:
+      tags:
+        - grid
+        - forecast
+      summary: Grid Forecast Data
+      operationId: Grid_Forecast_Data_grid_forecast__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: nwp-v1-1h-2500m
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - t2m
+          name: parameters
+          in: query
+        - description: "Supply in format *south,west,north,east*"
+          required: true
+          schema:
+            title: Bbox
+            type: string
+            description: "Supply in format *south,west,north,east*"
+          example: "47.45,14.05,47.50,14.10"
+          name: bbox
+          in: query
+        - description: >-
+            This parameter allows to access historical forecasts. If this
+            parameter is not set the most recently created forecast is returned.
+            If an integer value is given an older forecast is returned, where
+            value is the 'age' of the forecast. 0 is the most recent forecast, 1
+            is the second to last forecast, and so on.
+          required: false
+          schema:
+            title: Forecast Offset
+            type: integer
+            description: >-
+              This parameter allows to access historical forecasts. If this
+              parameter is not set the most recently created forecast is
+              returned. If an integer value is given an older forecast is
+              returned, where value is the 'age' of the forecast. 0 is the most
+              recent forecast, 1 is the second to last forecast, and so on.
+            default: 0
+          example: 0
+          name: forecast_offset
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: false
+          schema:
+            title: Start
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: start
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: false
+          schema:
+            title: End
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: end
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - netcdf
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridForecastGeoJSONSerializer"
+            application/x-netcdf:
+              schema:
+                type: string
+                format: byte
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/timeseries/historical/{resource_id}/metadata":
+    get:
+      tags:
+        - timeseries
+        - historical
+        - metadata
+      summary: Historical Timeseries Metadata
+      operationId: >-
+        Historical_Timeseries_Metadata_timeseries_historical__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: inca-v1-1h-1km
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridHistoricalMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/timeseries/historical/{resource_id}":
+    get:
+      tags:
+        - timeseries
+        - historical
+      summary: Historical Timeseries
+      operationId: Historical_Timeseries_timeseries_historical__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: inca-v1-1h-1km
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - RR
+          name: parameters
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: Start
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: start
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: End
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: end
+          in: query
+        - description: "Strings of 'LAT,LON'."
+          required: true
+          schema:
+            title: Lat Lon
+            type: array
+            items:
+              type: string
+            description: "Strings of 'LAT,LON'."
+          example:
+            - "48.206248,16.367569"
+            - "47.262886,11.394676"
+          name: lat_lon
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - csv
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeseriesGeoJSONSerializer"
+            text/csv:
+              schema:
+                type: string
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/timeseries/forecast/{resource_id}/metadata":
+    get:
+      tags:
+        - timeseries
+        - forecast
+        - metadata
+      summary: Timeseries Forecast Metadata
+      operationId: >-
+        Timeseries_Forecast_Metadata_timeseries_forecast__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: nwp-v1-1h-2500m
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GridForecastMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/timeseries/forecast/{resource_id}":
+    get:
+      tags:
+        - timeseries
+        - forecast
+      summary: Timeseries Forecast
+      operationId: Timeseries_Forecast_timeseries_forecast__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: nwp-v1-1h-2500m
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - RR
+          name: parameters
+          in: query
+        - description: "Strings of 'LAT,LON'."
+          required: true
+          schema:
+            title: Lat Lon
+            type: array
+            items:
+              type: string
+            description: "Strings of 'LAT,LON'."
+          example:
+            - "48.206248,16.367569"
+            - "47.262886,11.394676"
+          name: lat_lon
+          in: query
+        - description: >-
+            This parameter allows to access historical forecasts. If this
+            parameter is not set the most recently created forecast is returned.
+            If an integer value is given an older forecast is returned, where
+            value is the 'age' of the forecast. 0 is the most recent forecast, 1
+            is the second to last forecast, and so on.
+          required: false
+          schema:
+            title: Forecast Offset
+            type: integer
+            description: >-
+              This parameter allows to access historical forecasts. If this
+              parameter is not set the most recently created forecast is
+              returned. If an integer value is given an older forecast is
+              returned, where value is the 'age' of the forecast. 0 is the most
+              recent forecast, 1 is the second to last forecast, and so on.
+            default: 0
+          example: 0
+          name: forecast_offset
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: false
+          schema:
+            title: Start
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: start
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: false
+          schema:
+            title: End
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: end
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - csv
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimeseriesForecastGeoJSONSerializer"
+            text/csv:
+              schema:
+                type: string
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/{mode}/{resource_id}/filter":
+    get:
+      tags:
+        - station
+      summary: Filter Stations
+      operationId: Filter_Stations_station__mode___resource_id__filter_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: klima-v1-10min
+          name: resource_id
+          in: path
+        - required: true
+          schema:
+            $ref: "#/components/schemas/StationFilterEndpointMode"
+          name: mode
+          in: path
+        - description: Restricts output to stations that have one of the given ids.
+          required: false
+          schema:
+            title: Id
+            type: array
+            items:
+              type: string
+            description: Restricts output to stations that have one of the given ids.
+          name: id
+          in: query
+        - description: >-
+            Restricts output to stations whose name contains one of the given
+            strings.
+          required: false
+          schema:
+            title: Name
+            type: array
+            items:
+              type: string
+            description: >-
+              Restricts output to stations whose name contains one of the given
+              strings.
+          name: name
+          in: query
+        - description: >-
+            Restricts output to stations who are located in one of the given
+            states
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Bundesland"
+            description: >-
+              Restricts output to stations who are located in one of the given
+              states
+          name: state
+          in: query
+        - description: "Supply in format: *YYYY-MM-DD* or *YYYY-MM-DDTHH:mm*"
+          required: false
+          schema:
+            title: Start Date
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DD* or *YYYY-MM-DDTHH:mm*"
+          example: "2021-01-01"
+          name: start_date
+          in: query
+        - description: "Supply in format: *YYYY-MM-DD* or *YYYY-MM-DDTHH:mm*"
+          required: false
+          schema:
+            title: End Date
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DD* or *YYYY-MM-DDTHH:mm*"
+          example: "2021-01-01"
+          name: end_date
+          in: query
+        - description: Physical unit is *m*
+          required: false
+          schema:
+            title: Min Altitude
+            type: integer
+            description: Physical unit is *m*
+          name: min_altitude
+          in: query
+        - description: Physical unit is *m*
+          required: false
+          schema:
+            title: Max Altitude
+            type: integer
+            description: Physical unit is *m*
+          name: max_altitude
+          in: query
+        - required: false
+          schema:
+            title: Has Sunshine
+            type: boolean
+          name: has_sunshine
+          in: query
+        - required: false
+          schema:
+            title: Has Global Radiation
+            type: boolean
+          name: has_global_radiation
+          in: query
+        - required: false
+          schema:
+            title: Is Active
+            type: boolean
+          name: is_active
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationFilterResponseDto"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/historical/{resource_id}/metadata":
+    get:
+      tags:
+        - station
+        - historical
+        - metadata
+      summary: Historical Station Metadata
+      operationId: >-
+        Historical_Station_Metadata_station_historical__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: klima-v1-10min
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationHistoricalMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/historical/{resource_id}/metadata/{mdtype}":
+    get:
+      tags:
+        - station
+        - historical
+        - metadata
+      summary: Historical Station Metadata Csv
+      operationId: >-
+        Historical_Station_Metadata_CSV_station_historical__resource_id__metadata__mdtype__get
+      parameters:
+        - required: true
+          schema:
+            $ref: "#/components/schemas/MDType"
+          name: mdtype
+          in: path
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: klima-v1-10min
+          name: resource_id
+          in: path
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/historical/{resource_id}":
+    get:
+      tags:
+        - station
+        - historical
+      summary: Historical Station Data
+      operationId: Historical_Station_Data_station_historical__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: klima-v1-10min
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - RR
+          name: parameters
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: Start
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: start
+          in: query
+        - description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          required: true
+          schema:
+            title: End
+            anyOf:
+              - type: string
+                format: date
+              - type: string
+                format: date-time
+            description: "Supply in format: *YYYY-MM-DDThh:mm*. Time is optional."
+          example: "2021-01-01T00:00"
+          name: end
+          in: query
+        - description: At least one station id has to be specified.
+          required: true
+          schema:
+            title: Station Ids
+            type: array
+            items:
+              type: string
+            description: At least one station id has to be specified.
+          example:
+            - "5882"
+          name: station_ids
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - csv
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationGeoJSONSerializer"
+            text/csv:
+              schema:
+                type: string
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/current/{resource_id}/metadata":
+    get:
+      tags:
+        - station
+        - current
+        - metadata
+      summary: Current Station Metadata
+      operationId: Current_Station_Metadata_station_current__resource_id__metadata_get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: tawes-v1-10min
+          name: resource_id
+          in: path
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationCurrentMetadataModel"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  "/station/current/{resource_id}":
+    get:
+      tags:
+        - station
+        - current
+      summary: Current Station Data
+      operationId: Current_Station_Data_station_current__resource_id__get
+      parameters:
+        - description: ID of dataset
+          required: true
+          schema:
+            title: Resource Id
+            type: string
+            description: ID of dataset
+          example: tawes-v1-10min
+          name: resource_id
+          in: path
+        - description: At least one parameter has to be specified.
+          required: true
+          schema:
+            title: Parameters
+            type: array
+            items:
+              type: string
+            description: At least one parameter has to be specified.
+          example:
+            - RR
+          name: parameters
+          in: query
+        - description: At least one station id has to be specified.
+          required: true
+          schema:
+            title: Station Ids
+            type: array
+            items:
+              type: string
+            description: At least one station id has to be specified.
+          example:
+            - "11035"
+          name: station_ids
+          in: query
+        - required: false
+          schema:
+            title: Output Format
+            enum:
+              - geojson
+              - csv
+            type: string
+            default: geojson
+          name: output_format
+          in: query
+        - description: Filename without file extension
+          required: false
+          schema:
+            title: Filename
+            type: string
+            description: Filename without file extension
+          name: filename
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationGeoJSONSerializer"
+            text/csv:
+              schema:
+                type: string
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    Bundesland:
+      title: Bundesland
+      enum:
+        - Burgenland
+        - Kärnten
+        - Niederösterreich
+        - Oberösterreich
+        - Salzburg
+        - Steiermark
+        - Tirol
+        - Vorarlberg
+        - Wien
+      type: string
+      description: An enumeration.
+    Dataset:
+      title: Dataset
+      required:
+        - type
+        - mode
+        - response_formats
+        - url
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/EndpointType"
+        mode:
+          $ref: "#/components/schemas/EndpointMode"
+        response_formats:
+          type: array
+          items:
+            $ref: "#/components/schemas/OutputFormat"
+        url:
+          title: Url
+          type: string
+    EndpointMode:
+      title: EndpointMode
+      enum:
+        - historical
+        - current
+        - forecast
+      type: string
+      description: An enumeration.
+    EndpointType:
+      title: EndpointType
+      enum:
+        - grid
+        - timeseries
+        - station
+      type: string
+      description: An enumeration.
+    GeoJSONFeature:
+      title: GeoJSONFeature
+      required:
+        - geometry
+        - properties
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Feature
+          example: Feature
+          const: Feature
+        geometry:
+          $ref: "#/components/schemas/GeoJSONPoint"
+        properties:
+          $ref: "#/components/schemas/GeoJSONFeatureProperties"
+    GeoJSONFeatureParameter:
+      title: GeoJSONFeatureParameter
+      required:
+        - name
+        - unit
+        - data
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          example: RR
+        unit:
+          title: Unit
+          type: string
+          example: kg m-2
+        data:
+          title: Data
+          type: array
+          items:
+            type: number
+          example:
+            - 9
+            - 0
+    GeoJSONFeatureProperties:
+      title: GeoJSONFeatureProperties
+      required:
+        - parameters
+      type: object
+      properties:
+        parameters:
+          title: Parameters
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/GeoJSONFeatureParameter"
+    GeoJSONPoint:
+      title: GeoJSONPoint
+      required:
+        - coordinates
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Point
+          example: Point
+          const: Point
+        coordinates:
+          title: Coordinates
+          maxItems: 2
+          minItems: 2
+          type: array
+          items:
+            type: number
+          description: >-
+            Point coordinates are in x, y order (easting, northing for projected
+            coordinates, longitude, and latitude for geographic coordinates)
+          example:
+            - 16.356388092041016
+            - 48.24861145019531
+    GridForecastGeoJSONSerializer:
+      title: GridForecastGeoJSONSerializer
+      required:
+        - reference_time
+        - version
+        - timestamps
+        - features
+        - bbox
+      type: object
+      properties:
+        reference_time:
+          title: Reference Time
+          type: string
+          format: date-time
+        media_type:
+          title: Media Type
+          type: string
+          default: application/json
+          const: application/json
+        type:
+          title: Type
+          type: string
+          default: FeatureCollection
+          const: FeatureCollection
+        version:
+          title: Version
+          type: string
+        timestamps:
+          title: Timestamps
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: "Format: *YYYY-MM-DDThh:mm:ss±hh:mm*"
+        features:
+          title: Features
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+        filename:
+          title: Filename
+          type: string
+          default: Filename
+        bbox:
+          title: Bbox
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+    GridForecastMetadataModel:
+      title: GridForecastMetadataModel
+      required:
+        - title
+        - parameters
+        - frequency
+        - type
+        - mode
+        - response_formats
+        - available_forecast_reftimes
+        - bbox
+        - bbox_outer
+        - spatial_resolution_m
+        - crs
+        - grid_bounds
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        parameters:
+          title: Parameters
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterMetadataModel"
+        frequency:
+          title: Frequency
+          type: string
+        type:
+          title: Type
+          type: string
+        mode:
+          title: Mode
+          type: string
+        response_formats:
+          title: Response Formats
+          type: array
+          items:
+            type: string
+          example:
+            - geojson
+            - netcdf
+        last_forecast_reftime:
+          title: Last Forecast Reftime
+          type: string
+          format: date-time
+        max_forecast_offset:
+          title: Max Forecast Offset
+          type: integer
+        available_forecast_reftimes:
+          title: Available Forecast Reftimes
+          type: array
+          items:
+            type: string
+            format: date-time
+        forecast_length:
+          title: Forecast Length
+          type: integer
+        bbox:
+          title: Bbox
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+        bbox_outer:
+          title: Bbox Outer
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+        spatial_resolution_m:
+          title: Spatial Resolution M
+          type: integer
+          example: 1000
+        crs:
+          title: Crs
+          type: string
+          example: "EPSG:4326"
+        grid_bounds:
+          title: Grid Bounds
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+    GridGeoJSONSerializer:
+      title: GridGeoJSONSerializer
+      required:
+        - version
+        - timestamps
+        - features
+        - bbox
+      type: object
+      properties:
+        media_type:
+          title: Media Type
+          type: string
+          default: application/json
+          const: application/json
+        type:
+          title: Type
+          type: string
+          default: FeatureCollection
+          const: FeatureCollection
+        version:
+          title: Version
+          type: string
+        timestamps:
+          title: Timestamps
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: "Format: *YYYY-MM-DDThh:mm:ss±hh:mm*"
+        features:
+          title: Features
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+        filename:
+          title: Filename
+          type: string
+          default: Filename
+        bbox:
+          title: Bbox
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+    GridHistoricalMetadataModel:
+      title: GridHistoricalMetadataModel
+      required:
+        - title
+        - parameters
+        - frequency
+        - type
+        - mode
+        - response_formats
+        - start_time
+        - end_time
+        - bbox
+        - bbox_outer
+        - spatial_resolution_m
+        - crs
+        - grid_bounds
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        parameters:
+          title: Parameters
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterMetadataModel"
+        frequency:
+          title: Frequency
+          type: string
+        type:
+          title: Type
+          type: string
+        mode:
+          title: Mode
+          type: string
+        response_formats:
+          title: Response Formats
+          type: array
+          items:
+            type: string
+          example:
+            - geojson
+            - netcdf
+        start_time:
+          title: Start Time
+          type: string
+          format: date-time
+        end_time:
+          title: End Time
+          type: string
+          format: date-time
+        bbox:
+          title: Bbox
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+        bbox_outer:
+          title: Bbox Outer
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+        spatial_resolution_m:
+          title: Spatial Resolution M
+          type: integer
+          example: 1000
+        crs:
+          title: Crs
+          type: string
+          example: "EPSG:4326"
+        grid_bounds:
+          title: Grid Bounds
+          maxItems: 4
+          minItems: 4
+          type: array
+          items:
+            type: number
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationError"
+    IdType:
+      title: IdType
+      enum:
+        - Synop
+        - Klima
+      type: string
+      description: An enumeration.
+    MDType:
+      title: MDType
+      enum:
+        - stations
+        - parameters
+      type: string
+      description: An enumeration.
+    OutputFormat:
+      title: OutputFormat
+      enum:
+        - geojson
+        - netcdf
+        - csv
+      type: string
+      description: An enumeration.
+    ParameterMetadataModel:
+      title: ParameterMetadataModel
+      required:
+        - name
+        - long_name
+        - desc
+        - unit
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+          example: RR
+        long_name:
+          title: Long Name
+          type: string
+          example: 1-hour precipitation sum
+        desc:
+          title: Desc
+          type: string
+          example: 1-hour precipitation sum
+        unit:
+          title: Unit
+          type: string
+          example: kg m-2
+    StationCurrentMetadataModel:
+      title: StationCurrentMetadataModel
+      required:
+        - title
+        - parameters
+        - frequency
+        - type
+        - mode
+        - response_formats
+        - time
+        - stations
+        - id_type
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        parameters:
+          title: Parameters
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterMetadataModel"
+        frequency:
+          title: Frequency
+          type: string
+        type:
+          title: Type
+          type: string
+        mode:
+          title: Mode
+          type: string
+        response_formats:
+          title: Response Formats
+          type: array
+          items:
+            type: string
+          example:
+            - geojson
+            - netcdf
+        time:
+          title: Time
+          type: string
+          format: date-time
+        stations:
+          title: Stations
+          type: array
+          items:
+            $ref: "#/components/schemas/StationMetadata"
+        id_type:
+          $ref: "#/components/schemas/IdType"
+    StationFilterEndpointMode:
+      title: StationFilterEndpointMode
+      enum:
+        - historical
+        - current
+      type: string
+      description: An enumeration.
+    StationFilterResponseDto:
+      title: StationFilterResponseDto
+      required:
+        - num_stations_total
+        - num_stations_matching
+        - matching_stations
+      type: object
+      properties:
+        num_stations_total:
+          title: Num Stations Total
+          type: integer
+        num_stations_matching:
+          title: Num Stations Matching
+          type: integer
+        matching_stations:
+          title: Matching Stations
+          type: array
+          items:
+            $ref: "#/components/schemas/StationMetadataDto"
+    StationGeoJSONFeature:
+      title: StationGeoJSONFeature
+      required:
+        - geometry
+        - properties
+      type: object
+      properties:
+        type:
+          title: Type
+          type: string
+          default: Feature
+          example: Feature
+          const: Feature
+        geometry:
+          $ref: "#/components/schemas/GeoJSONPoint"
+        properties:
+          $ref: "#/components/schemas/StationGeoJSONProperties"
+    StationGeoJSONProperties:
+      title: StationGeoJSONProperties
+      required:
+        - parameters
+        - station
+      type: object
+      properties:
+        parameters:
+          title: Parameters
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/GeoJSONFeatureParameter"
+        station:
+          title: Station
+          type: string
+    StationGeoJSONSerializer:
+      title: StationGeoJSONSerializer
+      required:
+        - version
+        - timestamps
+        - features
+      type: object
+      properties:
+        media_type:
+          title: Media Type
+          type: string
+          default: application/json
+          const: application/json
+        type:
+          title: Type
+          type: string
+          default: FeatureCollection
+          const: FeatureCollection
+        version:
+          title: Version
+          type: string
+        timestamps:
+          title: Timestamps
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: "Format: *YYYY-MM-DDThh:mm:ss±hh:mm*"
+        features:
+          title: Features
+          type: array
+          items:
+            $ref: "#/components/schemas/StationGeoJSONFeature"
+        filename:
+          title: Filename
+          type: string
+          default: Filename
+    StationHistoricalMetadataModel:
+      title: StationHistoricalMetadataModel
+      required:
+        - title
+        - parameters
+        - frequency
+        - type
+        - mode
+        - response_formats
+        - start_time
+        - end_time
+        - stations
+        - id_type
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+        parameters:
+          title: Parameters
+          type: array
+          items:
+            $ref: "#/components/schemas/ParameterMetadataModel"
+        frequency:
+          title: Frequency
+          type: string
+        type:
+          title: Type
+          type: string
+        mode:
+          title: Mode
+          type: string
+        response_formats:
+          title: Response Formats
+          type: array
+          items:
+            type: string
+          example:
+            - geojson
+            - netcdf
+        start_time:
+          title: Start Time
+          type: string
+          format: date-time
+        end_time:
+          title: End Time
+          type: string
+          format: date-time
+        stations:
+          title: Stations
+          type: array
+          items:
+            $ref: "#/components/schemas/StationMetadata"
+        id_type:
+          $ref: "#/components/schemas/IdType"
+    StationMetadata:
+      title: StationMetadata
+      required:
+        - type
+        - id
+        - name
+        - lat
+        - lon
+        - valid_from
+        - valid_to
+      type: object
+      properties:
+        type:
+          allOf:
+            - $ref: "#/components/schemas/StationMetadataType"
+          example: INDIVIDUAL
+        id:
+          title: Id
+          type: string
+          example: 5904
+        group_id:
+          title: Group Id
+          type: string
+          example: 105
+        name:
+          title: Name
+          type: string
+          example: WIEN-HOHE WARTE
+        state:
+          allOf:
+            - $ref: "#/components/schemas/Bundesland"
+          example: Wien
+        lat:
+          title: Lat
+          type: number
+          example: 48.248611
+        lon:
+          title: Lon
+          type: number
+          example: 16.356388
+        altitude:
+          title: Altitude
+          type: number
+          example: 198
+        valid_from:
+          title: Valid From
+          type: string
+          format: date-time
+          example: "1992-11-05T00:00:00"
+        valid_to:
+          title: Valid To
+          type: string
+          format: date-time
+          example: "2100-12-31T00:00:00"
+        has_sunshine:
+          title: Has Sunshine
+          type: boolean
+          example: true
+        has_global_radiation:
+          title: Has Global Radiation
+          type: boolean
+          example: true
+        is_active:
+          title: Is Active
+          type: boolean
+          example: true
+    StationMetadataDto:
+      title: StationMetadataDto
+      required:
+        - type
+        - id
+        - name
+        - lat
+        - lon
+        - valid_from
+        - valid_to
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/StationMetadataType"
+        id:
+          title: Id
+          type: string
+        name:
+          title: Name
+          type: string
+        state:
+          $ref: "#/components/schemas/Bundesland"
+        lat:
+          title: Lat
+          type: number
+        lon:
+          title: Lon
+          type: number
+        altitude:
+          title: Altitude
+          type: number
+        valid_from:
+          title: Valid From
+          type: string
+          format: date-time
+        valid_to:
+          title: Valid To
+          type: string
+          format: date-time
+        has_sunshine:
+          title: Has Sunshine
+          type: boolean
+        has_global_radiation:
+          title: Has Global Radiation
+          type: boolean
+        is_active:
+          title: Is Active
+          type: boolean
+        sub_stations:
+          title: Sub Stations
+          type: array
+          items:
+            $ref: "#/components/schemas/StationMetadataDto"
+          description: >-
+            List of sub-stations of this station. Only populated if type ==
+            COMBINED.
+          default: []
+        matches:
+          title: Matches
+          type: boolean
+          default: true
+    StationMetadataType:
+      title: StationMetadataType
+      enum:
+        - COMBINED
+        - SUB_STATION
+        - INDIVIDUAL
+      type: string
+      description: An enumeration.
+    TimeseriesForecastGeoJSONSerializer:
+      title: TimeseriesForecastGeoJSONSerializer
+      required:
+        - reference_time
+        - version
+        - timestamps
+        - features
+      type: object
+      properties:
+        reference_time:
+          title: Reference Time
+          type: string
+          format: date-time
+        media_type:
+          title: Media Type
+          type: string
+          default: application/json
+          const: application/json
+        type:
+          title: Type
+          type: string
+          default: FeatureCollection
+          const: FeatureCollection
+        version:
+          title: Version
+          type: string
+        timestamps:
+          title: Timestamps
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: "Format: *YYYY-MM-DDThh:mm:ss±hh:mm*"
+        features:
+          title: Features
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+        filename:
+          title: Filename
+          type: string
+          default: Filename
+    TimeseriesGeoJSONSerializer:
+      title: TimeseriesGeoJSONSerializer
+      required:
+        - version
+        - timestamps
+        - features
+      type: object
+      properties:
+        media_type:
+          title: Media Type
+          type: string
+          default: application/json
+          const: application/json
+        type:
+          title: Type
+          type: string
+          default: FeatureCollection
+          const: FeatureCollection
+        version:
+          title: Version
+          type: string
+        timestamps:
+          title: Timestamps
+          type: array
+          items:
+            type: string
+            format: date-time
+          description: "Format: *YYYY-MM-DDThh:mm:ss±hh:mm*"
+        features:
+          title: Features
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoJSONFeature"
+        filename:
+          title: Filename
+          type: string
+          default: Filename
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string

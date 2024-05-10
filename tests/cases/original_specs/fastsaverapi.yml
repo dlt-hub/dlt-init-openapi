@@ -1,0 +1,106 @@
+# https://fastsaverapi.com/docs
+openapi: 3.1.0
+info:
+  title: FastSaverAPI Docs
+  description: >-
+    Use **get\-info** endpoint to scrape datas from all social medias. You can
+    get your token from [here](/tokens)
+
+    If you need any help, feel free to ask: [Telegram](https://t.me/coder2077)
+  version: 1.0.0
+paths:
+  /get-info:
+    get:
+      summary: Get Data From All
+      description: >-
+        Use this endpoint to get medias from all social medias (Instagram,
+        Tiktok, Youtube and much more...).
+      operationId: get_data_from_all_get_info_get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            title: Url
+          name: url
+          in: query
+        - required: true
+          schema:
+            type: string
+            title: Token
+          name: token
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+  /get-stats:
+    get:
+      summary: Get Usage Statistics
+      description: Use this endpoint to get your usage statistics as JSON.
+      operationId: get_usage_statistics_get_stats_get
+      parameters:
+        - required: true
+          schema:
+            type: string
+            title: Token
+          name: token
+          in: query
+        - required: false
+          schema:
+            type: boolean
+            title: Filter By Token
+            default: false
+          name: filter_by_token
+          in: query
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError

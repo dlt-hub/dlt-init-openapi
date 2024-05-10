@@ -1,0 +1,202 @@
+# https://api.mihomo.me/docs
+openapi: 3.0.2
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  '/sr_info/{uid}':
+    get:
+      summary: Read Item Raw
+      operationId: read_item_raw_sr_info__uid__get
+      parameters:
+        - required: true
+          schema:
+            title: Uid
+            type: string
+          name: uid
+          in: path
+        - required: false
+          schema:
+            title: Is Force Update
+            type: boolean
+            default: false
+          name: is_force_update
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/sr_info_parsed/{uid}':
+    get:
+      summary: Read Item
+      operationId: read_item_sr_info_parsed__uid__get
+      parameters:
+        - required: true
+          schema:
+            title: Uid
+            type: string
+          name: uid
+          in: path
+        - required: false
+          schema:
+            title: Lang
+            type: string
+            default: cn
+          name: lang
+          in: query
+        - required: false
+          schema:
+            title: Version
+            type: string
+            default: v2
+          name: version
+          in: query
+        - required: false
+          schema:
+            title: Is Force Update
+            type: boolean
+            default: false
+          name: is_force_update
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/sr_panel/{uid}':
+    get:
+      summary: Sr Panel
+      operationId: sr_panel_sr_panel__uid__get
+      parameters:
+        - required: true
+          schema:
+            title: Uid
+            type: string
+          name: uid
+          in: path
+        - required: false
+          schema:
+            title: Chara Index
+            type: integer
+            default: 0
+          name: chara_index
+          in: query
+        - required: false
+          schema:
+            title: Lang
+            type: string
+            default: cn
+          name: lang
+          in: query
+        - required: false
+          schema:
+            title: Is Force Update
+            type: boolean
+            default: false
+          name: is_force_update
+          in: query
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/panel/{file_path}':
+    get:
+      summary: Panel File
+      operationId: panel_file_panel__file_path__get
+      parameters:
+        - required: true
+          schema:
+            title: File Path
+            type: string
+          name: file_path
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/fonts/{file_path}':
+    get:
+      summary: Font File
+      operationId: font_file_fonts__file_path__get
+      parameters:
+        - required: true
+          schema:
+            title: File Path
+            type: string
+          name: file_path
+          in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      title: ValidationError
+      required:
+        - loc
+        - msg
+        - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string

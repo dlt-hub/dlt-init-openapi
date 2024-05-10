@@ -1,4 +1,3 @@
-```markdown
 # dlt-openapi
 `dlt-openapi` generates [dlt](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents using the [dlt rest_api verified source](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know dlt or our verified sources, please read:
 

@@ -1,3 +1,5 @@
+import pytest
+
 from dlt_openapi.config import Config
 from dlt_openapi.detector.base_detector import GLOBAL_WARNING_KEY
 from dlt_openapi.detector.default.warnings import UnsupportedSecuritySchemeWarning
@@ -46,3 +48,19 @@ def test_oauth_warning() -> None:
     # no global warnings
     assert len(warnings.get(GLOBAL_WARNING_KEY)) == 1
     assert type(warnings.get(GLOBAL_WARNING_KEY)[0]) == UnsupportedSecuritySchemeWarning
+
+
+@pytest.mark.parametrize(
+    "spec",
+    [
+        "fastsaverapi.yml",
+        "mihomo.yml",
+        "geosphere.yml",
+        "geosphere.yml",
+        "pollenrapporten.yml",
+        "planetarycomputer.yml",
+    ],
+)
+def test_no_auth_specs(spec):
+    source_dict = get_dict_by_case("original", spec)
+    assert "auth" not in source_dict["client"]

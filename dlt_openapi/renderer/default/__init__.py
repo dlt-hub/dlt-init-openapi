@@ -69,10 +69,28 @@ class DefaultRenderer(BaseRenderer):
         self._build_dlt_config()
         self._build_source()
         self._build_pipeline()
+        self._build_meta_files()
         self._run_post_hooks()
 
         # copy rest api source into project dir
         copy_tree(REST_API_SOURCE_LOCATION, str(self.project_dir / "rest_api"))
+
+    def _build_meta_files(self) -> None:
+        requirements_template = self.env.get_template("requirements.txt.j2")
+        req_path = self.project_dir / "requirements.txt"
+        req_path.write_text(
+            requirements_template.render(),
+            encoding=FILE_ENCODING,
+        )
+
+        from dlt_openapi import __version__
+
+        readme_template = self.env.get_template("README.md.j2")
+        readme_path = self.project_dir / "README.md"
+        readme_path.write_text(
+            readme_template.render(endpoint_collection=self.openapi.endpoints, version=__version__),
+            encoding=FILE_ENCODING,
+        )
 
     def _create_package(self) -> None:
         self.project_dir.mkdir(exist_ok=True)

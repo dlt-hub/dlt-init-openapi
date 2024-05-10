@@ -1,6 +1,5 @@
 import json
 import logging
-import mimetypes
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Union
 from urllib.parse import urlparse
@@ -73,35 +72,31 @@ class OpenapiParser:
         self.credentials = CredentialsProperty.from_context(self.context)
 
 
-def _load_yaml_or_json(data: bytes, content_type: Optional[str]) -> Dict[str, Any]:
-    if content_type == "application/json":
-        log.info("Parsing JSON file")
+def _load_yaml_or_json(data: bytes) -> Dict[str, Any]:
+    log.info("Trying to parse as JSON")
+    try:
         return json.loads(data.decode())
-    else:
-        log.info("Parsing YAML file")
-        return yaml.load(data, Loader=BaseLoader)
+    except ValueError:
+        log.info("No valid JSON found")
+        pass
+
+    log.info("Trying to parse as YAML")
+    return yaml.load(data, Loader=BaseLoader)
 
 
 def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, timeout: int = 60) -> Dict[str, Any]:
-    yaml_bytes: bytes
-    content_type: Optional[str]
     if url is not None and path is not None:
         raise ValueError("Provide URL or Path, not both.")
     if url is not None:
         log.info("Downloading spec from %s", url)
         try:
             response = httpx.get(url, timeout=timeout)
-            yaml_bytes = response.content
-            content_type = mimetypes.guess_type(url, strict=True)[0]
             log.info("Download complete")
+            return _load_yaml_or_json(response.content)
         except (httpx.HTTPError, httpcore.NetworkError) as e:
             raise ValueError("Could not get OpenAPI document from provided URL") from e
     elif path is not None:
         log.info("Loading spec from %s", path)
-        yaml_bytes = path.read_bytes()
-        content_type = mimetypes.guess_type(path.absolute().as_uri(), strict=True)[0]
-
+        return _load_yaml_or_json(path.read_bytes())
     else:
         raise ValueError("No URL or Path provided")
-
-    return _load_yaml_or_json(yaml_bytes, content_type)

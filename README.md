@@ -158,6 +158,7 @@ $ openapi-python-client generate [OPTIONS]
 - `--output-path PATH`: A path to render the output to
 - `--config PATH`: Path to the config file to use (see below)
 - `--no-interactive`: Skip endpoint selection and render all paths of the OpenAPI spec.
+- `--loglevel`: Set logging level for stdout output, defaults to 20 (INFO).
 - `--help`: Show this message and exit.
 
 ## Config options

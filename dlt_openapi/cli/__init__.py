@@ -50,15 +50,18 @@ def init(
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
-    loglevel: int = typer.Option(20, help="Set logging level, defaults to 20 (INFO)"),
+    loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
     from dlt_openapi import create_new_client
 
     # set up console logging
     rootLogger = logging.getLogger()
-    rootLogger.addHandler(logging.StreamHandler(sys.stdout))
-    rootLogger.setLevel(20)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(loglevel)
+    rootLogger.setLevel(10)
+    rootLogger.addHandler(stream_handler)
+
     log.info("Starting dlt openapi generator")
 
     if not url and not path:

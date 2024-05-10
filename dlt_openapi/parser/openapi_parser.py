@@ -33,7 +33,6 @@ class OpenapiParser:
 
     def load_spec_raw(self) -> Dict[str, Any]:
         p = self.spec_file
-        log.info("Load spec %s", p)
         if isinstance(p, Path):
             return _get_document(path=p)
         parsed = urlparse(p)
@@ -59,24 +58,27 @@ class OpenapiParser:
 
     def parse(self) -> None:
         self.spec_raw = self.load_spec_raw()
-        # log.info("Pydantic parse")
+
+        log.info("Validating spec structure")
         spec = osp.OpenAPI.parse_obj(self.spec_raw)
 
-        log.info("Extracting metadata")
+        log.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)
 
-        log.info("Parsing endpoints")
+        log.info("Parsing openapi endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)
 
-        log.info("Parsing credentials")
+        log.info("Parsing openapi credentials")
         self.credentials = CredentialsProperty.from_context(self.context)
 
 
 def _load_yaml_or_json(data: bytes, content_type: Optional[str]) -> Dict[str, Any]:
     if content_type == "application/json":
+        log.info("Parsing JSON file")
         return json.loads(data.decode())
     else:
+        log.info("Parsing YAML file")
         return yaml.load(data, Loader=BaseLoader)
 
 
@@ -86,17 +88,16 @@ def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, tim
     if url is not None and path is not None:
         raise ValueError("Provide URL or Path, not both.")
     if url is not None:
+        log.info("Downloading spec from %s", url)
         try:
             response = httpx.get(url, timeout=timeout)
             yaml_bytes = response.content
-            if "content-type" in response.headers:
-                content_type = response.headers["content-type"].split(";")[0]
-            else:
-                content_type = mimetypes.guess_type(url, strict=True)[0]
-
+            content_type = mimetypes.guess_type(url, strict=True)[0]
+            log.info("Download complete")
         except (httpx.HTTPError, httpcore.NetworkError) as e:
             raise ValueError("Could not get OpenAPI document from provided URL") from e
     elif path is not None:
+        log.info("Loading spec from %s", path)
         yaml_bytes = path.read_bytes()
         content_type = mimetypes.guess_type(path.absolute().as_uri(), strict=True)[0]
 

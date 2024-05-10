@@ -1,4 +1,6 @@
+import logging
 import pathlib
+import sys
 from typing import Optional
 
 import typer
@@ -7,6 +9,7 @@ from dlt_openapi.cli.cli_endpoint_selection import questionary_endpoint_selectio
 from dlt_openapi.config import Config
 
 app = typer.Typer()
+log = logging.getLogger(__name__)
 
 
 def _print_version(value: bool) -> None:
@@ -47,9 +50,16 @@ def init(
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
+    loglevel: int = typer.Option(20, help="Set logging level, defaults to 20 (INFO)"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
     from dlt_openapi import create_new_client
+
+    # set up console logging
+    rootLogger = logging.getLogger()
+    rootLogger.addHandler(logging.StreamHandler(sys.stdout))
+    rootLogger.setLevel(20)
+    log.info("Starting dlt openapi generator")
 
     if not url and not path:
         typer.secho("You must either provide --url or --path", fg=typer.colors.RED)

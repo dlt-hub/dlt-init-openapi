@@ -43,14 +43,11 @@ class Project:  # pylint: disable=too-many-instance-attributes
         self.config = config
 
     def parse(self) -> None:
-        log.info("Parse spec")
         self.openapi.parse()
-        log.info("Parsing completed")
 
     def detect(self) -> None:
-        log.info("Detecting parsed output")
+        log.info("Running heuristics on parsed output")
         self.detector.run(self.openapi)
-        log.info("Detecting completed")
 
     def render(self, dry: bool = False) -> None:
         log.info("Rendering project")
@@ -58,7 +55,6 @@ class Project:  # pylint: disable=too-many-instance-attributes
             filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
             self.openapi.endpoints.set_names_to_render(filtered_endpoints)
         self.renderer.run(self.openapi, dry=dry)
-        log.info("Rendering complete")
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
@@ -66,8 +62,6 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     path: Optional[Path],
     config: Config = Config(),
 ) -> Project:
-    log.info("Running detector")
-
     renderer_cls = cast(BaseRenderer, import_class_from_string(config.renderer_class))
     detector_cls = cast(BaseDetector, import_class_from_string(config.detector_class))
 

@@ -1,55 +1,64 @@
-# 🚧 dlt-openapi-openapi demo
+# dlt-openapi
+`dlt-openapi` generates [dlt](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents using the [dlt rest_api verified source](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know dlt or our verified sources, please read:
 
-Generates dlt pipelines from OpenAPI 3.x documents.
+* [Getting started](https://dlthub.com/docs/getting-started) to learn the dlt basics
+* [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our rest api source works
 
-_This generator does not support OpenAPI 2.x FKA Swagger. If you need to use an older document, try upgrading it to
-version 3 first with one of many available converters._
+> This generator does not support OpenAPI 2.x FKA Swagger. If you need to use an older document, try upgrading it to
+version 3 first with one of many available converters.
 
-
-> 🕳️ This is only a demo.
-> - will generate resources for all endpoints that return lists of objects
-> - will use a few heuristics to find list wrapped in responses
-> - will generate transformers from all endpoints that have a matching list resource (same object type returned)
-> - will use a few heuristics to find the right object id to pass to the transformer
-> - user can select endpoints using `questionary` lib in CLI
-> - endpoints that have the most central data types (tables linking to many other tables) will be listed first
-> - the structure of the code is not optimized!
-> - there's no pagination added. use our GPT-4 playground to do that
-
-**Generating a Pokemon dlt pipeline from Open API Spec 🚀**
-
-<a href="https://www.loom.com/share/2806b873ba1c4e0ea382eb3b4fbaf808">
-    <img style="max-width:450px;" src="https://cdn.loom.com/sessions/thumbnails/2806b873ba1c4e0ea382eb3b4fbaf808-with-play.gif">
-  </a>
-  
 
 ## Prior work
-This is a heavily hacked fork of [openapi-python-client](https://github.com/openapi-generators/openapi-python-client)
+This project is a heavily updated and changed fork of [openapi-python-client](https://github.com/openapi-generators/openapi-python-client). 
 
-## Usage
-1. You need `poetry` to install dependencies
-```
-poetry install
-poetry shell
+
+## Features
+The dlt-openapi generates code from an openap spec that you can use to extract data from a rest api into any [destination](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. postgres, bigquery, redshift...) dlt supports.
+
+Features include
+
+* Pagination discovery
+* Primary key discovery
+* Endpoint relationship mapping into dlt transformers (e.g. /users/ -> /user/{id})
+* Payload json path discovery for nested results
+* Authentication discovery
+
+## Setup
+
+1. Checkout this repository locally
+```console
+$ git clone git@github.com:dlt-hub/dlt-openapi.git
 ```
 
 2. Init git submodules
-On fist use of the repo, fetch the **rest api** sources:
-```sh
-git submodule update --init --recursive
+On fist use of the repo, fetch the **rest api** sources after checking out:
+```console
+$ git submodule update --init --recursive
 ```
 
-On subsequent uses, to get the most up to date source:
-```sh
-git submodule update --recursive --remote
+	> On subsequent uses, to get the most up to date source:
+	```
+	git submodule update --recursive --remote
+	```
+
+3. You need [`poetry`](https://python-poetry.org/docs/) to install dependencies
+```console
+$ poetry install
+$ poetry shell
 ```
 
-3. Create new `dlt` pipeline from [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/main/specification/pokeapi.yml) and place it in the `pokemon-pipeline` 
-```
-dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+## Basic Usage
+
+Here we create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenApi Spec instead if you like.
+
+1. Run the generator with the dlt-openapi init command:
+
+```console
+$ dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 ```
 
-4. After executing of the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure how many other tables, the given table links to):
+2. After executing of the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure how many other tables, the given table links to):
+
 ```
 ? Which resources would you like to generate? (Use arrow keys to move, <space> to select, <a> to toggle, <i> to invert)
  
@@ -62,34 +71,20 @@ EvolutionChain endpoints:
 
    ○ evolution_chain_list /api/v2/evolution-chain/
    ○ evolution_chain_read /api/v2/evolution-chain/{id}/
- 
-MoveAilment endpoints:
-
-   ○ move_ailment_list /api/v2/move-ailment/
-   ○ move_ailment_read /api/v2/move-ailment/{id}/
- 
-Move endpoints:
-
-   ○ move_list /api/v2/move/
-   ○ move_read /api/v2/move/{id}/
- 
-Pokemon endpoints:
-
-   ○ pokemon_list /api/v2/pokemon/
-   ○ pokemon_read /api/v2/pokemon/{id}/
 ```
 
-5. Pick your endpoints and press **ENTER** to generate pipeline. Now you are ready to load data.
+3. Pick your endpoints and press **ENTER** to generate pipeline. Now you are ready to load data.
 
-6. Enter the `pokemon-pipeline` folder and execute the `pipeline.py` script. This will load your endpoints to local `duckdb`. Below we use `enlighten` to show fancy progress bars:
-```
-cd pokemon-pipeline
-PROGRESS=enlighten python pipeline.py
+4. Enter the `pokemon-pipeline` folder and execute the `pipeline.py` script. This will load your endpoints to local `duckdb`. Below we use `enlighten` to show some fancy progress bars:
+```console
+$ cd pokemon-pipeline
+$ PROGRESS=enlighten python pipeline.py
 ```
 
-7. Inspect the pipeline to see what got loaded
-```
+5. Inspect the pipeline to see what got loaded
+```console
 $ dlt pipeline pokemon_pipeline info
+
 Found pipeline pokemon_pipeline in /home/rudolfix/.dlt/pipelines
 Synchronized state:
 _state_version: 2
@@ -113,85 +108,58 @@ Has 1 completed load packages with following load ids:
 
 Pipeline has last run trace. Use 'dlt pipeline pokemon_pipeline trace' to inspect
 ```
+
 8. Launch the streamlit app to preview the data (we copy a streamlit config to make it work on codespaces)
-```
-cp -r ../.streamlit .
-pip install pandas streamlit
-dlt pipeline pokemon_pipeline show
+```console
+$ cp -r ../.streamlit .
+$ pip install pandas streamlit
+$ dlt pipeline pokemon_pipeline show
 ```
 
 ## What You Get
 When you run the command above, following files will be generated:
-1. `pokemon-pipeline` a folder with all the files
-2. a folder `pokemon` with the Python module containing dlt source, resources and the Python client. 
-3. `__init__.py` in that folder with the dlt source
-4. the `pipeline.py` file that loads the resources to duckdb
-5. `.dlt` folder with the `config.toml`
 
-## What's next
-There's still work needed to make things useful:
-1. We will fully restructure the underlying Python client. We'll compress all the files in `pokemon/api` folder into a single, nice and extendable client.
-2. We'll allow to easily add pagination and other injections into client. GPT-4 friendly
-3. Many more heuristics to extract resources and their dependencies
-4. Integration with existing `dlt init` command 
+* A `./pokemon-pipeline` a folder containing the full project.
+* A file `./pokemon-pipeline/pokemon/__init__.py` which contains the generated code to connect to the PokeApi, you can inspect this file and manually change it to your liking or to fix incorrectly generated results.
+3. A file `./pokemon-pipeline/pipeline.py` which you can execute to run your pipeline.
+5. `./pokemon-pipeline/.dlt` folder with the `config.toml`
 
+## Cli commands
 
-# 🚀 openapi-python-client docs
-If you want to experiment, features below still work
+```console
+$ dlt-init [OPTIONS] COMMAND [ARGS]...
+# e.g.: dlt-init init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
-## OpenAPI features supported
-
-1. All HTTP Methods
-1. JSON and form bodies, path and query parameters
-1. File uploads with multipart/form-data bodies
-1. float, string, int, date, datetime, string enums, and custom schemas or lists containing any of those
-1. html/text or application/json responses containing any of the previous types
-1. Bearer token security
-
-## Configuration
-
-You can pass a YAML (or JSON) file to openapi-python-client with the `--config` option in order to change some behavior.
-The following parameters are supported:
-
-
-### project_name_override and package_name_override
-
-Pass the `source` in command line to create pipeline instead!
-
-### field_prefix
-
-When generating properties, the `name` attribute of the OpenAPI schema will be used. When the `name` is not a valid Python identifier (e.g. begins with a number) this string will be prepended. Defaults to "field\_". It will also be used to prefix fields in schema starting with "_" in order to avoid ambiguous semantics.
-
-Example:
-
-```yaml
-field_prefix: attr_
 ```
 
-### package_version_override
+**Options**:
 
-Specify the package version of the generated client. If unset, the client will use the version of the OpenAPI spec.
+- `--version`: Print the version and exit [default: False]
+- `--help`: Show this message and exit.
 
-Example:
+**Commands**:
 
-```yaml
-package_version_override: 1.2.3
+- `generate`: Generate a new OpenAPI Client library
+- `update`: Update an existing OpenAPI Client library
+
+### `dlt-openapi init`
+
+Generate a new dlt source
+
+**Usage**:
+
+```console
+$ openapi-python-client generate [OPTIONS]
 ```
 
-### post_hooks
+**Options**:
 
-In the config file, there's an easy way to tell `openapi-python-client` to run additional commands after generation. Here's an example showing the default commands that will run if you don't override them in config:
+- `--url TEXT`: A URL to read the JSON from
+- `--path PATH`: A path to the JSON file
+- `--config PATH`: Path to the config file to use (see below)
+- `--help`: Show this message and exit.
 
-```yaml
-post_hooks:
-   - "autoflake -i -r --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports ."
-   - "isort ."
-   - "black ."
-```
+## Config options
+You can pass a path to a config file with the `--config PATH` argument. Config values include:
 
-### http_timeout
-
-By default, the timeout for retrieving the schema file via HTTP is 5 seconds. In case there is an error when retrieving the schema, you might try and increase this setting to a higher value.
-
-[changelog.md]: CHANGELOG.md
-[poetry]: https://python-poetry.org/
+TODO...

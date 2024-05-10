@@ -35,14 +35,6 @@ def cli(
     """Generate a Python client from an OpenAPI JSON document"""
 
 
-custom_template_path_options = {
-    "help": "A path to a directory containing custom template(s)",
-    "file_okay": False,
-    "dir_okay": True,
-    "readable": True,
-    "resolve_path": True,
-}
-
 CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
 
 

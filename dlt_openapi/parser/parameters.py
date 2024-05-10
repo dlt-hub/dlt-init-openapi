@@ -3,9 +3,9 @@ from typing import Any, List, Literal, Optional, Union, cast
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.parser.context import OpenapiContext
-from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper, TSchemaType
-from openapi_python_client.parser.types import compare_openapi_types
+from dlt_openapi.parser.context import OpenapiContext
+from dlt_openapi.parser.models import DataPropertyPath, SchemaWrapper, TSchemaType
+from dlt_openapi.parser.types import compare_openapi_types
 
 TParamIn = Literal["query", "header", "path", "cookie"]
 

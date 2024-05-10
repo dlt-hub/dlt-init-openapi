@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from openapi_python_client.utils import paths
+from dlt_openapi.utils import paths
 
 from .const import PRIMARY_KEY_SUFFIXES, PRIMARY_KEY_WORD_SEPARATORS, PRIMAY_KEY_NAMES
 from .utils import get_word_variations

@@ -5,11 +5,11 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.openapi_parser import OpenapiParser
+    from dlt_openapi.parser.openapi_parser import OpenapiParser
 
 
-class BaseDetector(ABC):
+class BaseRenderer(ABC):
     @abstractmethod
-    def run(self, open_api: "OpenapiParser") -> FileNotFoundError:
+    def run(self, open_api: "OpenapiParser", dry: bool = False) -> FileNotFoundError:
         """Run the detector"""
         ...

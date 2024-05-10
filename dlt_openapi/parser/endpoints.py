@@ -5,11 +5,11 @@ from typing import Dict, List, Literal, Optional, Set, Union, cast
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.parser.context import OpenapiContext
-from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
-from openapi_python_client.parser.pagination import Pagination
-from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import get_path_var_names, path_looks_like_list
+from dlt_openapi.parser.context import OpenapiContext
+from dlt_openapi.parser.models import DataPropertyPath, SchemaWrapper
+from dlt_openapi.parser.pagination import Pagination
+from dlt_openapi.parser.parameters import Parameter
+from dlt_openapi.utils.paths import get_path_var_names, path_looks_like_list
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
 

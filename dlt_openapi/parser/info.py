@@ -3,7 +3,7 @@ from typing import List, Optional
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.parser.context import OpenapiContext
+from dlt_openapi.parser.context import OpenapiContext
 
 
 @dataclass

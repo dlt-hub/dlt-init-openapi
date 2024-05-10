@@ -14,9 +14,9 @@ classifiers = [
 ]
 readme = "README.md"
 packages = [
-    {include = "openapi_python_client"},
+    {include = "dlt_openapi"},
 ]
-include = ["CHANGELOG.md", "openapi_python_client/py.typed"]
+include = ["CHANGELOG.md", "dlt_openapi/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.8.1,<3.13"
@@ -43,7 +43,7 @@ referencing = "^0.34.0"
 inflector = "^3.1.1"
 
 [tool.poetry.scripts]
-dlt-init = "openapi_python_client.cli:app"
+dlt-openapi = "dlt_openapi.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
@@ -63,23 +63,23 @@ check = """
 isort .\
  && black .\
  && poetry export -f requirements.txt | poetry run safety check --bare --stdin\
- && mypy openapi_python_client\
- && flake8 openapi_python_client\
- && TASKIPY=true pytest --cov openapi_python_client tests --cov-report=term-missing --basetemp=tests/tmp\
+ && mypy dlt_openapi\
+ && flake8 dlt_openapi\
+ && TASKIPY=true pytest --cov dlt_openapi tests --cov-report=term-missing --basetemp=tests/tmp\
  && rm -r tests/tmp\
 """
 regen = """
 task regen_e2e\
 && task regen_integration\
 """
-e2e = "pytest openapi_python_client end_to_end_tests/test_end_to_end.py"
+e2e = "pytest dlt_openapi end_to_end_tests/test_end_to_end.py"
 re = """
 task regen\
 && task e2e\
 """
 regen_e2e = "python -m end_to_end_tests.regen_golden_record"
 regen_integration = """
-openapi-python-client update --url https://raw.githubusercontent.com/openapi-generators/openapi-test-server/main/openapi.json --config integration-tests-config.yaml\
+dlt-openapi update --url https://raw.githubusercontent.com/openapi-generators/openapi-test-server/main/openapi.json --config integration-tests-config.yaml\
 && mypy integration-tests --strict
 """
 
@@ -93,7 +93,7 @@ exclude = '''
     | \.venv
     | env
     | \.mypy_cache
-    | openapi_python_client/templates
+    | dlt_openapi/templates
     | tests/test_templates
     | end_to_end_tests/test_custom_templates
     | end_to_end_tests/golden-record-custom
@@ -107,7 +107,7 @@ profile = "black"
 skip = [".venv", "tests/test_templates", "integration-tests", "env"]
 
 [tool.coverage.run]
-omit = ["openapi_python_client/templates/*"]
+omit = ["dlt_openapi/templates/*"]
 
 
 [tool.mypy]

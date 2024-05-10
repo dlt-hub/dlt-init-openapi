@@ -5,8 +5,8 @@ import openapi_schema_pydantic as osp
 import referencing
 import referencing.jsonschema
 
-from openapi_python_client.parser.config import Config
-from openapi_python_client.utils.misc import ClassName
+from dlt_openapi.parser.config import Config
+from dlt_openapi.utils.misc import ClassName
 
 TComponentClass = Union[
     osp.Schema,

@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Dict, List, Union
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.endpoints import Parameter
+    from dlt_openapi.parser.endpoints import Parameter
 
 
 @dataclass

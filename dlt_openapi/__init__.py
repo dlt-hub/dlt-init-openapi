@@ -65,8 +65,8 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     config: Config = Config(),
 ) -> Project:
     log.info("Running detector")
-    from openapi_python_client.detector.default import DefaultDetector
-    from openapi_python_client.renderer.default import DefaultRenderer
+    from dlt_openapi.detector.default import DefaultDetector
+    from dlt_openapi.renderer.default import DefaultRenderer
 
     return Project(
         openapi=OpenapiParser(config, url or path),

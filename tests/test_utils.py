@@ -2,7 +2,7 @@
 
 import pytest
 
-from openapi_python_client.utils import misc
+from dlt_openapi.utils import misc
 
 
 class TestClassName:

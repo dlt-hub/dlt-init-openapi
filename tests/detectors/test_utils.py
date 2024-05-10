@@ -1,4 +1,4 @@
-from openapi_python_client.detector.default import utils
+from dlt_openapi.detector.default import utils
 
 
 def test_word_variations() -> None:

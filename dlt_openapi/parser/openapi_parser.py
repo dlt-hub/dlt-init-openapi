@@ -11,11 +11,11 @@ import openapi_schema_pydantic as osp
 import yaml
 from yaml import BaseLoader
 
-from openapi_python_client.parser.config import Config
-from openapi_python_client.parser.context import OpenapiContext
-from openapi_python_client.parser.credentials import CredentialsProperty
-from openapi_python_client.parser.endpoints import EndpointCollection
-from openapi_python_client.parser.info import OpenApiInfo
+from dlt_openapi.parser.config import Config
+from dlt_openapi.parser.context import OpenapiContext
+from dlt_openapi.parser.credentials import CredentialsProperty
+from dlt_openapi.parser.endpoints import EndpointCollection
+from dlt_openapi.parser.info import OpenApiInfo
 
 log = logging.getLogger(__name__)
 

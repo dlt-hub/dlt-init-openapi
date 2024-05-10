@@ -9,10 +9,10 @@ from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
 
-from openapi_python_client.config import Config
-from openapi_python_client.parser.openapi_parser import OpenapiParser
-from openapi_python_client.renderer.base_renderer import BaseRenderer
-from openapi_python_client.utils import misc
+from dlt_openapi.config import Config
+from dlt_openapi.parser.openapi_parser import OpenapiParser
+from dlt_openapi.renderer.base_renderer import BaseRenderer
+from dlt_openapi.utils import misc
 
 log = logging.getLogger(__name__)
 

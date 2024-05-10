@@ -3,17 +3,17 @@ from typing import Optional
 
 import typer
 
-from openapi_python_client.cli.cli_endpoint_selection import questionary_endpoint_selection
-from openapi_python_client.config import Config
+from dlt_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
+from dlt_openapi.config import Config
 
 app = typer.Typer()
 
 
 def _version_callback(value: bool) -> None:
-    from openapi_python_client import __version__
+    from dlt_openapi import __version__
 
     if value:
-        typer.echo(f"openapi-python-client version: {__version__}")
+        typer.echo(f"dlt-openapi version: {__version__}")
         raise typer.Exit()
 
 
@@ -28,7 +28,7 @@ def _process_config(path: Optional[pathlib.Path]) -> Config:
 
 # noinspection PyUnusedLocal
 # pylint: disable=unused-argument
-@app.callback(name="openapi-python-client")
+@app.callback(name="dlt-openapi")
 def cli(
     version: bool = typer.Option(False, "--version", callback=_version_callback, help="Print the version and exit"),
 ) -> None:
@@ -56,7 +56,7 @@ def init(
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
-    from openapi_python_client import create_new_client
+    from dlt_openapi import create_new_client
 
     if not url and not path:
         typer.secho("You must either provide --url or --path", fg=typer.colors.RED)

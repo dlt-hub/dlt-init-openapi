@@ -3,7 +3,7 @@ from typing import List
 
 import inflector  # type: ignore
 
-from openapi_python_client.utils import paths
+from dlt_openapi.utils import paths
 
 inf = inflector.English()
 

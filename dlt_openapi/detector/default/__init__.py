@@ -5,21 +5,16 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 
 import openapi_schema_pydantic as osp
 
-from openapi_python_client.config import Config
-from openapi_python_client.detector.base_detector import BaseDetector
-from openapi_python_client.detector.default import utils
-from openapi_python_client.detector.default.primary_key import detect_primary_key_by_name
-from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
-from openapi_python_client.parser.models import DataPropertyPath, SchemaWrapper
-from openapi_python_client.parser.openapi_parser import OpenapiContext, OpenapiParser
-from openapi_python_client.parser.pagination import Pagination
-from openapi_python_client.parser.parameters import Parameter
-from openapi_python_client.utils.paths import (
-    get_path_parts,
-    get_path_var_names,
-    path_looks_like_list,
-    table_names_from_paths,
-)
+from dlt_openapi.config import Config
+from dlt_openapi.detector.base_detector import BaseDetector
+from dlt_openapi.detector.default import utils
+from dlt_openapi.detector.default.primary_key import detect_primary_key_by_name
+from dlt_openapi.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
+from dlt_openapi.parser.models import DataPropertyPath, SchemaWrapper
+from dlt_openapi.parser.openapi_parser import OpenapiContext, OpenapiParser
+from dlt_openapi.parser.pagination import Pagination
+from dlt_openapi.parser.parameters import Parameter
+from dlt_openapi.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list, table_names_from_paths
 
 from .const import (
     RE_CURSOR_PARAM,

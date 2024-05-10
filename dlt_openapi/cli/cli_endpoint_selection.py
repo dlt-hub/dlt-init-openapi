@@ -2,7 +2,7 @@ from typing import List, Set
 
 import questionary
 
-from openapi_python_client.parser.endpoints import Endpoint, EndpointCollection
+from dlt_openapi.parser.endpoints import Endpoint, EndpointCollection
 
 
 def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:

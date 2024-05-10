@@ -1,4 +1,4 @@
-# 🚧 dlt-init-openapi demo
+# 🚧 dlt-openapi-openapi demo
 
 Generates dlt pipelines from OpenAPI 3.x documents.
 
@@ -46,7 +46,7 @@ git submodule update --recursive --remote
 
 3. Create new `dlt` pipeline from [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/main/specification/pokeapi.yml) and place it in the `pokemon-pipeline` 
 ```
-dlt-init init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 ```
 
 4. After executing of the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure how many other tables, the given table links to):

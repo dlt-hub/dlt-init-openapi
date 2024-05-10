@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Literal, Optional, 
 import openapi_schema_pydantic as osp
 from dlt.common.utils import digest128
 
-from openapi_python_client.parser.properties.converter import convert
-from openapi_python_client.parser.types import DataType, TOpenApiType
-from openapi_python_client.utils.misc import unique_list
+from dlt_openapi.parser.properties.converter import convert
+from dlt_openapi.parser.types import DataType, TOpenApiType
+from dlt_openapi.utils.misc import unique_list
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.context import OpenapiContext
+    from dlt_openapi.parser.context import OpenapiContext
 
 from .const import MAX_RECURSION_DEPTH
 

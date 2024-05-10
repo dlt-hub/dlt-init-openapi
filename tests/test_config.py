@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from openapi_python_client.config import Config
+from dlt_openapi.config import Config
 
 
 def json_with_tabs(d):

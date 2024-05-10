@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, List, Literal, Optional
 
 if TYPE_CHECKING:
-    from openapi_python_client.parser.models import Property, SchemaWrapper
+    from dlt_openapi.parser.models import Property, SchemaWrapper
 
 
 TOpenApiType = Literal["boolean", "object", "array", "number", "string", "integer"]

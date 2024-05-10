@@ -161,7 +161,17 @@ $ openapi-python-client generate [OPTIONS]
 - `--help`: Show this message and exit.
 
 ## Config options
-You can pass a path to a config file with the `--config PATH` argument. Config values include:
+You can pass a path to a config file with the `--config PATH` argument. To see available config values, go to https://github.com/dlt-hub/dlt-openapi/blob/master/dlt_openapi/config.py and read the information below each field on the `Config` class.
 
-TODO...
-```  
+The config file can be supplied as json or yaml dictionary. For example to change the package name, you can create a yaml file:
+
+```yaml
+# settings.yaml
+package_name="My Package"
+```
+
+And use it with the config argument:
+
+```console
+$ dlt-openapi init pokemon --url ... --config settings.yaml
+```

@@ -103,7 +103,4 @@ class OpenapiContext:
     def get_security_scheme(self, name: str) -> SecurityScheme:
         if name in self.security_schemes:
             return self.security_schemes[name]
-        scheme: osp.SecurityScheme = self.spec.components.securitySchemes[name]  # type: ignore[assignment]
-        ret = SecurityScheme(scheme, ClassName(name + "Credentials", self.config.field_prefix))
-        self.security_schemes[name] = ret
-        return ret
+        return None

@@ -18,7 +18,7 @@ class OpenApiInfo:
     def from_context(cls, context: OpenapiContext) -> "OpenApiInfo":
         info = context.spec.info
         return cls(
-            title=info.title or context.config.default_openapi_title,
+            title=info.title or context.config.fallback_openapi_title,
             summary=info.summary,
             description=info.description,
             version=info.version or "",

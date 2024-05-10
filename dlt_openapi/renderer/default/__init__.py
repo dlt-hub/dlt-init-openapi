@@ -47,12 +47,13 @@ class DefaultRenderer(BaseRenderer):
         self.openapi = openapi
 
         # set up some paths
+        base_dir = Path.cwd() if not self.config.output_path else Path.cwd() / self.config.output_path
         project_name_base: str = self.config.project_name or f"{misc.kebab_case(openapi.info.title).lower()}"
         self.project_name = project_name_base + self.config.project_name_suffix
         self.package_name = (self.config.package_name or self.project_name).replace("-", "_")
         self.source_name = self.package_name + "_source"
         self.dataset_name = self.package_name + self.config.dataset_name_suffix
-        self.project_dir = Path.cwd() / self.project_name
+        self.project_dir = base_dir / self.project_name
         self.package_dir = self.project_dir / self.package_name
 
         self.env.globals.update(
@@ -93,7 +94,7 @@ class DefaultRenderer(BaseRenderer):
         )
 
     def _create_package(self) -> None:
-        self.project_dir.mkdir(exist_ok=True)
+        self.project_dir.mkdir(exist_ok=True, parents=True)
         self.package_dir.mkdir()
 
     def _build_dlt_config(self) -> None:

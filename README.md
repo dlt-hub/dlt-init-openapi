@@ -153,8 +153,9 @@ $ openapi-python-client generate [OPTIONS]
 
 **Options**:
 
-- `--url TEXT`: A URL to read the JSON from
-- `--path PATH`: A path to the JSON file
+- `--url TEXT`: A url to read the OpenAPI JSON or YAML file from
+- `--path PATH`: A path to read the OpenAPI JSON or YAML file from locally
+- `--output-path PATH`: A path to render the output to
 - `--config PATH`: Path to the config file to use (see below)
 - `--no-interactive`: Skip endpoint selection and render all paths of the OpenAPI spec.
 - `--help`: Show this message and exit.

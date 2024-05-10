@@ -12,6 +12,8 @@ from .typing import TEndpointFilter
 class Config(BaseModel):
     """Contains any configurable values passed by the user."""
 
+    output_path: Optional[Path] = None
+    """Path for the render output"""
     project_name: Optional[str] = None
     """Custom name for the created project"""
     package_name: Optional[str] = None

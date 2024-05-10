@@ -44,6 +44,7 @@ def init(
     source: str = typer.Argument(None, help="A name of data source for which to generate a pipeline"),
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
     path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
+    output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
 ) -> None:
@@ -60,6 +61,7 @@ def init(
     config = _load_config(config_path)
     config.project_name = source
     config.package_name = source
+    config.output_path = output_path
     config.endpoint_filter = questionary_endpoint_selection if interactive else None
     create_new_client(
         url=url,

@@ -47,9 +47,9 @@ class DefaultRenderer(BaseRenderer):
         self.openapi = openapi
 
         # set up some paths
-        project_name_base: str = self.config.project_name_override or f"{misc.kebab_case(openapi.info.title).lower()}"
+        project_name_base: str = self.config.project_name or f"{misc.kebab_case(openapi.info.title).lower()}"
         self.project_name = project_name_base + self.config.project_name_suffix
-        self.package_name = (self.config.package_name_override or self.project_name).replace("-", "_")
+        self.package_name = (self.config.package_name or self.project_name).replace("-", "_")
         self.source_name = self.package_name + "_source"
         self.dataset_name = self.package_name + self.config.dataset_name_suffix
         self.project_dir = Path.cwd() / self.project_name

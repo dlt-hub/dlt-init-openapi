@@ -9,7 +9,7 @@ from dlt_openapi.config import Config
 app = typer.Typer()
 
 
-def _version_callback(value: bool) -> None:
+def _print_version(value: bool) -> None:
     from dlt_openapi import __version__
 
     if value:
@@ -17,7 +17,7 @@ def _version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-def _process_config(path: Optional[pathlib.Path]) -> Config:
+def _load_config(path: Optional[pathlib.Path]) -> Config:
     if not path:
         return Config()
     try:
@@ -30,7 +30,7 @@ def _process_config(path: Optional[pathlib.Path]) -> Config:
 # pylint: disable=unused-argument
 @app.callback(name="dlt-openapi")
 def cli(
-    version: bool = typer.Option(False, "--version", callback=_version_callback, help="Print the version and exit"),
+    version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
 ) -> None:
     """Generate a Python client from an OpenAPI JSON document"""
 
@@ -57,9 +57,9 @@ def init(
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    config = _process_config(config_path)
-    config.project_name_override = source
-    config.package_name_override = source
+    config = _load_config(config_path)
+    config.project_name = source
+    config.package_name = source
     config.endpoint_filter = questionary_endpoint_selection if interactive else None
     create_new_client(
         url=url,

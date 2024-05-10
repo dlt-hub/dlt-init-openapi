@@ -31,21 +31,12 @@ def test_load_from_path(tmp_path: Path, filename, dump, relative):
             pytest.skip("Only test relative paths when running with `task check`")
             return
         yml_file = yml_file.relative_to(Path.cwd())
-    override1 = {"class_name": "ExampleClass", "module_name": "example_module"}
-    override2 = {"class_name": "DifferentClass", "module_name": "different_module"}
     data = {
-        "field_prefix": "blah",
-        "class_overrides": {"Class1": override1, "Class2": override2},
-        "project_name_override": "project-name",
-        "package_name_override": "package_name",
-        "package_version_override": "package_version",
+        "project_name": "project-name",
+        "package_name": "package_name",
     }
     yml_file.write_text(dump(data))
 
     config = Config.load_from_path(yml_file)
-    assert config.field_prefix == "blah"
-    assert config.class_overrides["Class1"] == override1
-    assert config.class_overrides["Class2"] == override2
-    assert config.project_name_override == "project-name"
-    assert config.package_name_override == "package_name"
-    assert config.package_version_override == "package_version"
+    assert config.project_name == "project-name"
+    assert config.package_name == "package_name"

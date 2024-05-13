@@ -1,0 +1,2 @@
+class DltOpenAPIException(Exception):
+    pass

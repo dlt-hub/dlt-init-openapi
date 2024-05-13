@@ -47,6 +47,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
     def detect(self) -> None:
         logger.info("Running heuristics on parsed output")
         self.detector.run(self.openapi)
+        logger.success("Heuristics completed")
 
     def render(self, dry: bool = False) -> None:
         logger.info("Rendering project")
@@ -54,6 +55,8 @@ class Project:  # pylint: disable=too-many-instance-attributes
             filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
             self.openapi.endpoints.set_names_to_render(filtered_endpoints)
         self.renderer.run(self.openapi, dry=dry)
+        logger.success(f"Rendered project to: {self.renderer.project_dir}")  # type: ignore
+        logger.info("You can now run your pipeline from this folder with 'python pipeline.py'.")
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments

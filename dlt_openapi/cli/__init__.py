@@ -57,7 +57,7 @@ def init(
     # set up console logging
     logger.remove()
     logger.add(sys.stdout, level=loglevel)
-    logger.info("Starting dlt openapi generator")
+    logger.success("Starting dlt openapi generator")
 
     if not url and not path:
         typer.secho("You must either provide --url or --path", fg=typer.colors.RED)
@@ -76,3 +76,4 @@ def init(
         path=path,
         config=config,
     )
+    logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")

@@ -1,7 +1,8 @@
 import pathlib
 import sys
-from typing import Optional
+from typing import Any, Optional
 
+import questionary
 import typer
 from loguru import logger
 
@@ -19,13 +20,15 @@ def _print_version(value: bool) -> None:
         raise typer.Exit()
 
 
-def _load_config(path: Optional[pathlib.Path]) -> Config:
+def _load_config(path: Optional[pathlib.Path], config: Any) -> Config:
     if not path:
-        return Config()
-    try:
-        return Config.load_from_path(path=path)
-    except Exception as err:
-        raise typer.BadParameter("Unable to parse config") from err
+        c = Config(**config)
+    else:
+        try:
+            c = Config.load_from_path(path=path, **config)
+        except Exception as err:
+            raise typer.BadParameter("Unable to parse config") from err
+    return c
 
 
 # noinspection PyUnusedLocal
@@ -66,11 +69,24 @@ def init(
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    config = _load_config(config_path)
-    config.project_name = source
-    config.package_name = source
-    config.output_path = output_path
-    config.endpoint_filter = questionary_endpoint_selection if interactive else None
+    config = _load_config(
+        path=config_path,
+        config={
+            "project_name": source,
+            "package_name": source,
+            "output_path": output_path,
+            "endpoint_filter": questionary_endpoint_selection if interactive else None,
+        },
+    )
+
+    if config.project_dir.exists():
+        if not questionary.confirm(
+            f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
+            + "This will overwrite your changes in those files."
+        ).ask():
+            logger.warning("Exiting...")
+            exit(0)
+
     create_new_client(
         url=url,
         path=path,

@@ -5,7 +5,6 @@ Default renderer
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
-from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
 from loguru import logger
@@ -46,20 +45,16 @@ class DefaultRenderer(BaseRenderer):
         self.openapi = openapi
 
         # set up some paths
-        base_dir = Path.cwd() if not self.config.output_path else Path.cwd() / self.config.output_path
-        project_name_base: str = self.config.project_name or f"{misc.kebab_case(openapi.info.title).lower()}"
-        self.project_name = project_name_base + self.config.project_name_suffix
-        self.package_name = (self.config.package_name or self.project_name).replace("-", "_")
+        self.package_name = (self.config.package_name or self.config.project_name).replace("-", "_")
         self.source_name = self.package_name + "_source"
         self.dataset_name = self.package_name + self.config.dataset_name_suffix
-        self.project_dir = base_dir / self.project_name
-        self.package_dir = self.project_dir / self.package_name
+        self.package_dir = self.config.project_dir / self.package_name
 
         self.env.globals.update(
             utils=misc,
             class_name=lambda x: misc.ClassName(x, ""),
             package_name=self.package_name,
-            project_name=self.project_name,
+            project_name=self.config.project_name,
         )
 
         if dry:
@@ -73,11 +68,11 @@ class DefaultRenderer(BaseRenderer):
         self._run_post_hooks()
 
         # copy rest api source into project dir
-        copy_tree(REST_API_SOURCE_LOCATION, str(self.project_dir / "rest_api"))
+        copy_tree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")
-        req_path = self.project_dir / "requirements.txt"
+        req_path = self.config.project_dir / "requirements.txt"
         req_path.write_text(
             requirements_template.render(),
             encoding=FILE_ENCODING,
@@ -86,19 +81,19 @@ class DefaultRenderer(BaseRenderer):
         from dlt_openapi import __version__
 
         readme_template = self.env.get_template("README.md.j2")
-        readme_path = self.project_dir / "README.md"
+        readme_path = self.config.project_dir / "README.md"
         readme_path.write_text(
             readme_template.render(endpoint_collection=self.openapi.endpoints, version=__version__),
             encoding=FILE_ENCODING,
         )
 
     def _create_package(self) -> None:
-        self.project_dir.mkdir(exist_ok=True, parents=True)
-        self.package_dir.mkdir()
+        self.config.project_dir.mkdir(exist_ok=True, parents=True)
+        self.package_dir.mkdir(exist_ok=True)
 
     def _build_dlt_config(self) -> None:
-        config_dir = self.project_dir / ".dlt"
-        config_dir.mkdir()
+        config_dir = self.config.project_dir / ".dlt"
+        config_dir.mkdir(exist_ok=True)
 
         servers = self.openapi.info.servers
         first_server = servers[0] if servers else None
@@ -133,7 +128,7 @@ class DefaultRenderer(BaseRenderer):
         )
 
     def _build_pipeline(self) -> None:
-        module_path = self.project_dir / "pipeline.py"
+        module_path = self.config.project_dir / "pipeline.py"
 
         template = self.env.get_template("pipeline.py.j2")
         module_path.write_text(

@@ -24,11 +24,9 @@ test-fast:
 
 # dev helpers
 create-pokemon-pipeline:
-	rm -rf pokemon-pipeline
 	poetry run dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml --no-interactive
 
 create-pokemon-pipeline-interactive:
-	rm -rf pokemon-pipeline
 	poetry run dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
 run-pokemon-pipeline:

@@ -36,9 +36,7 @@ from typing import Any
 Oauth20Credentials = Any
 """
 
-    config = Config(name_resources_by_operation=name_resources_by_operation)
-    config.project_name = "test"
-    config.package_name = "test"
+    config = Config(name_resources_by_operation=name_resources_by_operation, project_name="test", package_name="test")
 
     # get project and render source into string
     project = _get_project_for_url_or_path(url=None, path=case, config=config)  # type: ignore

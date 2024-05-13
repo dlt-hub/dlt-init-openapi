@@ -1,7 +1,7 @@
 import json
 import mimetypes
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -41,13 +41,21 @@ class Config(BaseModel):
     detector_class: str = "dlt_openapi.detector.default.DefaultDetector"
     """Which class to use for detecting"""
 
+    project_dir: Path = None
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super(Config, self).__init__(*args, **kwargs)
+        base_dir = Path.cwd() if not self.output_path else Path.cwd() / self.output_path
+        self.project_name += self.project_name_suffix
+        self.project_dir = base_dir / self.project_name
+
     @staticmethod
-    def load_from_path(path: Path) -> "Config":
+    def load_from_path(path: Path, *args: Any, **kwargs: Any) -> "Config":
         """Creates a Config from provided JSON or YAML file and sets a bunch of globals from it"""
         mime = mimetypes.guess_type(path.absolute().as_uri(), strict=True)[0]
         if mime == "application/json":
             config_data = json.loads(path.read_text())
         else:
             config_data = yaml.safe_load(path.read_text())
-        config = Config(**config_data)
+        config = Config(**config_data, **kwargs)
         return config

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import logging
 from dataclasses import dataclass, field
 from typing import Dict, List, Literal, Optional, Set, Union, cast
 
 import openapi_schema_pydantic as osp
+from loguru import logger
 
 from dlt_openapi.parser.context import OpenapiContext
 from dlt_openapi.parser.models import DataPropertyPath, SchemaWrapper
@@ -13,8 +13,6 @@ from dlt_openapi.parser.parameters import Parameter
 from dlt_openapi.utils.paths import get_path_var_names, path_looks_like_list
 
 TMethod = Literal["GET", "POST", "PUT", "PATCH"]
-
-log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -209,7 +207,7 @@ class EndpointCollection:
             for op_name in context.config.include_methods:
                 if not (operation := getattr(path_item, op_name)):
                     continue
-                log.info(f"Found endpoint {op_name.upper()} {path}")
+                logger.info(f"Found endpoint {op_name.upper()} {path}")
                 endpoints.append(
                     Endpoint.from_operation(
                         method=cast(TMethod, op_name.upper()),

@@ -2,20 +2,18 @@
 Default renderer
 """
 
-import logging
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
 from pathlib import Path
 
 from jinja2 import Environment, PackageLoader
+from loguru import logger
 
 from dlt_openapi.config import Config
 from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.renderer.base_renderer import BaseRenderer
 from dlt_openapi.utils import misc
-
-log = logging.getLogger(__name__)
 
 REST_API_SOURCE_LOCATION = "./sources/sources/rest_api"
 FILE_ENCODING = "utf-8"
@@ -153,7 +151,7 @@ class DefaultRenderer(BaseRenderer):
         cmd_name = cmd.split(" ")[0]
         command_exists = shutil.which(cmd_name)
         if not command_exists:
-            log.warning("Skipping integration: %s is not in PATH", cmd_name)
+            logger.warning("Skipping integration: %s is not in PATH", cmd_name)
             return
         cwd = self.package_dir
         try:

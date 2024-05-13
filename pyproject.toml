@@ -42,6 +42,7 @@ pyjwt = "^2.8.0"
 cryptography = "^42.0.5"
 referencing = "^0.34.0"
 inflector = "^3.1.1"
+loguru = "^0.7.2"
 
 [tool.poetry.scripts]
 dlt-openapi = "dlt_openapi.cli:app"

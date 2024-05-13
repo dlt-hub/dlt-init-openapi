@@ -1,15 +1,14 @@
-import logging
 import pathlib
 import sys
 from typing import Optional
 
 import typer
+from loguru import logger
 
 from dlt_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_openapi.config import Config
 
 app = typer.Typer()
-log = logging.getLogger(__name__)
 
 
 def _print_version(value: bool) -> None:
@@ -56,13 +55,9 @@ def init(
     from dlt_openapi import create_new_client
 
     # set up console logging
-    rootLogger = logging.getLogger()
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(loglevel)
-    rootLogger.setLevel(10)
-    rootLogger.addHandler(stream_handler)
-
-    log.info("Starting dlt openapi generator")
+    logger.remove()
+    logger.add(sys.stdout, level=loglevel)
+    logger.info("Starting dlt openapi generator")
 
     if not url and not path:
         typer.secho("You must either provide --url or --path", fg=typer.colors.RED)

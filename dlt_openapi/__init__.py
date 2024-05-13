@@ -1,10 +1,11 @@
 """ Generate modern Python clients from OpenAPI """
 
-import logging
 from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
 from typing import Optional, cast
+
+from loguru import logger
 
 from dlt_openapi.utils.misc import import_class_from_string
 
@@ -12,8 +13,6 @@ from .config import Config
 from .detector.base_detector import BaseDetector
 from .parser.openapi_parser import OpenapiParser
 from .renderer.base_renderer import BaseRenderer
-
-log = logging.getLogger(__name__)
 
 __version__ = version(__package__)
 
@@ -46,11 +45,11 @@ class Project:  # pylint: disable=too-many-instance-attributes
         self.openapi.parse()
 
     def detect(self) -> None:
-        log.info("Running heuristics on parsed output")
+        logger.info("Running heuristics on parsed output")
         self.detector.run(self.openapi)
 
     def render(self, dry: bool = False) -> None:
-        log.info("Rendering project")
+        logger.info("Rendering project")
         if self.config.endpoint_filter:
             filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
             self.openapi.endpoints.set_names_to_render(filtered_endpoints)

@@ -1,5 +1,4 @@
 import json
-import logging
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Union
 from urllib.parse import urlparse
@@ -8,6 +7,7 @@ import httpcore
 import httpx
 import openapi_schema_pydantic as osp
 import yaml
+from loguru import logger
 from yaml import BaseLoader
 
 from dlt_openapi.parser.config import Config
@@ -15,8 +15,6 @@ from dlt_openapi.parser.context import OpenapiContext
 from dlt_openapi.parser.credentials import CredentialsProperty
 from dlt_openapi.parser.endpoints import EndpointCollection
 from dlt_openapi.parser.info import OpenApiInfo
-
-log = logging.getLogger(__name__)
 
 
 class OpenapiParser:
@@ -45,7 +43,7 @@ class OpenapiParser:
             if "$ref" in dictionary and isinstance(dictionary["$ref"], str):
                 ref = dictionary["$ref"]
                 if not ref.startswith("#/"):
-                    log.warning("$ref url %s is not supported", ref)
+                    logger.warning("$ref url %s is not supported", ref)
                 else:
                     yield dictionary["$ref"]
             else:
@@ -58,29 +56,29 @@ class OpenapiParser:
     def parse(self) -> None:
         self.spec_raw = self.load_spec_raw()
 
-        log.info("Validating spec structure")
+        logger.info("Validating spec structure")
         spec = osp.OpenAPI.parse_obj(self.spec_raw)
 
-        log.info("Extracting openapi metadata")
+        logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)
 
-        log.info("Parsing openapi endpoints")
+        logger.info("Parsing openapi endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)
 
-        log.info("Parsing openapi credentials")
+        logger.info("Parsing openapi credentials")
         self.credentials = CredentialsProperty.from_context(self.context)
 
 
 def _load_yaml_or_json(data: bytes) -> Dict[str, Any]:
-    log.info("Trying to parse as JSON")
+    logger.info("Trying to parse as JSON")
     try:
         return json.loads(data.decode())
     except ValueError:
-        log.info("No valid JSON found")
+        logger.info("No valid JSON found")
         pass
 
-    log.info("Trying to parse as YAML")
+    logger.info("Trying to parse as YAML")
     return yaml.load(data, Loader=BaseLoader)
 
 
@@ -88,15 +86,15 @@ def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, tim
     if url is not None and path is not None:
         raise ValueError("Provide URL or Path, not both.")
     if url is not None:
-        log.info("Downloading spec from %s", url)
+        logger.info(f"Downloading spec from {url}")
         try:
             response = httpx.get(url, timeout=timeout)
-            log.info("Download complete")
+            logger.info("Download complete")
             return _load_yaml_or_json(response.content)
         except (httpx.HTTPError, httpcore.NetworkError) as e:
             raise ValueError("Could not get OpenAPI document from provided URL") from e
     elif path is not None:
-        log.info("Loading spec from %s", path)
+        logger.info("Loading spec from %s", path)
         return _load_yaml_or_json(path.read_bytes())
     else:
         raise ValueError("No URL or Path provided")

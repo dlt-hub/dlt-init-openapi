@@ -28,7 +28,7 @@ class Config(BaseModel):
     """HTTP methods to render from OpenAPI spec"""
     fallback_openapi_title: str = "openapi"
     """Fallback title when openapi info.title is missing or empty"""
-    project_name_suffix: str = "-pipeline"
+    project_folder_suffix: str = "-pipeline"
     """Suffix for project name"""
     dataset_name_suffix: str = "_data"
     """Suffix for dataset"""
@@ -46,8 +46,8 @@ class Config(BaseModel):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Config, self).__init__(*args, **kwargs)
         base_dir = Path.cwd() if not self.output_path else Path.cwd() / self.output_path
-        self.project_name += self.project_name_suffix
-        self.project_dir = base_dir / self.project_name
+        project_folder = self.project_name + self.project_folder_suffix
+        self.project_dir = base_dir / project_folder
 
     @staticmethod
     def load_from_path(path: Path, *args: Any, **kwargs: Any) -> "Config":

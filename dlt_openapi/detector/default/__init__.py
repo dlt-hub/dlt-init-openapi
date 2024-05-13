@@ -18,6 +18,7 @@ from dlt_openapi.utils.paths import get_path_parts, get_path_var_names, path_loo
 from .const import (
     DEFAULT_MAXIMUM_PAGINATOR_OFFSET,
     RE_CURSOR_PARAM,
+    RE_CURSOR_PROP,
     RE_LIMIT_PARAM,
     RE_MATCH_ALL,
     RE_NEXT_PROPERTY,
@@ -236,6 +237,12 @@ class DefaultDetector(BaseDetector):
                 # Try to response property to feed into the cursor param
                 if prop := cursor_param.find_input_property(response_schema, fallback=None):
                     cursor_props.append((cursor_param, prop))
+
+        # if we could not find matching prop in response, we can try to find the
+        # matching prop in the response with a regex
+        if response_schema and len(cursor_params) == 1 and not cursor_props:
+            if prop := response_schema.nested_properties.find_property(RE_CURSOR_PROP):
+                cursor_props.append((cursor_params[0], prop))
 
         # Prefer the least nested cursor prop
         if cursor_props:

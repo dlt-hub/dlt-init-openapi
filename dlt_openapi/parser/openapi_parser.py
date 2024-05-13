@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, Iterator, Optional, Union
 from urllib.parse import urlparse
@@ -77,6 +78,12 @@ class OpenapiParser:
 
 def _load_yaml_or_json(data: bytes) -> Dict[str, Any]:
     logger.info("Trying to parse spec as JSON")
+
+    data_size = sys.getsizeof(data)
+    if data_size > 1000000:
+        mb = round(data_size / 1000000)
+        logger.warning(f"Spec is around {mb} mb, so parsing might take a while.")
+
     try:
         result = json.loads(data.decode())
         logger.success("Parsed spec as JSON")
@@ -84,7 +91,6 @@ def _load_yaml_or_json(data: bytes) -> Dict[str, Any]:
     except ValueError:
         logger.info("No valid JSON found")
         pass
-
     logger.info("Trying to parse spec as YAML")
     result = yaml.load(data, Loader=BaseLoader)
     logger.success("Parsed spec as YAML")
@@ -103,7 +109,7 @@ def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, tim
         except (httpx.HTTPError, httpcore.NetworkError) as e:
             raise ValueError("Could not get OpenAPI document from provided URL") from e
     elif path is not None:
-        logger.info("Loading spec from %s", path)
+        logger.info(f"Reading spec from {path}")
         return _load_yaml_or_json(path.read_bytes())
     else:
         raise ValueError("No URL or Path provided")

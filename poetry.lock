@@ -572,7 +572,7 @@ weaviate = ["weaviate-client (>=3.22)"]
 
 [package.source]
 type = "git"
-url = "git@github.com:dlt-hub/dlt.git"
+url = "https://github.com/dlt-hub/dlt.git"
 reference = "devel"
 resolved_reference = "d26c5d0dae10ff4a5eaba756047d69068e6fd06c"
 
@@ -2534,4 +2534,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1,<3.13"
-content-hash = "71c9cb238bb5fa068ca6ebb2828a31731d4223b5070cb7521b2fd9da30f30fd6"
+content-hash = "0119c38736f0927ee61cd34e3c61668631e1ec121b49c0791f2f93c05367f870"

@@ -6,7 +6,7 @@ import pytest
 from tests.e2e.utils import get_dict_by_case
 
 
-@pytest.mark.skip
+@pytest.mark.skip("Probably will not work, is not parsed by osp")
 def test_simple_zoom_load() -> None:
     source = get_dict_by_case("extracted", "zoom_with_pagination.yml")
 

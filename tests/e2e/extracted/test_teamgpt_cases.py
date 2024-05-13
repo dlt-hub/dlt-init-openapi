@@ -1,12 +1,9 @@
 #
 # Test different iterations of dotastats spec, this is FastAPI generated
 #
-import pytest
-
 from tests.e2e.utils import get_dict_by_case
 
 
-@pytest.mark.skip
 def test_teamgpt_load() -> None:
     source = get_dict_by_case("extracted", "teamgpt_with_pagination.yml")
     assert len(source["resources"]) == 1
@@ -18,6 +15,12 @@ def test_teamgpt_load() -> None:
             "data_selector": "$",
             "path": "/api/companies/{uuid}/filesystem_objects",
             "params": {"uuid": "FILL_ME_IN"},
-            "paginator": {},
+            "paginator": {
+                "limit": 100,
+                "limit_param": "page_size",
+                "maximum_offset": 20,
+                "offset_param": "page",
+                "type": "offset",
+            },
         },
     }

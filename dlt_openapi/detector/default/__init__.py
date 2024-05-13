@@ -213,8 +213,6 @@ class DefaultDetector(BaseDetector):
         """Detect pagination from discovered main response and params of an endpoint"""
 
         response_schema = endpoint.detected_data_response.schema if endpoint.detected_data_response else None
-        if not response_schema:
-            return None
 
         offset_params: List["Parameter"] = []
         cursor_params: List["Parameter"] = []
@@ -233,10 +231,11 @@ class DefaultDetector(BaseDetector):
         # Detect cursor
         #
         cursor_props: List[Tuple["Parameter", DataPropertyPath]] = []
-        for cursor_param in cursor_params:
-            # Try to response property to feed into the cursor param
-            if prop := cursor_param.find_input_property(response_schema, fallback=None):
-                cursor_props.append((cursor_param, prop))
+        if response_schema:
+            for cursor_param in cursor_params:
+                # Try to response property to feed into the cursor param
+                if prop := cursor_param.find_input_property(response_schema, fallback=None):
+                    cursor_props.append((cursor_param, prop))
 
         # Prefer the least nested cursor prop
         if cursor_props:
@@ -258,11 +257,12 @@ class DefaultDetector(BaseDetector):
         offset_param: Optional["Parameter"] = None
         limit_param: Optional["Parameter"] = None
         limit_initial: Optional[int] = 20
-        for offset_param in offset_params:
-            # Try to response property to feed into the offset param
-            prop = offset_param.find_input_property(response_schema, fallback=None)
-            if prop:
-                offset_props.append((offset_param, prop))
+        if response_schema:
+            for offset_param in offset_params:
+                # Try to response property to feed into the offset param
+                prop = offset_param.find_input_property(response_schema, fallback=None)
+                if prop:
+                    offset_props.append((offset_param, prop))
         # Prefer least nested offset prop
         if offset_props:
             offset_props.sort(key=lambda x: len(x[1].path))
@@ -272,14 +272,17 @@ class DefaultDetector(BaseDetector):
         for limit_param in limit_params:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
-            limit_initial = to_int(limit_param.maximum) if limit_param.maximum else (to_int(limit_param.default) or 20)
-        total_prop = response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
-
-        if offset_param and limit_param and limit_initial:
+            limit_initial = to_int(limit_param.maximum) if limit_param.maximum else to_int(limit_param.default)
+        total_prop = (
+            response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+            if response_schema
+            else None
+        )
+        if offset_param and limit_param:
 
             pagination_config: Dict[str, Union[str, int]] = {
                 "type": "offset",
-                "limit": limit_initial,
+                "limit": limit_initial or 20,
                 "offset_param": offset_param.name,
                 "limit_param": limit_param.name,
             }
@@ -296,12 +299,13 @@ class DefaultDetector(BaseDetector):
         #
         # Detect json_links
         #
-        next_prop = response_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
-        if next_prop:
-            return Pagination(
-                paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},
-                pagination_params=[offset_param, limit_param],
-            )
+        if response_schema:
+            next_prop = response_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
+            if next_prop:
+                return Pagination(
+                    paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},
+                    pagination_params=[offset_param, limit_param],
+                )
 
         #
         # Nothing found :(

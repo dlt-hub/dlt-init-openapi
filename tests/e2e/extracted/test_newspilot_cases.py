@@ -6,7 +6,7 @@ import pytest
 from tests.e2e.utils import get_dict_by_case
 
 
-@pytest.mark.skip
+@pytest.mark.skip("wait for page paginator")
 def test_teamgpt_load() -> None:
     source = get_dict_by_case("extracted", "newspilot_with_pagination.yml")
     assert len(source["resources"]) == 1

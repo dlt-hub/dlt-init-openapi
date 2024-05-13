@@ -14,7 +14,7 @@ PRIMARY_KEY_WORD_SEPARATORS = ["", "-", "_"]
 RE_UNIQUE_KEY = re.compile(r"\b(unique|id|identifier)\b", re.IGNORECASE)
 
 # pagination
-RE_OFFSET_PARAM = re.compile(r"(?i)(page|start|offset)", re.IGNORECASE)
+RE_OFFSET_PARAM = re.compile(r"(?i)(page|start|offset|skip)", re.IGNORECASE)
 RE_LIMIT_PARAM = re.compile(r"(?i)(limit|per_page|page_size|size)", re.IGNORECASE)
 RE_TOTAL_PROPERTY = re.compile(r"(?i)(total|count)", re.IGNORECASE)
 RE_CURSOR_PARAM = re.compile(r"(?i)(cursor|after|since)", re.IGNORECASE)

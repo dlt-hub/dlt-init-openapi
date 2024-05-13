@@ -114,5 +114,5 @@ def get_indexed_resources(
 def get_all_spec_paths() -> Iterable[str]:
     for dirpath, dnames, fnames in os.walk("./tests/cases"):
         for f in fnames:
-            if f.endswith("yml") or f.endswith("json"):
+            if f.endswith("yml") or f.endswith("json") or f.endswith("yaml"):
                 yield os.path.join(dirpath, f)

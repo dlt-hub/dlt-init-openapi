@@ -44,6 +44,27 @@ paths:
                   results:
                     type: array
 
+
+  /offset_limit_pagination_no_count_1/:
+    get:
+      operationId: offset_limit_pagination_no_count_1
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          description: Number of results to return per page.
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          description: The initial index from which to return the results.
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          description: "OK"
+
   /cursor_pagination_1/:
     get:
       operationId: cursor_pagination_1

@@ -21,6 +21,16 @@ def test_offset_limit_pagination_1(paginators: Dict[str, Any]) -> None:
     }
 
 
+def offset_limit_pagination_no_count_1(paginators: Dict[str, Any]) -> None:
+    assert paginators["offset_limit_pagination_no_count_1"] == {
+        "limit": 20,
+        "limit_param": "limit",
+        "offset_param": "offset",
+        "type": "offset",
+        "maximum_offset": 20,
+    }
+
+
 def test_json_links_pagination_1(paginators: Dict[str, Any]) -> None:
     assert paginators["json_links_pagination_1"] == {
         "next_url_path": "next",

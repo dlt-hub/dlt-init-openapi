@@ -16,7 +16,7 @@ def test_simple_openartnft_load() -> None:
             "path": "/v1/pollen-types",
             "paginator": {
                 "type": "offset",
-                "initial_limit": "'100'",
+                "limit": 100,
                 "offset_param": "offset",
                 "limit_param": "limit",
                 "total_path": "_meta.totalRecords",

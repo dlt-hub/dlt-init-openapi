@@ -1,6 +1,7 @@
 """
 Default renderer
 """
+
 import logging
 import shutil
 import subprocess

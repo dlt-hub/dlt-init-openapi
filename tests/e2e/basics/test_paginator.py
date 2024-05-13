@@ -13,7 +13,7 @@ def paginators() -> Dict[str, Any]:
 
 def test_offset_limit_pagination_1(paginators: Dict[str, Any]) -> None:
     assert paginators["offset_limit_pagination_1"] == {
-        "initial_limit": 20,
+        "limit": 20,
         "limit_param": "limit",
         "offset_param": "offset",
         "type": "offset",

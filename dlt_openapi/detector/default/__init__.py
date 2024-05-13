@@ -1,6 +1,7 @@
 """
 Default open source detector
 """
+
 from typing import Dict, List, Optional, Tuple, Union, cast
 
 from dlt_openapi.config import Config
@@ -15,6 +16,7 @@ from dlt_openapi.parser.parameters import Parameter
 from dlt_openapi.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list, table_names_from_paths
 
 from .const import (
+    DEFAULT_MAXIMUM_PAGINATOR_OFFSET,
     RE_CURSOR_PARAM,
     RE_LIMIT_PARAM,
     RE_MATCH_ALL,
@@ -23,6 +25,7 @@ from .const import (
     RE_TOTAL_PROPERTY,
     RE_UNIQUE_KEY,
 )
+from .utils import to_int
 
 Tree = Dict[str, Union["str", "Tree"]]
 
@@ -269,18 +272,24 @@ class DefaultDetector(BaseDetector):
         for limit_param in limit_params:
             # When spec doesn't provide default/max limit, fallback to a conservative default
             # 20 should be safe for most APIs
-            limit_initial = int(limit_param.maximum) if limit_param.maximum else (limit_param.default or 20)
+            limit_initial = to_int(limit_param.maximum) if limit_param.maximum else (to_int(limit_param.default) or 20)
         total_prop = response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
 
-        if offset_param and limit_param and limit_initial and total_prop:
+        if offset_param and limit_param and limit_initial:
+
+            pagination_config: Dict[str, Union[str, int]] = {
+                "type": "offset",
+                "limit": limit_initial,
+                "offset_param": offset_param.name,
+                "limit_param": limit_param.name,
+            }
+            if total_prop:
+                pagination_config["total_path"] = total_prop.json_path
+            else:
+                pagination_config["maximum_offset"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
+
             return Pagination(
-                paginator_config={
-                    "type": "offset",
-                    "initial_limit": limit_initial,
-                    "offset_param": offset_param.name,
-                    "limit_param": limit_param.name,
-                    "total_path": total_prop.json_path,
-                },
+                paginator_config=pagination_config,
                 pagination_params=[offset_param, limit_param],
             )
 

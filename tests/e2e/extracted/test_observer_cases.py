@@ -16,7 +16,7 @@ def test_simple_observer_load() -> None:
             "path": "/admin/users",
             "paginator": {
                 "type": "offset",
-                "initial_limit": "'100'",
+                "limit": 100,
                 "offset_param": "offset",
                 "limit_param": "limit",
                 "total_path": "total",
@@ -31,7 +31,7 @@ def test_simple_observer_load() -> None:
             "path": "/offices",
             "paginator": {
                 "type": "offset",
-                "initial_limit": "'100'",
+                "limit": 100,
                 "offset_param": "offset",
                 "limit_param": "limit",
                 "total_path": "total",

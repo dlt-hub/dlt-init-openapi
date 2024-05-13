@@ -4,6 +4,7 @@ import re
 # Some settings
 #
 MAX_RECURSION_DEPTH = 6
+DEFAULT_MAXIMUM_PAGINATOR_OFFSET = 20
 
 # primary key
 PRIMAY_KEY_NAMES = ["id", "pk", "unique", "identifier", "primary_key"]

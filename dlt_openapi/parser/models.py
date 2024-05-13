@@ -225,7 +225,6 @@ class SchemaWrapper:
         if "null" in schema_types:
             nullable = True
             schema_types.remove("null")
-
         wrapper = cls(
             osp_schema=schema,
             name=name,
@@ -238,7 +237,11 @@ class SchemaWrapper:
             types=cast(List[TSchemaType], unique_list(schema_types)),
             nullable=nullable,
             array_item=array_item,
-            default=convert("str", schema.default) if isinstance(schema.default, str) else schema.default,
+            default=(
+                convert("str", schema.default)
+                if (isinstance(schema.default, str) and "integer" not in schema_types)
+                else schema.default
+            ),
             nested_properties=NestedProperties(),
             hash_key=digest128(schema.json(sort_keys=True)),
             type_format=schema.schema_format,

@@ -74,6 +74,8 @@ When you run the `init` command above, the following files will be generated:
 * `./pokemon-pipeline/.dlt` - a folder with the `config.toml`. You can add your `secrets.toml` with credentials here.
 * `./pokemon-pipeline/rest_api` -  a folder that contains the rest_api source from our verified sources.
 
+> If you re-generate your pipeline, you will be prompted to continue if this folder exists. If you select yes, all generated files will be overwritten. All other files you may have created will remain in this folder.
+
 ## CLI commands
 
 ```console

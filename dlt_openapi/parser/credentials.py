@@ -37,7 +37,7 @@ class CredentialsProperty:
         if self.scheme.type == "apiKey":
             result = f"""
         {{
-            "type": "apiKey",
+            "type": "api_key",
             "api_key": api_key,
             "name": "{self.scheme.name}",
             "location": "header"
@@ -46,16 +46,14 @@ class CredentialsProperty:
         elif self.scheme.type == "http" and self.scheme.scheme == "basic":
             return """
         {
-            "type": "http",
-            "scheme": "basic",
-            "username": "",
+            "type": "http_basic",
+            "username": "username",
             "password": password,
         }"""
         elif self.scheme.type == "http" and self.scheme.scheme == "bearer":
             return """
         {
-            "type": "http",
-            "scheme": "bearer",
+            "type": "bearer",
             "token": token,
         }"""
         return ""

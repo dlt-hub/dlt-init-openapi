@@ -310,7 +310,7 @@ class DefaultDetector(BaseDetector):
             next_prop = response_schema.nested_properties.find_property(RE_NEXT_PROPERTY, require_type="string")
             if next_prop:
                 return Pagination(
-                    paginator_config={"type": "json_links", "next_url_path": next_prop.json_path},
+                    paginator_config={"type": "json_response", "next_url_path": next_prop.json_path},
                     pagination_params=[offset_param, limit_param],
                 )
 

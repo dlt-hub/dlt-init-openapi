@@ -43,69 +43,24 @@ $ poetry shell
 
 ## Basic Usage
 
-Here we create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenAPI Spec instead if you like.
-
-1. Run the generator with the dlt-openapi init command:
+Let's create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenAPI Spec instead if you like.
 
 ```console
+# 1. Run the generator with the dlt-openapi init command:
 $ dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
-```
 
-2. After executing the command, you can pick the endpoints that you want to add to your source and then load with the pipeline. The endpoints are grouped by returned data type (table) and ordered by centrality (a measure of how many other tables the given table links to):
+# 2. You can now pick the endpoints you need from the popup
 
-```
-? Which resources would you like to generate? (Use arrow keys to move, <space> to select, <a> to toggle, <i> to invert)
- 
-PokemonSpecies endpoints:
+# 3. After selecting your pokemon endpoints and hitting Enter, your pipeline will be rendered
 
-   ○ pokemon_species_list /api/v2/pokemon-species/
- » ○ pokemon_species_read /api/v2/pokemon-species/{id}/
- 
-EvolutionChain endpoints:
-
-   ○ evolution_chain_list /api/v2/evolution-chain/
-   ○ evolution_chain_read /api/v2/evolution-chain/{id}/
-```
-
-3. Pick your endpoints and press **ENTER** to generate a pipeline. Now you are ready to load data.
-
-4. Enter the `pokemon-pipeline` folder and execute the `pipeline.py` script. This will load your endpoints into local `duckdb`. Below we use `enlighten` to show some fancy progress bars:
-```console
+# 4. Go to the created pipeline folder and run your pipeline
 $ cd pokemon-pipeline
-$ PROGRESS=enlighten python pipeline.py
-```
+$ PROGRESS=enlighten python pipeline.py # we use enlighten for a nice progress bar :)
 
-5. Inspect the pipeline to see what got loaded
-```console
+# 5. Print the pipeline info to console to see what got loaded
 $ dlt pipeline pokemon_pipeline info
 
-Found pipeline pokemon_pipeline in /home/rudolfix/.dlt/pipelines
-Synchronized state:
-_state_version: 2
-_state_engine_version: 2
-pipeline_name: pokemon_pipeline
-dataset_name: pokemon_data
-default_schema_name: pokemon
-schema_names: ['pokemon']
-destination: dlt.destinations.duckdb
-
-Local state:
-first_run: False
-_last_extracted_at: 2023-06-12T11:50:16.171872+00:00
-
-Resources in schema: pokemon
-pokemon_species_read with 8 table(s) and 0 resource state slot(s)
-
-Working directory content:
-Has 1 completed load packages with the following load ids:
-1686570616.17882
-
-Pipeline has last run trace. Use 'dlt pipeline pokemon_pipeline trace' to inspect
-```
-
-8. Launch the Streamlit app to preview the data (we copy a Streamlit config to make it work on codespaces)
-```console
-$ cp -r ../.streamlit .
+# 6. You can now also install streamlit to see a preview of the data
 $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
 ```

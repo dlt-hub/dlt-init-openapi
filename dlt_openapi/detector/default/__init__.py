@@ -30,6 +30,8 @@ from .const import (
     RE_MATCH_ALL,
     RE_NEXT_PROPERTY,
     RE_OFFSET_PARAM,
+    RE_PAGE_PARAM,
+    RE_TOTAL_PAGE_PROPERTY,
     RE_TOTAL_PROPERTY,
     RE_UNIQUE_KEY,
 )
@@ -222,6 +224,7 @@ class DefaultDetector(BaseDetector):
 
         response_schema = endpoint.detected_data_response.schema if endpoint.detected_data_response else None
 
+        page_params: List["Parameter"] = []
         offset_params: List["Parameter"] = []
         cursor_params: List["Parameter"] = []
         limit_params: List["Parameter"] = []
@@ -234,6 +237,8 @@ class DefaultDetector(BaseDetector):
                 limit_params.append(param)
             if RE_CURSOR_PARAM.match(param_name):
                 cursor_params.append(param)
+            if RE_PAGE_PARAM.match(param_name):
+                page_params.append(param)
 
         #
         # Detect cursor
@@ -308,6 +313,31 @@ class DefaultDetector(BaseDetector):
             return Pagination(
                 paginator_config=pagination_config,
                 pagination_params=[offset_param, limit_param],
+            )
+
+        #
+        # detect page number paginator
+        #
+        if page_params:
+            total_prop = None
+            page_param = page_params[0]
+            pagination_config = {
+                "type": "page_number",
+                "page_param": page_param.name,
+            }
+            total_prop = (
+                response_schema.nested_properties.find_property(RE_TOTAL_PAGE_PROPERTY, require_type="integer")
+                if response_schema
+                else None
+            )
+            if total_prop:
+                pagination_config["total_path"] = total_prop.json_path
+            else:
+                pagination_config["maximum_page"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
+
+            return Pagination(
+                paginator_config=pagination_config,
+                pagination_params=[page_param],
             )
 
         #

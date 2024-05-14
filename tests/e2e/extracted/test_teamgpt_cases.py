@@ -17,11 +17,9 @@ def test_teamgpt_load() -> None:
             "path": "/api/companies/{uuid}/filesystem_objects",
             "params": {"uuid": "FILL_ME_IN"},
             "paginator": {
-                "limit": 100,
-                "limit_param": "page_size",
-                "maximum_offset": 20,
-                "offset_param": "page",
-                "type": "offset",
+                "maximum_page": 20,
+                "page_param": "page",
+                "type": "page_number",
             },
         },
     }

@@ -112,3 +112,41 @@ paths:
                     nullable: true
                   results:
                     type: array
+
+
+  /page_number_paginator_no_count/:
+    get:
+      operationId: page_number_paginator_no_count
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+
+
+  /page_number_paginator_with_count/:
+    get:
+      operationId: page_number_paginator_with_count
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3

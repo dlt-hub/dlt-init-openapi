@@ -25,25 +25,19 @@ Features include
 
 ## Setup
 
-1. Checkout this repository locally
+You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.org/docs/) to install dependencies.
+
 ```console
+# 1. Checkout this repository locally
 $ git clone git@github.com:dlt-hub/dlt-openapi.git
-```
 
-2. Init git submodules
-On first use of the repo, fetch the **rest API** sources after checking out:
-```console
+# 2. Init git submodules, this contains our verified sources for now
 $ git submodule update --init --recursive
-```
 
-	> On subsequent uses, to get the most up-to-date source:
-	```
-	git submodule update --recursive --remote
-	```
-
-3. You need [`poetry`](https://python-poetry.org/docs/) to install dependencies
-```console
+# 3. Install required poetry dependencies
 $ poetry install
+
+# 4. Start the poetry shell
 $ poetry shell
 ```
 

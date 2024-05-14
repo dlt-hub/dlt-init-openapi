@@ -65,20 +65,21 @@ $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
 ```
 
-## What You Get
-When you run the command above, the following files will be generated:
+## What will be created?
+When you run the `init` command above, the following files will be generated:
 
-* A `./pokemon-pipeline` folder containing the full project.
-* A file `./pokemon-pipeline/pokemon/__init__.py` which contains the generated code to connect to the PokeApi, you can inspect this file and manually change it to your liking or to fix incorrectly generated results.
-* A file `./pokemon-pipeline/pipeline.py` which you can execute to run your pipeline.
-* `./pokemon-pipeline/.dlt` folder with the `config.toml`
+* `./pokemon-pipeline` - a folder containing the full project.
+* `./pokemon-pipeline/pipeline.py` - a file which you can execute to run your pipeline.
+* `./pokemon-pipeline/pokemon/__init__.py` - a file that contains the generated code to connect to the PokeApi, you can inspect this file and manually change it to your liking or to fix incorrectly generated results.
+* `./pokemon-pipeline/.dlt` - a folder with the `config.toml`. You can add your `secrets.toml` with credentials here.
+* `./pokemon-pipeline/rest_api` -  a folder that contains the rest_api source from our verified sources.
 
 ## CLI commands
 
 ```console
 $ dlt-init [OPTIONS] COMMAND [ARGS]...
-# e.g.: dlt-init init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
-
+# example:
+$ dlt-init init pokemon --path ./path/to/my_spec.yml
 ```
 
 **Options**:

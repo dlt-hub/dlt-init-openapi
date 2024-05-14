@@ -26,6 +26,14 @@ You can give us any notes you like. If you do not know what to write in your not
 
 5. If something failed, was the reason for the failure clear? What error message would've been better?
 
-6. Was anything incorrectly converted from the spec to the rest_api definition although it is clear how it should've been generated?
+6. Was anything incorrectly converted from the spec to the rest_api definition although it is clear how it should've been generated? If so, which section and what should've been produced?
 
 7. Are there any settings or options or commands you are missing from the tool?
+
+## Notes
+
+* Oauth currently is not supported.
+
+* If you need better logging output while **running** the pipeline (after generating it), you can increase the dlt loglevel as described in the [docs](https://dlthub.com/docs/running-in-production/running#set-the-log-level-and-format).
+
+* Problems that happen during running of the pipeline may actually be stuff to fix in the rest_api or rest_client, but you can add all of this feedback to this hackathon and we will figure out what goes where.

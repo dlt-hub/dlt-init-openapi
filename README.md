@@ -17,11 +17,11 @@ The dlt-openapi generates code from an OpenAPI spec that you can use to extract 
 
 Features include
 
-* Pagination discovery
+* [Pagination](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#pagination) discovery
 * Primary key discovery
 * Endpoint relationship mapping into `dlt` [`transformers`](https://dlthub.com/docs/general-usage/resource#process-resources-with-dlttransformer) (e.g. /users/ -> /user/{id})
-* Payload JSON path discovery for nested results
-* Authentication discovery
+* Payload JSON path [data selector](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#data-selection) discovery for nested results
+* [Authentication](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#authentication) discovery
 
 ## Setup
 
@@ -120,7 +120,7 @@ The config file can be supplied as json or yaml dictionary. For example to chang
 
 ```yaml
 # config.yml
-package_name: "My Package"
+package_name: "other_package_name"
 ```
 
 And use it with the config argument:

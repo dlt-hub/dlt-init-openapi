@@ -11,6 +11,10 @@ if TYPE_CHECKING:
 
 class BaseDetector:
     @abstractmethod
-    def run(self, open_api: "OpenapiParser") -> FileNotFoundError:
-        """Run the detector"""
+    def run(self, open_api: "OpenapiParser") -> None:
+        """Run the detector
+
+        Args:
+            open_api (OpenapiParser): OpenAPI parser instance
+        """
         ...

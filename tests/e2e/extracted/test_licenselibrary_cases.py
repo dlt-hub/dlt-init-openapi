@@ -10,6 +10,7 @@ def test_simple_licenselibrary_load() -> None:
 
     assert source["resources"][0] == {
         "name": "list",
+        "table_name": "list",
         "endpoint": {
             "data_selector": "$",
             "path": "/licenselibrary/list",

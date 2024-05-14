@@ -13,7 +13,14 @@ from dlt_openapi.parser.models import DataPropertyPath
 from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.parser.pagination import Pagination
 from dlt_openapi.parser.parameters import Parameter
-from dlt_openapi.utils.paths import get_path_parts, get_path_var_names, path_looks_like_list, table_names_from_paths
+from dlt_openapi.utils.misc import snake_case
+from dlt_openapi.utils.paths import (
+    get_non_var_path_parts,
+    get_path_parts,
+    get_path_var_names,
+    path_looks_like_list,
+    table_names_from_paths,
+)
 
 from .const import (
     DEFAULT_MAXIMUM_PAGINATOR_OFFSET,
@@ -66,11 +73,11 @@ class DefaultDetector(BaseDetector):
             name = endpoint.payload.name if endpoint.payload else None
             # try to use the singularized last path element
             if not name:
-                parts = utils.singularized_path_parts(endpoint.path)
+                parts = get_non_var_path_parts(endpoint.path)
                 if len(parts):
-                    name = parts[-1]
-            endpoint.detected_resource_name = name
-            endpoint.detected_table_name = name
+                    name = utils.inf.singularize(parts[-1])
+            endpoint.detected_resource_name = snake_case(name)
+            endpoint.detected_table_name = snake_case(name)
 
         if resource_names_are_disctinct() and not self.config.name_resources_by_operation:
             return
@@ -78,15 +85,15 @@ class DefaultDetector(BaseDetector):
         # now we try to build resource names from the path
         path_table_names = table_names_from_paths([e.path for e in endpoints.endpoints])
         for e in endpoints.endpoints:
-            e.detected_resource_name = path_table_names[e.path]
+            e.detected_resource_name = snake_case(path_table_names[e.path])
             if not e.detected_table_name:
-                e.detected_table_name = path_table_names[e.path]
+                e.detected_table_name = snake_case(path_table_names[e.path])
         if resource_names_are_disctinct() and not self.config.name_resources_by_operation:
             return
 
         # last resort, we use the operation id, this should not happen really though
         for endpoint in endpoints.endpoints:
-            endpoint.detected_resource_name = endpoint.operation_id
+            endpoint.detected_resource_name = snake_case(endpoint.operation_id)
 
     def detect_transformer_settings(self, endpoints: EndpointCollection) -> None:
         for endpoint in endpoints.endpoints:

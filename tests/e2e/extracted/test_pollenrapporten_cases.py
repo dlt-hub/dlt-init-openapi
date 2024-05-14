@@ -8,7 +8,8 @@ def test_simple_openartnft_load() -> None:
     source = get_dict_by_case("extracted", "pollenrapporten_with_pagination.yml")
     assert len(source["resources"]) == 1
     assert source["resources"][0] == {
-        "name": "PaginationLink",
+        "name": "pagination_link",
+        "table_name": "pagination_link",
         "endpoint": {
             "data_selector": "_links",
             "path": "/v1/pollen-types",

@@ -12,6 +12,7 @@ def test_simple_museums_load() -> None:
 
     assert source["resources"][0] == {
         "name": "list",
+        "table_name": "list",
         "endpoint": {
             "data_selector": "$",
             "path": "/quote/list",

@@ -28,6 +28,7 @@ def {{ source_name }}(
         {% for endpoint in endpoint_collection.all_endpoints_to_render %}
         {
             "name": "{{ endpoint.detected_resource_name }}",
+            "table_name": "{{ endpoint.detected_table_name }}",
             {% if endpoint.primary_key %}
             "primary_key": "{{ endpoint.primary_key }}",
             {% if endpoint.detected_resource_name in endpoint_collection.names_to_deselect %}

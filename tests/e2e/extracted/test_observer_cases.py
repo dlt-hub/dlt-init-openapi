@@ -9,7 +9,8 @@ def test_simple_observer_load() -> None:
     assert len(source["resources"]) == 2
 
     assert source["resources"][1] == {
-        "name": "UserResponse",
+        "name": "user_response",
+        "table_name": "user_response",
         "primary_key": "id",
         "endpoint": {
             "data_selector": "items",
@@ -24,7 +25,8 @@ def test_simple_observer_load() -> None:
         },
     }
     assert source["resources"][0] == {
-        "name": "OfficeResponse",
+        "name": "office_response",
+        "table_name": "office_response",
         "primary_key": "id",
         "endpoint": {
             "data_selector": "items",

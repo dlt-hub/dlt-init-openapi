@@ -9,7 +9,8 @@ def test_simple_museums_load() -> None:
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
-        "name": "MuseumDailyHours",
+        "name": "museum_daily_hours",
+        "table_name": "museum_daily_hours",
         "endpoint": {
             "path": "/museum-hours",
             "data_selector": "$",
@@ -30,7 +31,8 @@ def test_simple_museums_pagination() -> None:
     assert len(source["resources"]) == 1
 
     assert source["resources"][0] == {
-        "name": "SpecialEventResponse",
+        "name": "special_event_response",
+        "table_name": "special_event_response",
         "endpoint": {
             "path": "/special-events",
             "data_selector": "$",

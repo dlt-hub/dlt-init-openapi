@@ -1,8 +1,8 @@
 # dlt-openapi
-`dlt-openapi` generates [dlt](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents using the [dlt rest_api verified source](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know dlt or our verified sources, please read:
+`dlt-openapi` generates [`dlt`](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know `dlt` or our `verified sources`, please read:
 
-* [Getting started](https://dlthub.com/docs/getting-started) to learn the dlt basics
-* [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our rest API source works
+* [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics
+* [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our `rest_api` source works
 
 > This generator does not support OpenAPI 2.x FKA Swagger. If you need to use an older document, try upgrading it to
 version 3 first with one of many available converters.
@@ -13,13 +13,13 @@ This project is a heavily updated and changed fork of [openapi-python-client](ht
 
 
 ## Features
-The dlt-openapi generates code from an OpenAPI spec that you can use to extract data from a REST API into any [destination](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. Postgres, BigQuery, Redshift...) dlt supports.
+The dlt-openapi generates code from an OpenAPI spec that you can use to extract data from a `rest_api` into any [`destination`](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. Postgres, BigQuery, Redshift...) `dlt` supports.
 
 Features include
 
 * Pagination discovery
 * Primary key discovery
-* Endpoint relationship mapping into dlt transformers (e.g. /users/ -> /user/{id})
+* Endpoint relationship mapping into `dlt` [`transformers`](https://dlthub.com/docs/general-usage/resource#process-resources-with-dlttransformer) (e.g. /users/ -> /user/{id})
 * Payload JSON path discovery for nested results
 * Authentication discovery
 
@@ -91,11 +91,11 @@ $ dlt-init init pokemon --path ./path/to/my_spec.yml
 
 **Commands**:
 
-- `init`: Generate a new dlt source
+- `init`: Generate a new `dlt` `rest_api` `source`
 
 ### `dlt-openapi init`
 
-Generate a new dlt source
+Generate a new `dlt` `rest_api` `source`
 
 **Usage**:
 

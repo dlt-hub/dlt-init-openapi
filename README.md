@@ -100,7 +100,7 @@ Generate a new `dlt` `rest_api` `source`
 **Usage**:
 
 ```console
-$ openapi-python-client generate [OPTIONS]
+$ dlt-openapi init pokemon --path ./path/to/my_spec.yml
 ```
 
 **Options**:

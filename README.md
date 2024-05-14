@@ -1,5 +1,5 @@
 # dlt-openapi
-`dlt-openapi` generates [`dlt`](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know `dlt` or our `verified sources`, please read:
+`dlt-openapi` generates [`dlt`](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents/specs using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know `dlt` or our `verified sources`, please read:
 
 * [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics
 * [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our `rest_api` source works

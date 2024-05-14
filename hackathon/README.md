@@ -4,9 +4,9 @@ Welcome to our OpenAPI Generator Hackathon. We want to test how well our generat
 
 1. Select any api you wish to get data from and which has an OpenAPI spec. We have collected a bunch of specs in [this repo](https://github.com/dlt-hub/openapi-specs/tree/main/open_api_specs) which you can use, but any other will do. Do not forget you might need credentials to get data, so select something you have credentials to.
 
-2. Follow the steps outlined in the main readme of this repo https://github.com/dlt-hub/dlt-openapi to generate and run a pipeline. Please **generate an run your pipeline from this hackathon folder** in this repo. Read additional docs as linked in the main repo if something is unclear.
+2. Follow the steps outlined in the main readme of this repo (visible at https://github.com/dlt-hub/dlt-openapi) to generate and run a pipeline. Please **generate an run your pipeline from this hackathon folder** in this repo. Read additional docs as linked in the readme if something is unclear.
 
-3. Make notes! A couple of questions for inspiration are listed below.
+3. Make notes! A couple of questions for inspiration are listed below. Positive Feedback is also useful, since it indicates to use which parts work well/should not be changed too much or removed.
 
 4. Create a PR on this repo which includes your generated files and the original spec (or a link to the original spec). Add all your notes in the PR comments.
 

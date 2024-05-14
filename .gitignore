@@ -33,3 +33,4 @@ client/
 *-pipeline/
 tests/_local/
 .DS_Store
+!hackathon/*-pipeline/

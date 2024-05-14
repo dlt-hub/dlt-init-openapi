@@ -4,6 +4,7 @@ Default renderer
 
 import shutil
 import subprocess
+import pathlib
 from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, PackageLoader
@@ -14,7 +15,7 @@ from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.renderer.base_renderer import BaseRenderer
 from dlt_openapi.utils import misc
 
-REST_API_SOURCE_LOCATION = "./sources/sources/rest_api"
+REST_API_SOURCE_LOCATION = "../../../sources/sources/rest_api"
 FILE_ENCODING = "utf-8"
 TEMPLATE_FILTERS = {
     "snakecase": misc.snake_case,
@@ -68,7 +69,8 @@ class DefaultRenderer(BaseRenderer):
         self._run_post_hooks()
 
         # copy rest api source into project dir
-        copy_tree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
+        current_dir = pathlib.Path(__file__).parent.resolve()
+        copy_tree(current_dir / REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")

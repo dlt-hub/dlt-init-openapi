@@ -9,7 +9,7 @@ version 3 first with one of many available converters.
 
 
 ## Prior work
-This project is a heavily updated and changed fork of [openapi-python-client](https://github.com/openapi-generators/openapi-python-client). 
+This project started as a fork of [openapi-python-client](https://github.com/openapi-generators/openapi-python-client). Pretty much all parts are heavily changed or completely replaced, but some lines of code still exist and we like to acknowledge the many good ideas we got from the original project :)
 
 
 ## Features

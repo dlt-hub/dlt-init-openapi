@@ -10,7 +10,6 @@ from rest_api.typing import RESTAPIConfig
 def pollenrapporten_source(
     base_url: str = dlt.config.value,
 ) -> List[DltResource]:
-
     # source configuration
     source_config: RESTAPIConfig = {
         "client": {

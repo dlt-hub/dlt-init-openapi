@@ -31,6 +31,7 @@ def {{ source_name }}(
             "table_name": "{{ endpoint.detected_table_name }}",
             {% if endpoint.primary_key %}
             "primary_key": "{{ endpoint.primary_key }}",
+            "write_disposition": "merge",
             {% if endpoint.detected_resource_name in endpoint_collection.names_to_deselect %}
             "selected": False,
             {% endif %}

@@ -12,6 +12,7 @@ def test_simple_observer_load() -> None:
         "name": "user_response",
         "table_name": "user_response",
         "primary_key": "id",
+        "write_disposition": "merge",
         "endpoint": {
             "data_selector": "items",
             "path": "/admin/users",
@@ -28,6 +29,7 @@ def test_simple_observer_load() -> None:
         "name": "office_response",
         "table_name": "office_response",
         "primary_key": "id",
+        "write_disposition": "merge",
         "endpoint": {
             "data_selector": "items",
             "path": "/offices",

@@ -1,0 +1,2162 @@
+# Source: https://gist.github.com/NiccoMlt/073b18934a6001fc5a2414c590e3b8ba
+# Credit goes to Niccolò Maltoni for building the baseline version of this specification
+openapi: 3.0.0
+info:
+  description: ''
+  title: 'pokeapi'
+  version: '20220523'
+servers:
+- url: 'https://pokeapi.co/'
+paths:
+  /api/v2/pokemon/:
+    get:
+      operationId: pokemon_list
+      parameters:
+      - in: query
+        name: limit
+        schema:
+          description: Number of results to return per page.
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        schema:
+          description: The initial index from which to return the results.
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: The total number of pokemons.
+                    example: 3
+                  next:
+                    type: string
+                    nullable: true
+                    description: URL to retrieve the next page of pokemons.
+                    example: https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20
+                  previous:
+                    type: string
+                    nullable: true
+                    description: URL to retrieve the previous page of pokemons.
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pokemon'
+      tags:
+      - pokemon
+  /api/v2/pokemon/{name}/:
+    get:
+      operationId: pokemon_read
+      parameters:
+      - in: path
+        name: name
+        required: true
+        schema:
+          description: A unique integer value identifying this pokemon.
+          title: ID
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pokemon'
+      tags:
+      - pokemon
+
+components:
+  schemas:
+    Ability:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name for this ability resource.
+        is_main_series:
+          type: boolean
+          description: Whether or not this ability originated in the main series of the video games.
+        generation:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The generation this ability originated in.
+            url:
+              type: string
+              description: The URL of the API endpoint for this generation.
+        names:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The localized name for an API resource in a specific language.
+              language:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the language.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the language.
+    AbilityEffectChange:
+      type: object
+      properties:
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Effect'
+        version_group:
+          description: The version group in which the ability effect change occurred.
+          $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - effect_entries
+        - version_group
+    APIResource:
+      type: object
+      properties:
+        url:
+          description: The URL of the referenced resource.
+          type: string
+        name:
+          description: The name of the referenced resource.
+          type: string
+        id:
+          description: The ID of the referenced resource.
+          type: integer
+          format: int32
+      xml:
+        name: resource
+      additionalProperties: false
+    Berry:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this berry resource
+        name:
+          type: string
+          description: The name for this berry resource
+        growth_time:
+          type: integer
+          description: Time it takes the tree to grow one stage, in hours. Berry trees go through four of these growth stages before they can be picked.
+        max_harvest:
+          type: integer
+          description: The maximum number of these berries that can grow on one tree in Generation IV
+        natural_gift_power:
+          type: integer
+          description: The power of the move "Natural Gift" when used with this Berry
+        size:
+          type: integer
+          description: The size of this Berry, in millimeters
+        smoothness:
+          type: integer
+          description: The smoothness of this Berry, used in making Pokéblocks or Poffins
+        soil_dryness:
+          type: integer
+          description: The speed at which this Berry dries out the soil as it grows. A higher rate means the soil dries more quickly.
+        firmness:
+          $ref: '#/components/schemas/BerryFirmness'
+        flavors:
+          type: array
+          description: A list of references to each flavor a berry can have and the potency of each of those flavors in regard to this berry.
+          items:
+            $ref: '#/components/schemas/BerryFlavorMap'
+      required:
+        - id
+        - name
+        - growth_time
+        - max_harvest
+        - natural_gift_power
+        - size
+        - smoothness
+        - soil_dryness
+        - firmness
+        - flavors
+    BerryFirmness:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this berry firmness resource
+        name:
+          type: string
+          description: The name for this berry firmness resource
+      required:
+        - id
+        - name
+    BerryFlavor:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this berry flavor resource
+        name:
+          type: string
+          description: The name for this berry flavor resource
+        berries:
+          type: array
+          description: A list of the berries with this flavor
+          items:
+            $ref: '#/components/schemas/BerryFlavorMap'
+      required:
+        - id
+        - name
+    BerryFlavorMap:
+      type: object
+      properties:
+        potency:
+          type: integer
+          description: How powerful the referenced flavor is for this berry
+        flavor:
+          $ref: '#/components/schemas/BerryFlavor'
+      required:
+        - potency
+        - flavor
+    Characteristic:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this characteristic resource
+        gene_modulo:
+          type: integer
+          description: The remainder of the highest stat/IV divided by 5
+        possible_values:
+          type: array
+          items:
+            type: integer
+          description: The possible values of the highest stat that would result in a Pokémon recieving this characteristic when divided by 5
+      required:
+        - id
+        - gene_modulo
+        - possible_values
+    ContestComboDetail:
+      type: object
+      properties:
+        use_before:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+          description: A list of moves to use before this move.
+        use_after:
+          type: array
+          items:
+            $ref: '#/components/schemas/Move'
+          description: A list of moves to use after this move.
+    ContestComboSets:
+      type: object
+      properties:
+        normal:
+          $ref: '#/components/schemas/ContestComboDetail'
+        super:
+          $ref: '#/components/schemas/ContestComboDetail'
+    ContestName:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The localized name for an API resource in a specific language.
+          example: Beauty
+    ContestType:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this contest type resource
+        name:
+          type: string
+          description: The name for this contest type resource
+        berry_flavor:
+          $ref: '#/components/schemas/BerryFlavor'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContestName'
+          description: The name of this contest type listed in different languages
+      required:
+        - id
+        - name
+        - berry_flavor
+        - names
+    ContestEffect:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this contest effect resource
+        appeal:
+          type: integer
+          description: The base number of hearts the user of this move gets
+        jam:
+          type: integer
+          description: The base number of hearts the user's opponent loses
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerboseEffect'
+          description: The flavor text of this contest effect listed in different languages
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+          description: The flavor text of this contest effect listed in different languages
+      required:
+        - id
+        - appeal
+        - jam
+        - effect_entries
+        - flavor_text_entries
+    Description:
+      type: object
+      properties:
+        description:
+          type: string
+        language:
+          $ref: '#/components/schemas/Language'
+    Effect:
+      type: object
+      description: An effect that occurs in a game, e.g. causing a Pokémon to fall asleep.
+      properties:
+        id:
+          type: integer
+          description: The identifier for this effect resource
+          example: 1
+        name:
+          type: string
+          description: The name for this effect resource
+          example: "no-type-damage"
+        effect_entries:
+          type: array
+          description: The list of effect text entries
+          items:
+            $ref: '#/components/schemas/EffectEffect'
+        pokemon_flavor_text_entries:
+          type: array
+          description: The flavor text entries that describe this effect
+          items:
+            $ref: '#/components/schemas/EffectEffect'
+        target_species:
+          description: The species that this effect is against
+          $ref: '#/components/schemas/PokemonSpecies'
+        effect_changes:
+          type: array
+          description: The list of effects that are changed by this ability
+          items:
+            $ref: '#/components/schemas/AbilityEffectChange'
+        flavor_text_entries:
+          type: array
+          description: The flavor text entries that describe this effect
+          items:
+            $ref: '#/components/schemas/FlavorText'
+        generation:
+          description: The generation this effect originated in
+          $ref: '#/components/schemas/Generation'
+        machines:
+          type: array
+          description: The machines that teach this move
+          items:
+            $ref: '#/components/schemas/MachineVersionDetail'
+        meta:
+          description: Meta data about this effect
+          $ref: '#/components/schemas/MoveMetaData'
+        short_effect:
+          type: string
+          description: The short description of this effect listed in different languages
+          example: "null"
+        effect_chance:
+          type: integer
+          description: The chance of this move having an additional effect listed in percentage
+          example: 30
+        stat_changes:
+          type: array
+          description: The list of stat changes that are caused by this effect
+          items:
+            $ref: '#/components/schemas/MoveStatChange'
+        super_contest_effect:
+          description: The detail of how effective this move is to the super contest
+          $ref: '#/components/schemas/SuperContestEffect'
+        contest_combos:
+          description: A detail of combos this move can be used in
+          $ref: '#/components/schemas/ContestComboSets'
+        contest_type:
+          description: The type of appeal this move gives a Pokémon when used in a contest
+          $ref: '#/components/schemas/ContestType'
+    EffectEffect:
+      type: object
+      description: "The various effects of the move `effect_entries`"
+      properties:
+        effect:
+          description: "The localized effect text of this effect"
+          type: string
+        language:
+          $ref: '#/components/schemas/Language'
+      required:
+        - effect
+        - language
+    EggGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this egg group resource
+        name:
+          type: string
+          description: The name for this egg group resource
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+          description: The name of this egg group listed in different languages
+        pokemon_species:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+          description: A list of all Pokemon species that are members of this egg group
+      required:
+        - id
+        - name
+        - names
+        - pokemon_species
+    Encounter:
+      type: object
+      properties:
+        min_level:
+          type: integer
+          description: The lowest level the Pokémon could be encountered at.
+        max_level:
+          type: integer
+          description: The highest level the Pokémon could be encountered at.
+        condition_values:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncounterConditionValue'
+          description: The condition which triggers this encounter.
+        chance:
+          type: integer
+          description: Percent chance that this encounter will occur.
+        method:
+          $ref: '#/components/schemas/EncounterMethod'
+          description: The method by which this encounter happens.
+      required:
+        - min_level
+        - max_level
+        - method
+    EncounterConditionValue:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this encounter condition value resource
+        name:
+          type: string
+          description: The name for this encounter condition value resource
+        condition:
+          $ref: '#/components/schemas/NamedAPIResource'
+          description: The condition this encounter condition value pertains to
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+          description: The name of this encounter condition value listed in different languages
+      required:
+        - id
+        - name
+        - condition
+        - names
+    EncounterCondition:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this encounter condition resource
+        name:
+          type: string
+          description: The name for this encounter condition resource
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+          description: A list of values that are used with this encounter condition
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+          description: The name of this encounter condition listed in different languages
+      required:
+        - id
+        - name
+        - values
+        - names
+    EncounterMethod:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this encounter method resource
+        name:
+          type: string
+          description: The name for this encounter method resource
+        order:
+          type: integer
+          description: A good value for sorting
+      required:
+        - id
+        - name
+        - order
+    EncounterMethodRate:
+      type: object
+      properties:
+        encounter_method:
+          $ref: '#/components/schemas/EncounterMethod'
+        version_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncounterVersionDetails'
+    EncounterVersionDetails:
+      type: object
+      properties:
+        version:
+          $ref: '#/components/schemas/NamedAPIResource'
+          description: The game version this encounter happens in.
+        max_chance:
+          type: integer
+          description: The total percentage of all encounter potential.
+        encounter_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/Encounter'
+          description: A list of encounters and their specifics.
+      description: Version details of an encounter.
+    EvolutionChain:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this evolution chain resource
+        baby_trigger_item:
+          nullable: true
+          oneOf:
+            - type: null
+            - $ref: "#/components/schemas/Item"
+          description: The item that a baby Pokémon would be holding when born during a forced evolution
+        chain:
+          type: object
+          properties:
+            is_baby:
+              type: boolean
+              description: Whether or not this is a baby Pokémon
+            species:
+              $ref: "#/components/schemas/PokemonSpecies"
+              description: The Pokémon species at this point in the evolution chain
+            evolution_details:
+              nullable: true
+              type: array
+              items:
+                type: object
+                properties:
+                  item:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Item"
+                  trigger:
+                    $ref: "#/components/schemas/EvolutionTrigger"
+                  gender:
+                    nullable: true
+                    type: integer
+                    description: The required female gender of the evolving Pokémon species. Must be either 1 or 2, or null if the Pokémon species has no gender or the gender is fixed.
+                  held_item:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Item"
+                  known_move:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Move"
+                  known_move_type:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Type"
+                  location:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Location"
+                  min_level:
+                    nullable: true
+                    type: integer
+                    description: The minimum required level of the evolving Pokémon species
+                  min_happiness:
+                    nullable: true
+                    type: integer
+                    description: The minimum required happiness of the evolving Pokémon species
+                  min_beauty:
+                    nullable: true
+                    type: integer
+                    description: The minimum required beauty of the evolving Pokémon species
+                  min_affection:
+                    nullable: true
+                    type: integer
+                    description: The minimum required affection of the evolving Pokémon species
+                  needs_overworld_rain:
+                    type: boolean
+                    description: Whether or not it must be raining in the overworld to evolve into this Pokémon species
+                  party_species:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/PokemonSpecies"
+                  party_type:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/Type"
+                  relative_physical_stats:
+                    nullable: true
+                    type: integer
+                    description: The required relation between the Pokémon's Attack and Defense stats. 1 means Attack > Defense, 0 means Attack = Defense, and -1 means Attack < Defense.
+                  time_of_day:
+                    type: string
+                    enum:
+                      - day
+                      - night
+                    description: The required time of day. Day or night.
+                  trade_species:
+                    oneOf:
+                      - type: null
+                      - $ref: "#/components/schemas/PokemonSpecies"
+                  turn_upside_down:
+                    type: boolean
+                    description: Whether or not the 3DS needs to be turned upside-down as this Pokémon levels up.
+              description: The chain of Pokémon species that forms part of this evolution chain
+      required:
+        - id
+        - chain
+    EvolutionTrigger:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this evolution trigger resource
+        name:
+          type: string
+          description: The name for this evolution trigger resource
+    FlavorText:
+      type: object
+      properties:
+        flavor_text:
+          type: string
+        language:
+          $ref: '#/components/schemas/NamedAPIResource'
+        version:
+          $ref: '#/components/schemas/NamedAPIResource'
+    Gender:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this gender resource
+        name:
+          type: string
+          description: The name for this gender resource
+        pokemon_species_details:
+          type: array
+          items:
+            type: object
+            properties:
+              rate:
+                type: integer
+                description: The chance of this Pokémon being female, in eighths; or -1 for genderless
+    Generation:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this generation resource
+        name:
+          type: string
+          description: The name for this generation resource
+        abilities:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The name of this ability
+              is_hidden:
+                type: boolean
+                description: Whether or not this ability is a hidden one
+              slot:
+                type: integer
+                description: The slot this ability occupies in this Pokémon species
+        names:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The localized name for an API resource in a specific language
+              language:
+                $ref: '#/components/schemas/Language'
+    GenerationGameIndex:
+      type: object
+      properties:
+        game_index:
+          type: integer
+          format: int32
+          description: The internal id of an API resource within game data.
+        generation:
+          $ref: '#/components/schemas/Generation'
+    Genus:
+      type: object
+      properties:
+        genus:
+          type: string
+        language:
+          $ref: '#/components/schemas/Language'
+    GrowthRate:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this growth rate resource
+        name:
+          type: string
+          description: The name for this growth rate resource
+        formula:
+          type: string
+          description: The formula used to calculate the rate at which the Pokémon species gains level
+        descriptions:
+          type: array
+          description: The description of this growth rate listed in different languages
+          items:
+            $ref: '#/components/schemas/Description'
+    ItemAttribute:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this item attribute resource
+        name:
+          type: string
+          description: The name for this item attribute resource
+        items:
+          type: array
+          description: A list of items that have this attribute
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+    ItemCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this item category resource
+        name:
+          type: string
+          description: The name for this item category resource
+        items:
+          type: array
+          description: A list of items that are a part of this category
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+    ItemFlingEffect:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        effect_entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerboseEffect"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Item"
+    ItemPocket:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemCategory"
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        cost:
+          type: integer
+          format: int32
+        fling_power:
+          type: integer
+          format: int32
+        effect_entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/VerboseEffect"
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/FlavorText"
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemAttribute"
+        category:
+          $ref: "#/components/schemas/ItemCategory"
+        fling_effect:
+          $ref: "#/components/schemas/ItemFlingEffect"
+    Language:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        official:
+          type: boolean
+        iso639:
+          type: string
+        iso3166:
+          type: string
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/Name"
+    LocationArea:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        game_index:
+          type: integer
+          format: int32
+        encounter_method_rates:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncounterMethodRate'
+        location:
+          $ref: '#/components/schemas/Location'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pokemon_encounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonEncounter'
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        region:
+          $ref: '#/components/schemas/NamedAPIResource'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        game_indices:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenerationGameIndex'
+        areas:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'  
+    Machine:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        item:
+          $ref: '#/components/schemas/NamedAPIResource'
+        move:
+          $ref: '#/components/schemas/NamedAPIResource'
+        version_group:
+          $ref: '#/components/schemas/NamedAPIResource'
+    MachineVersionDetail:
+      type: object
+      properties:
+        machine:
+          description: The machine that teaches a move
+          type: object
+          $ref: '#/components/schemas/APIResource'
+        version_group:
+          description: The version group of this specific machine
+          type: object
+          $ref: '#/components/schemas/APIResource'
+      required:
+        - machine
+        - version_group
+    Move:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The identifier for this move resource
+        name:
+          type: string
+          description: The name for this move resource
+        accuracy:
+          type: integer
+          format: int32
+          description: The percent value of how likely this move is to be successful
+          nullable: true
+        effect_chance:
+          type: integer
+          format: int32
+          description: The percent value of the additional effects this move has occuring
+          nullable: true
+        pp:
+          type: integer
+          format: int32
+          description: Power points. The number of times this move can be used
+        priority:
+          type: integer
+          format: int32
+          description: A value of 0 means this move goes last in the turn, and 1 means it goes first
+        power:
+          type: integer
+          format: int32
+          description: The base power of this move with a value of 0 if it does not have a base power
+          nullable: true
+        contest_combos:
+          $ref: '#/components/schemas/ContestComboSets'
+        contest_type:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+          required:
+            - name
+            - url
+        contest_effect:
+          type: object
+          properties:
+            url:
+              type: string
+          required:
+            - url
+        damage_class:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+          required:
+            - name
+            - url
+        effect_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/VerboseEffect'
+        effect_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbilityEffectChange'
+        generation:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+          required:
+            - name
+            - url
+        meta:
+          $ref: '#/components/schemas/MoveMetaData'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        past_values:
+          type: array
+          items:
+            $ref: '#/components/schemas/PastMoveStatValues'
+        stat_changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatChange'
+        super_contest_effect:
+          type: object
+          properties:
+            url:
+              type: string
+          required:
+            - url
+        target:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+          required:
+            - name
+            - url
+        type:
+          type: object
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+          required:
+            - name
+            - url
+      required:
+        - id
+        - name
+        - pp
+        - priority
+        - generation
+        - target
+        - type
+    MoveAilment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "paralysis"
+        moves:
+          type: array
+          items:
+            $ref: "#/components/schemas/Move"
+      required:
+        - id
+        - name
+        - moves
+    MoveBattleStyle:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "attack"
+      required:
+        - id
+        - name
+    MoveBattleStylePreference:
+      type: object
+      properties:
+        low_hp_preference:
+          type: integer
+          description: Chance of using the move, in percent, if HP is under one half of maximum HP.
+          minimum: 0
+          maximum: 100
+        high_hp_preference:
+          type: integer
+          description: Chance of using the move, in percent, if HP is over one half of maximum HP.
+          minimum: 0
+          maximum: 100
+        move_battle_style:
+          $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - low_hp_preference
+        - high_hp_preference
+        - move_battle_style
+    MoveCategory:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "ailment"
+      required:
+        - id
+        - name
+    MoveDamageClass:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+      required:
+        - id
+        - name
+        - descriptions
+    MoveLearnMethod:
+      type: object
+      description: Methods by which Pokémon can learn moves.
+      properties:
+        id:
+          type: integer
+          description: The identifier for this move learn method resource.
+          example: 1
+        name:
+          type: string
+          description: The name for this move learn method resource.
+          example: level-up
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+          description: The description of this move learn method listed in different languages.
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+          description: The name of this move learn method listed in different languages.
+      required:
+        - id
+        - name
+    MoveMetaData:
+      type: object
+      properties:
+        ailment:
+          description: The type of status effect caused by the move if any.
+          $ref: '#/components/schemas/NamedAPIResource'
+        category:
+          description: The category of move this move falls under, e.g. damage or ailment.
+          $ref: '#/components/schemas/NamedAPIResource'
+        min_hits:
+          description: The minimum number of times this move hits. Null if it always only hits once.
+          type: integer
+          nullable: true
+        max_hits:
+          description: The maximum number of times this move hits. Null if it always only hits once.
+          type: integer
+          nullable: true
+        min_turns:
+          description: The minimum number of turns this move continues to take effect. Null if it always only lasts one turn.
+          type: integer
+          nullable: true
+        max_turns:
+          description: The maximum number of turns this move continues to take effect. Null if it always only lasts one turn.
+          type: integer
+          nullable: true
+        drain:
+          description: The amount of hp gained by the attacking Pokemon when it uses this move.
+          type: integer
+          nullable: true
+        healing:
+          description: The amount of hp gained by the target Pokemon when it receives this move.
+          type: integer
+          nullable: true
+        crit_rate:
+          description: Critical hit rate bonus.
+          type: integer
+          nullable: true
+        ailment_chance:
+          description: The chance of the target being inflicted with the status condition ailment.
+          type: integer
+          nullable: true
+        flinch_chance:
+          description: The chance of the target flinching when hit by this move.
+          type: integer
+          nullable: true
+        stat_chance:
+          description: The chance of the attacking Pokemon lowering the target's stat.
+          type: integer
+          nullable: true
+      required:
+        - ailment
+        - category
+    MoveStatAffect:
+      type: object
+      properties:
+        change:
+          type: integer
+          description: The amount of change to the referenced stat.
+          example: -1
+        move:
+          type: object
+          description: The move causing the change.
+          $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - change
+        - move
+    MoveStatAffectSets:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatAffect'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/MoveStatAffect'
+      required:
+        - increase
+        - decrease
+    MoveStatChange:
+      type: object
+      properties:
+        change:
+          type: integer
+          description: The amount of change to the referenced stat.
+        stat:
+          $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - change
+        - stat
+    MoveTarget:
+      type: object
+      description: "Targets moves can be directed at during battle. Targets can be Pokémon, adjacent positions, all opponents, etc."
+      properties:
+        id:
+          type: integer
+          description: "The identifier for this move target resource"
+          example: 1
+        name:
+          type: string
+          description: "The name for this move target resource"
+          example: "specific-move"
+        descriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Description"
+          description: "The description of this move target listed in different languages"
+      required:
+        - id
+        - name
+        - descriptions
+    NamedAPIResource:
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+      required:
+        - name
+        - url
+    Name:
+      type: object
+      properties:
+        language:
+          $ref: '#/components/schemas/NamedAPIResource'
+        name:
+          type: string
+    Nature:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        name:
+          type: string
+          example: "Hardy"
+        decreased_stat:
+          type: string
+          example: "Attack"
+        increased_stat:
+          type: string
+          example: "Attack"
+        hates_flavor:
+          type: string
+          example: "Spicy"
+        likes_flavor:
+          type: string
+          example: "Spicy"
+        pokeathlon_stat_changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/NatureStatChange"
+        move_battle_style_preferences:
+          type: array
+          items:
+            $ref: "#/components/schemas/MoveBattleStylePreference"
+      required:
+        - id
+        - name
+        - decreased_stat
+        - increased_stat
+        - hates_flavor
+        - likes_flavor
+      additionalProperties: false
+    NaturePokeathlonStatAffectSets:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokeathlonStatAffect'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokeathlonStatAffect'
+      required:
+        - increase
+        - decrease
+    NatureStatAffect:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nature'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nature'
+    NatureStatAffectSets:
+      type: object
+      properties:
+        increase:
+          type: array
+          items:
+            $ref: '#/components/schemas/NatureStatAffect'
+        decrease:
+          type: array
+          items:
+            $ref: '#/components/schemas/NatureStatAffect'
+      required:
+        - increase
+        - decrease
+    NatureStatChange:
+      type: object
+      properties:
+        max_change:
+          type: integer
+        pokeathlon_stat:
+          $ref: '#/components/schemas/PokeathlonStatName'
+    PokeAthlon:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Sprint"
+        names:
+          type: array
+          items:
+            $ref: "#/components/schemas/PokeathlonStatName"
+      required:
+        - id
+        - name
+        - names
+      additionalProperties: false
+    PokeathlonStatName:
+      type: object
+      properties:
+        name:
+          type: string
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+    Pokedex:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: "National"
+        is_main_series:
+          type: boolean
+          example: true
+        descriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Description"
+        pokemon_entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/PokemonEntry"
+        region:
+          $ref: "#/components/schemas/NamedAPIResource"
+      required:
+        - id
+        - name
+        - is_main_series
+        - descriptions
+        - pokemon_entries
+        - region
+      additionalProperties: false
+    PalParkArea:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this pal park area resource
+        name:
+          type: string
+          description: The name for this pal park area resource
+      required:
+        - id
+        - name
+    PalParkEncounterArea:
+      type: object
+      properties:
+        base_score:
+          type: integer
+          description: The base score given to the player when the referenced Pokemon is caught during a pal park run.
+        rate:
+          type: integer
+          description: The base rate for encountering the referenced Pokemon in this pal park area.
+        area:
+          $ref: '#/components/schemas/NamedAPIResource'
+      description: Areas where the Pokémon species can be encountered in pal park.
+    PastMoveStatValues:
+      type: object
+      properties:
+        accuracy:
+          type: integer
+          description: The percent value of how likely this move is to be successful.
+          minimum: 0
+          maximum: 100
+        effect_chance:
+          type: integer
+          description: The percent value of effect occurring.
+          minimum: 0
+          maximum: 100
+        power:
+          type: integer
+          description: The base power of this move with a value of 0 if it does not have a base power.
+          minimum: 0
+        pp:
+          type: integer
+          description: The power points this move has left.
+          minimum: 0
+        effect_entries:
+          type: array
+          description: The list of previous effects this move has had across version groups.
+          items:
+            type: object
+            properties:
+              effect:
+                $ref: '#/components/schemas/VerboseEffect'
+              version_group:
+                $ref: '#/components/schemas/NamedAPIResource'
+        type:
+          $ref: '#/components/schemas/Type'
+      required:
+        - accuracy
+        - power
+        - pp
+    PokeathlonStat:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this Pokéathlon stat resource
+          example: 1
+        name:
+          type: string
+          description: The name for this Pokéathlon stat resource
+          example: speed
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+          description: The name of this Pokéathlon stat listed in different languages
+        affecting_natures:
+          type: object
+          description: A detail of natures which affect this Pokéathlon stat positively or negatively
+          properties:
+            increase:
+              type: array
+              items:
+                $ref: '#/components/schemas/NaturePokeathlonStatAffectSets'
+              description: A list of natures that positively affect this Pokéathlon stat
+            decrease:
+              type: array
+              items:
+                $ref: '#/components/schemas/NaturePokeathlonStatAffectSets'
+              description: A list of natures that negatively affect this Pokéathlon stat
+      required:
+        - id
+        - name
+        - names
+        - affecting_natures
+    PokeathlonStatAffect:
+      type: object
+      properties:
+        max_change: 
+          type: integer
+          description: The maximum amount of change to the referenced Pokéathlon stat.
+        nature: 
+          $ref: '#/components/schemas/Nature'
+          description: The nature causing the change.
+      required:
+        - max_change
+        - nature
+    PokemonAbility:
+      type: object
+      properties:
+        is_hidden:
+          type: boolean
+        slot:
+          type: integer
+        ability:
+          $ref: '#/components/schemas/Ability'
+    PokemonColor:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this Pokemon color resource
+          example: 1
+        name:
+          type: string
+          description: The name for this Pokemon color resource
+          example: red
+    PokemonEntry:
+      type: object
+      properties:
+        entry_number:
+          type: integer
+          description: The index number within the Pokédex.
+          example: 6
+        pokemon_species:
+          $ref: "#/components/schemas/NamedAPIResource"
+          description: The Pokémon species being encountered.
+    PokemonForm:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this Pokemon form resource
+          example: 1
+        name:
+          type: string
+          description: The name for this Pokemon form resource
+          example: bulbasaur
+    PokemonHabitat:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this Pokemon habitat resource
+          example: 1
+        name:
+          type: string
+          description: The name for this Pokemon habitat resource
+          example: cave
+    PokemonHeldItem:
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Item'
+        version_details:
+          type: array
+          items:
+            type: object
+            properties:
+              rarity:
+                type: integer
+              version:
+                $ref: '#/components/schemas/Version'
+    PokemonMove:
+      type: object
+      properties:
+        move:
+          $ref: '#/components/schemas/NamedAPIResource'
+          description: The move the Pokémon can learn
+        version_group_details:
+          type: array
+          items:
+            type: object
+            properties:
+              level_learned_at:
+                type: integer
+                description: The minimum level to learn the move
+                example: 0
+              move_learn_method:
+                $ref: '#/components/schemas/NamedAPIResource'
+                description: The method by which the Pokémon learns the move
+              version_group:
+                $ref: '#/components/schemas/NamedAPIResource'
+                description: The version group in which the move can be learned
+            required:
+              - level_learned_at
+              - move_learn_method
+              - version_group
+          description: |
+            A list of details showing how the Pokémon can learn the move
+    PokemonShape:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this Pokemon shape resource
+          example: 1
+        name:
+          type: string
+          description: The name for this Pokemon shape resource
+          example: ball
+    PokemonSpecies:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        order:
+          type: integer
+          format: int32
+        gender_rate:
+          type: integer
+          format: int32
+        capture_rate:
+          type: integer
+          format: int32
+        base_happiness:
+          type: integer
+          format: int32
+        is_baby:
+          type: boolean
+        hatch_counter:
+          type: integer
+          format: int32
+        has_gender_differences:
+          type: boolean
+        forms_switchable:
+          type: boolean
+        growth_rate:
+          $ref: '#/components/schemas/GrowthRate'
+        pokedex_numbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpeciesDexEntry'
+        egg_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/EggGroup'
+        color:
+          $ref: '#/components/schemas/PokemonColor'
+        shape:
+          $ref: '#/components/schemas/PokemonShape'
+        evolves_from_species:
+          $ref: '#/components/schemas/PokemonSpecies'
+        evolution_chain:
+          $ref: '#/components/schemas/EvolutionChain'
+        habitat:
+          $ref: '#/components/schemas/PokemonHabitat'
+        generation:
+          $ref: '#/components/schemas/Generation'
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        pal_park_encounters:
+          type: array
+          items:
+            $ref: '#/components/schemas/PalParkEncounterArea'
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+        form_descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+        genera:
+          type: array
+          items:
+            $ref: '#/components/schemas/Genus'
+        varieties:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonSpeciesVariety'
+    PokemonSpeciesDexEntry:
+      type: object
+      properties:
+        entry_number:
+          type: integer
+          description: The index number of the Pokedex entry.
+        pokedex:
+          $ref: '#/components/schemas/NamedAPIResource'
+      description: An entry of a Pokemon species seen in the Pokedex.
+    PokemonSpeciesVariety:
+      type: object
+      properties:
+        is_default:
+          type: boolean
+          description: |
+            Whether this is the default "natural" variety of this species. Note that "default" is
+            subjective and that it may not match the Pokémon games' official status.
+          example: true
+        pokemon:
+          $ref: '#/components/schemas/Pokemon'
+        name:
+          type: string
+          description: The name of this Pokémon species variety
+          example: "Bulbasaur"
+    PokemonSprites:
+      type: object
+      properties:
+        front_default:
+          description: The default depiction of this Pokémon from the front in battle.
+          type: string
+          format: uri
+        front_female:
+          description: The shiny depiction of this Pokémon from the front in battle, for female gendered Pokémon.
+          type: string
+          format: uri
+        front_shiny:
+          description: The shiny depiction of this Pokémon from the front in battle.
+          type: string
+          format: uri
+        front_shiny_female:
+          description: The shiny depiction of this Pokémon from the front in battle, for female gendered Pokémon.
+          type: string
+          format: uri
+        back_default:
+          description: The default depiction of this Pokémon from the back in battle.
+          type: string
+          format: uri
+        back_female:
+          description: The shiny depiction of this Pokémon from the back in battle, for female gendered Pokémon.
+          type: string
+          format: uri
+        back_shiny:
+          description: The shiny depiction of this Pokémon from the back in battle.
+          type: string
+          format: uri
+        back_shiny_female:
+          description: The shiny depiction of this Pokémon from the back in battle, for female gendered Pokémon.
+          type: string
+          format: uri
+    PokemonStat:
+      type: object
+      properties:
+        stat:
+          description: The stat the Pokémon has.
+          $ref: '#/components/schemas/NamedAPIResource'
+        effort:
+          description: The effort points (EV) the Pokémon has in the stat.
+          type: integer
+        base_stat:
+          description: The base value of the stat.
+          type: integer
+    PokemonType:
+      type: object
+      properties:
+        slot:
+          description: The order the Pokémon's types are listed in.
+          type: integer
+          format: int32
+        type:
+          description: The type the Pokémon has.
+          $ref: '#/components/schemas/NamedAPIResource'
+    PokemonEncounter:
+      type: object
+      properties:
+        pokemon:
+          $ref: '#/components/schemas/NamedAPIResource'
+        version_details:
+          type: array
+          items:
+            $ref: '#/components/schemas/EncounterVersionDetails'
+      description: "Encounters Pokemon that can be encountered in the game and the version groups in which they can be encountered."
+    Pokemon:
+      type: object
+      properties:
+        name:
+          type: string
+        base_experience:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+        is_default:
+          type: boolean
+        order:
+          type: integer
+          format: int32
+        weight:
+          type: integer
+          format: int32
+        abilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonAbility'
+        forms:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonForm'
+        game_indices:
+          type: array
+          items:
+            $ref: '#/components/schemas/VersionGameIndex'
+        held_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonHeldItem'
+        location_area_encounters:
+          type: string
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonMove'
+        sprites:
+          $ref: '#/components/schemas/PokemonSprites'
+        species:
+          $ref: '#/components/schemas/NamedAPIResource'
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonStat'
+        types:
+          type: array
+          items:
+            $ref: '#/components/schemas/PokemonType'
+      required:
+        - id
+        - name
+        - base_experience
+        - height
+        - is_default
+        - order
+        - weight
+        - abilities
+        - forms
+        - game_indices
+        - held_items
+        - location_area_encounters
+        - moves
+        - sprites
+        - species
+        - stats
+        - types
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+        name:
+          type: string
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        main_generation:
+          $ref: '#/components/schemas/NamedAPIResource'
+        pokedexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+        version_groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - id
+        - locations
+        - name
+        - names
+        - main_generation
+        - pokedexes
+        - version_groups
+    Stat:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        game_index:
+          type: integer
+          format: int32
+        is_battle_only:
+          type: boolean
+        affecting_moves:
+          $ref: '#/components/schemas/MoveStatAffectSets'
+        affecting_natures:
+          $ref: '#/components/schemas/NatureStatAffectSets'
+      required:
+        - id
+        - name
+        - game_index
+
+    SuperContestEffect:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        appeal:
+          type: integer
+          format: int32
+        flavor_text_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlavorText'
+        moves:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - id
+        - appeal
+        - flavor_text_entries
+        - moves
+
+    VersionGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        order:
+          type: integer
+          format: int32
+        generation:
+          $ref: '#/components/schemas/NamedAPIResource'
+        move_learn_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+        pokedexes:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+        regions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - id
+        - name
+        - order
+        - generation
+        - move_learn_methods
+        - pokedexes
+        - regions
+        - versions
+    Version:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+        names:
+          type: array
+          items:
+            $ref: '#/components/schemas/Name'
+        version_group:
+          $ref: '#/components/schemas/NamedAPIResource'
+      required:
+        - id
+        - name
+        - names
+        - version_group
+    Type:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The identifier for this type resource.
+        name:
+          type: string
+          description: The name for this type resource.
+        damage_relations:
+          type: object
+          properties:
+            double_damage_from:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+            double_damage_to:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+            half_damage_from:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+            half_damage_to:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+            no_damage_from:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+            no_damage_to:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the related type.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the related type.
+        game_indices:
+          type: array
+          items:
+            type: object
+            properties:
+              game_index:
+                type: integer
+                format: int32
+                description: The internal id of an api resource within game data.
+              generation:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The generation this game index is related to.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the generation.
+        generation:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The generation this type originated in.
+            url:
+              type: string
+              description: The URL of the API endpoint for this generation.
+        move_damage_class:
+          type: object
+          properties:
+            name:
+              type: string
+              description: The name of this move damage class.
+            url:
+              type: string
+              description: The URL of the API endpoint for this move damage class.
+        names:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: The localized name for an API resource in a specific language.
+              language:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the language.
+                  url:
+                    type: string
+                    description: The URL of the API endpoint for the language.
+        pokemon:
+          type: array
+          items:
+            type: object
+            properties:
+              slot:
+                type: integer
+    VerboseEffect:
+      type: object
+      properties:
+        effect:
+          type: string
+          description: The localized effect text for an API resource in a specific language.
+          example: Raises the user's Defense by 1 stage.
+    VersionGameIndex:
+      type: object
+      properties:
+        game_index:
+          type: integer
+          description: |
+            The internal id of the game used in generation VI and VII to identify different
+            versions of the same Pokémon species.
+          example: 12
+        version:
+          $ref: '#/components/schemas/NamedAPIResource'
+          description: The version relevent to this game index

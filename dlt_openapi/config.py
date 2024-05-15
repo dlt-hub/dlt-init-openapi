@@ -40,6 +40,8 @@ class Config(BaseModel):
     """Which class to use for rendering"""
     detector_class: str = "dlt_openapi.detector.default.DefaultDetector"
     """Which class to use for detecting"""
+    global_limit: int = 0
+    """Set a limit on how many items are emitted from a resource"""
 
     project_dir: Path = None
 

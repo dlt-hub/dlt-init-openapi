@@ -23,6 +23,7 @@ def test_paged_poke_load() -> None:
         "name": "pokemon",
         "table_name": "pokemon",
         "primary_key": "id",
+        "write_disposition": "merge",
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
@@ -48,6 +49,7 @@ def test_simple_child_table_poke_load() -> None:
         "name": "pokemon_list",
         "table_name": "pokemon",
         "primary_key": "id",
+        "write_disposition": "merge",
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
@@ -66,6 +68,7 @@ def test_simple_child_table_poke_load() -> None:
         "name": "pokemon_read",
         "table_name": "pokemon",
         "primary_key": "id",
+        "write_disposition": "merge",
         "endpoint": {
             "path": "/api/v2/pokemon/{name}/",
             "data_selector": "$",

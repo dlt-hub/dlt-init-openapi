@@ -41,4 +41,5 @@ def test_simple_museums_pagination() -> None:
             },
         },
         "primary_key": "eventId",
+        "write_disposition": "merge"
     }

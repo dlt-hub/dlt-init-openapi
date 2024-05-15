@@ -11,5 +11,9 @@ if __name__ == "__main__":
         full_refresh=False,
         export_schema_path="schemas/export"
     )
-    info = pipeline.run({{ source_name }}())
+    source = {{ source_name }}()
+    {% if global_limit %}
+    source.add_limit({{global_limit}})
+    {% endif %}
+    info = pipeline.run(source)
     print(info)

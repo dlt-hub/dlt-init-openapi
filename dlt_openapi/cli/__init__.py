@@ -53,6 +53,7 @@ def init(
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
     loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
+    global_limit: int = typer.Option(0, help="Set a global limit on the generated source"),
 ) -> None:
     """Generate a new OpenAPI Client library"""
     from dlt_openapi import create_new_client
@@ -76,6 +77,7 @@ def init(
             "package_name": source,
             "output_path": output_path,
             "endpoint_filter": questionary_endpoint_selection if interactive else None,
+            "global_limit": global_limit,
         },
     )
 

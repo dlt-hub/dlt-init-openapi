@@ -15,7 +15,7 @@ from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.renderer.base_renderer import BaseRenderer
 from dlt_openapi.utils import misc
 
-REST_API_SOURCE_LOCATION = "../../../sources/sources/rest_api"
+REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../../../sources/sources/rest_api")
 FILE_ENCODING = "utf-8"
 TEMPLATE_FILTERS = {
     "snakecase": misc.snake_case,
@@ -69,8 +69,7 @@ class DefaultRenderer(BaseRenderer):
         self._run_post_hooks()
 
         # copy rest api source into project dir
-        current_dir = pathlib.Path(__file__).parent.resolve()
-        copy_tree(str(current_dir / REST_API_SOURCE_LOCATION), str(self.config.project_dir / "rest_api"))
+        copy_tree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")
@@ -135,7 +134,10 @@ class DefaultRenderer(BaseRenderer):
         template = self.env.get_template("pipeline.py.j2")
         module_path.write_text(
             template.render(
-                package_name=self.package_name, source_name=self.source_name, dataset_name=self.dataset_name
+                package_name=self.package_name,
+                source_name=self.source_name,
+                dataset_name=self.dataset_name,
+                global_limit=self.config.global_limit,
             ),
             encoding=FILE_ENCODING,
         )

@@ -62,11 +62,16 @@ jobs:
       - name: Run make test
         run: make test
 
+      # TODO: the below does one full e2e test, make this a 
+      # bit more generic and run a couple of these
       - name: Create example pipeline
         run: make create-e2e-pokemon-pipeline
         
       - name: Run example pipeline
-        run: cd pokemon-pipeline && poetry run python pipeline.py
+        run: make run-pokemon-pipeline
+
+      - name: Check example pipeline result
+        run: make check-pokemon-pipeline 
 
   matrix_job_required_check:
     name: lint | code & tests

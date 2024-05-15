@@ -15,12 +15,13 @@ format:
 	poetry run isort black tests dlt_openapi
 	poetry run black tests dlt_openapi
 
+# all tests excluding the checks on e2e tests
 test:
-	poetry run pytest tests 
+	poetry run pytest tests --ignore=tests/e2e
 
-# test without running all the original specs
+# test without running all the specs through a source
 test-fast:
-	poetry run pytest tests -m "not slow"
+	poetry run pytest tests -m "not slow" --ignore=tests/e2e
 
 # dev helpers
 create-pokemon-pipeline:
@@ -29,8 +30,12 @@ create-pokemon-pipeline:
 create-pokemon-pipeline-interactive:
 	poetry run dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
+# e2e test helpers
 create-e2e-pokemon-pipeline:
 	poetry run dlt-openapi init pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 1 --no-interactive
 
 run-pokemon-pipeline:
 	cd pokemon-pipeline && poetry run python pipeline.py
+
+check-pokemon-pipeline:
+	poetry run pytest tests/e2e

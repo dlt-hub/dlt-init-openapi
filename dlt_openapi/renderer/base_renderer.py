@@ -11,6 +11,13 @@ if TYPE_CHECKING:
 
 class BaseRenderer:
     @abstractmethod
-    def run(self, open_api: "OpenapiParser", dry: bool = False) -> FileNotFoundError:
-        """Run the detector"""
+    def run(self, open_api: "OpenapiParser", dry: bool = False) -> None:
+        """Run the detector
+
+        Args:
+            open_api (OpenapiParser): OpenAPI parser instance
+
+        Raises:
+            FileNotFoundError: when specification or other files missing
+        """
         ...

@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import pytest
 
-from tests.e2e.utils import get_indexed_resources
+from tests.integration.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")

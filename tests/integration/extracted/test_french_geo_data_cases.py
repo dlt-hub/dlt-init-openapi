@@ -3,7 +3,7 @@
 #
 import pytest
 
-from tests.e2e.utils import get_dict_by_case
+from tests.integration.utils import get_dict_by_case
 
 
 @pytest.mark.skip("Does not seem to have the required pagination parameters")

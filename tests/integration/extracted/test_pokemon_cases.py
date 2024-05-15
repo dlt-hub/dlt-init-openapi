@@ -1,7 +1,7 @@
 #
 # Test different iterations of pokemon
 #
-from tests.e2e.utils import get_dict_by_case
+from tests.integration.utils import get_dict_by_case
 
 
 def test_simple_poke_load() -> None:

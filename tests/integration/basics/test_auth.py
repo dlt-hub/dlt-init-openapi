@@ -1,4 +1,4 @@
-from tests.e2e.utils import get_dict_by_case
+from tests.integration.utils import get_dict_by_case
 
 
 def test_bearer_auth() -> None:

@@ -1,7 +1,7 @@
 import pytest
 from dlt.common.configuration.exceptions import InvalidNativeValue
 
-from tests.e2e.utils import get_all_spec_paths, get_source
+from tests.integration.utils import get_all_spec_paths, get_source
 
 SKIP_CASES = ["zoom_with_pagination.yml"]
 

@@ -2,9 +2,9 @@
 Default renderer
 """
 
+import pathlib
 import shutil
 import subprocess
-import pathlib
 from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, PackageLoader
@@ -70,7 +70,7 @@ class DefaultRenderer(BaseRenderer):
 
         # copy rest api source into project dir
         current_dir = pathlib.Path(__file__).parent.resolve()
-        copy_tree(current_dir / REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
+        copy_tree(str(current_dir / REST_API_SOURCE_LOCATION), str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")

@@ -1,15 +1,16 @@
 import dlt
 
-from pollenrapporten import pollen_source
+from pollenrapporten import pollenrapporten_source
 
 
 if __name__ == "__main__":
     pipeline = dlt.pipeline(
-        pipeline_name="pollen_pipeline",
+        pipeline_name="pollenrapporten_pipeline",
         destination='duckdb',
-        dataset_name="pollen_data",
+        dataset_name="pollenrapporten_data",
         full_refresh=False,
         export_schema_path="schemas/export"
     )
-    info = pipeline.run(pollen_source())
+    source = pollenrapporten_source()
+    info = pipeline.run(source)
     print(info)

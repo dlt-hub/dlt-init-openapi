@@ -1,2 +1,5 @@
+[runtime]
+log_level = "INFO"
+
 [sources]
 base_url = "https://fakerestapi.azurewebsites.net/"

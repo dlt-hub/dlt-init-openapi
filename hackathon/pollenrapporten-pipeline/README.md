@@ -1,4 +1,4 @@
-# pollen pipeline
+# pollenrapporten pipeline
 
 Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. 0.0.1
 
@@ -7,13 +7,13 @@ Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. 0.0.1
 * https://github.com/dlt-hub/dlt-openapi
 
 ## Available resources
-* pollen-types  
+* pollen_types  
   _GET /v1/pollen-types_  
 List all available pollen types.
 
 A pollen type entry contains all the information needed to present a specific pollen type. A pollen type can be references using a `pollen_id`.
 
-The ID of a pollen type, as `pollen_id`, is used to filter other endpoints such as `forecast`.* pollen-level-definitions  
+The ID of a pollen type, as `pollen_id`, is used to filter other endpoints such as `forecast`.* pollen_level_definitions  
   _GET /v1/pollen-level-definitions_  
 List all available pollen level definitions.
 
@@ -27,6 +27,6 @@ The `id` of region can be used as `region_id` in other endpoints such as `foreca
   _GET /v1/forecasts_  
 List forecasts filtering on a selection of parameters
 
-To fetch only current data for each region use the parameter `current=true`* pollen-count  
+To fetch only current data for each region use the parameter `current=true`* pollen_count  
   _GET /v1/pollen-count_  
 List a filtered set of daily pollen counts

@@ -1,4 +1,6 @@
+[runtime]
+log_level="INFO"
+
 [sources]
 # Base URL for the API
 base_url = "https://api.pollenrapporten.se"
-

@@ -1,4 +1,4 @@
-# fakeapi pipeline
+# fakerestapi pipeline
 
 Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. 0.0.1
 
@@ -7,11 +7,17 @@ Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. 0.0.1
 * https://github.com/dlt-hub/dlt-openapi
 
 ## Available resources
-* GET_/api/v1/Activities  
+* get_apiv_1_activities  
   _GET /api/v1/Activities_  
-* GET_/api/v1/Authors  
+* get_apiv_1_activitiesid  
+  _GET /api/v1/Activities/{id}_  
+* get_apiv_1_authors  
   _GET /api/v1/Authors_  
-* GET_/api/v1/Books  
-  _GET /api/v1/Books_  
-* GET_/api/v1/Authors/authors/books/{idBook}  
+* get_apiv_1_authorsid  
+  _GET /api/v1/Authors/{id}_  
+* get_apiv_1_authorsauthorsbooksid_book  
   _GET /api/v1/Authors/authors/books/{idBook}_  
+* get_apiv_1_books  
+  _GET /api/v1/Books_  
+* get_apiv_1_booksid  
+  _GET /api/v1/Books/{id}_  

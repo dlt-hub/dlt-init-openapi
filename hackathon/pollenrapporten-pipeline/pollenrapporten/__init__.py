@@ -6,10 +6,11 @@ from rest_api import rest_api_source
 from rest_api.typing import RESTAPIConfig
 
 
-@dlt.source(name="pollen_source", max_table_nesting=2)
-def pollen_source(
+@dlt.source(name="pollenrapporten_source", max_table_nesting=2)
+def pollenrapporten_source(
     base_url: str = dlt.config.value,
 ) -> List[DltResource]:
+
     # source configuration
     source_config: RESTAPIConfig = {
         "client": {
@@ -17,7 +18,8 @@ def pollen_source(
         },
         "resources": [
             {
-                "name": "pollen-types",
+                "name": "pollen_types",
+                "table_name": "pagination_link",
                 "endpoint": {
                     "data_selector": "_links",
                     "path": "/v1/pollen-types",
@@ -31,7 +33,8 @@ def pollen_source(
                 },
             },
             {
-                "name": "pollen-level-definitions",
+                "name": "pollen_level_definitions",
+                "table_name": "pagination_link",
                 "endpoint": {
                     "data_selector": "_links",
                     "path": "/v1/pollen-level-definitions",
@@ -46,6 +49,7 @@ def pollen_source(
             },
             {
                 "name": "regions",
+                "table_name": "pagination_link",
                 "endpoint": {
                     "data_selector": "_links",
                     "path": "/v1/regions",
@@ -60,6 +64,7 @@ def pollen_source(
             },
             {
                 "name": "forecasts",
+                "table_name": "pagination_link",
                 "endpoint": {
                     "data_selector": "_links",
                     "path": "/v1/forecasts",
@@ -73,7 +78,8 @@ def pollen_source(
                 },
             },
             {
-                "name": "pollen-count",
+                "name": "pollen_count",
+                "table_name": "pagination_link",
                 "endpoint": {
                     "data_selector": "_links",
                     "path": "/v1/pollen-count",

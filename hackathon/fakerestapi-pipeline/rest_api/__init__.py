@@ -14,15 +14,15 @@ import graphlib  # type: ignore[import,unused-ignore]
 
 import dlt
 from dlt.common.validation import validate_dict
-from dlt.extract.incremental import Incremental
-from dlt.extract.source import DltResource, DltSource
 from dlt.common import jsonpath
 from dlt.common.schema.schema import Schema
 from dlt.common.schema.typing import TSchemaContract
 from dlt.common.configuration.specs import BaseConfiguration
 
+from dlt.extract.incremental import Incremental
+from dlt.extract.source import DltResource, DltSource
+
 from dlt.sources.helpers.rest_client import RESTClient
-from dlt.sources.helpers.rest_client.detector import single_entity_path
 from dlt.sources.helpers.rest_client.paginators import BasePaginator
 from dlt.sources.helpers.rest_client.typing import HTTPMethodBasic
 from .typing import (
@@ -37,7 +37,7 @@ from .config_setup import (
     create_auth,
     create_paginator,
     build_resource_dependency_graph,
-    make_parent_key_name,
+    process_parent_data_item,
     setup_incremental_object,
     create_response_hooks,
 )
@@ -83,7 +83,7 @@ def rest_api_source(
         pokemon_source = rest_api_source({
             "client": {
                 "base_url": "https://pokeapi.co/api/v2/",
-                "paginator": "json_links",
+                "paginator": "json_response",
             },
             "endpoints": {
                 "pokemon": {
@@ -174,13 +174,8 @@ def rest_api_resources(config: RESTAPIConfig) -> List[DltResource]:
     validate_dict(RESTAPIConfig, config, path=".")
 
     client_config = config["client"]
-
     resource_defaults = config.get("resource_defaults", {})
-
-    resource_list = config.get("resources")
-
-    if not resource_list:
-        raise ValueError("No resources defined")
+    resource_list = config["resources"]
 
     (
         dependency_graph,
@@ -242,12 +237,6 @@ def create_resources(
 
         hooks = create_response_hooks(endpoint_config.get("response_actions"))
 
-        # try to guess if list of entities or just single entity is returned
-        if single_entity_path(endpoint_config["path"]):
-            data_selector = "$"
-        else:
-            data_selector = None
-
         resource_kwargs = exclude_keys(
             endpoint_resource, {"endpoint", "include_from_parent"}
         )
@@ -290,12 +279,12 @@ def create_resources(
                 params=request_params,
                 json=request_json,
                 paginator=paginator,
-                data_selector=endpoint_config.get("data_selector") or data_selector,
+                data_selector=endpoint_config.get("data_selector"),
                 hooks=hooks,
             )
 
         else:
-            predecessor = resources[resolved_param.resolve_config.resource_name]
+            predecessor = resources[resolved_param.resolve_config["resource"]]
 
             base_params = exclude_keys(request_params, {resolved_param.param_name})
 
@@ -310,22 +299,17 @@ def create_resources(
                 client: RESTClient = client,
                 resolved_param: ResolvedParam = resolved_param,
                 include_from_parent: List[str] = include_from_parent,
+                incremental_object: Optional[Incremental[Any]] = incremental_object,
+                incremental_param: IncrementalParam = incremental_param,
             ) -> Generator[Any, None, None]:
-                field_path = resolved_param.resolve_config.field_path
+                if incremental_object:
+                    params[incremental_param.start] = incremental_object.last_value
+                    if incremental_param.end:
+                        params[incremental_param.end] = incremental_object.end_value
 
                 for item in items:
-                    formatted_path = path.format(
-                        **{resolved_param.param_name: item[field_path]}
-                    )
-                    parent_resource_name = resolved_param.resolve_config.resource_name
-
-                    parent_record = (
-                        {
-                            make_parent_key_name(parent_resource_name, key): item[key]
-                            for key in include_from_parent
-                        }
-                        if include_from_parent
-                        else None
+                    formatted_path, parent_record = process_parent_data_item(
+                        path, item, resolved_param, include_from_parent
                     )
 
                     for child_page in client.paginate(
@@ -350,7 +334,7 @@ def create_resources(
                 path=endpoint_config.get("path"),
                 params=base_params,
                 paginator=paginator,
-                data_selector=endpoint_config.get("data_selector") or data_selector,
+                data_selector=endpoint_config.get("data_selector"),
                 hooks=hooks,
             )
 

@@ -63,8 +63,10 @@ jobs:
         run: make test
 
       - name: Create example pipeline
-        run: make create-pokemon-pipeline
+        run: make create-e2e-pokemon-pipeline
         
+      - name: Run example pipeline
+        run: cd pokemon-pipeline && poetry run python pipeline.py
 
   matrix_job_required_check:
     name: lint | code & tests

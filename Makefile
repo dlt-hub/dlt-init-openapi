@@ -29,5 +29,8 @@ create-pokemon-pipeline:
 create-pokemon-pipeline-interactive:
 	poetry run dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
+create-e2e-pokemon-pipeline:
+	poetry run dlt-openapi init pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 1 --no-interactive
+
 run-pokemon-pipeline:
 	cd pokemon-pipeline && poetry run python pipeline.py

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple, Union
 
 import openapi_schema_pydantic as osp
@@ -6,7 +5,6 @@ import referencing
 import referencing.jsonschema
 
 from dlt_openapi.parser.config import Config
-from dlt_openapi.utils.misc import ClassName
 
 TComponentClass = Union[
     osp.Schema,
@@ -20,35 +18,13 @@ TComponentClass = Union[
 ]
 
 
-@dataclass
-class SecurityScheme:
-    os_security_scheme: osp.SecurityScheme
-    class_name: ClassName
-
-    @property
-    def type(self) -> str:
-        return self.os_security_scheme.type
-
-    @property
-    def scheme(self) -> str:
-        return self.os_security_scheme.scheme
-
-    @property
-    def name(self) -> str:
-        return self.os_security_scheme.name
-
-    @property
-    def location(self) -> str:
-        return self.os_security_scheme.security_scheme_in
-
-
 class OpenapiContext:
     spec: osp.OpenAPI
     spec_raw: Dict[str, Any]
     config: Config
 
     _component_cache: Dict[str, Dict[str, Any]] = {}
-    security_schemes: Dict[str, SecurityScheme] = {}
+    # security_schemes: Dict[str, SecurityScheme] = {}
 
     def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any]) -> None:
         self.config = config

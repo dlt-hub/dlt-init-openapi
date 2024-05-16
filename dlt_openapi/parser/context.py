@@ -45,16 +45,17 @@ class SecurityScheme:
 class OpenapiContext:
     spec: osp.OpenAPI
     spec_raw: Dict[str, Any]
+    config: Config
 
-    _component_cache: Dict[str, Dict[str, Any]]
-    security_schemes: Dict[str, SecurityScheme]
+    _component_cache: Dict[str, Dict[str, Any]] = {}
+    security_schemes: Dict[str, SecurityScheme] = {}
 
     def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any]) -> None:
         self.config = config
         self.spec = spec
         self.spec_raw = spec_raw
-        self._component_cache = {}
-        self.security_schemes = {}
+
+        # setup ref resolver
         resource = referencing.Resource(  # type: ignore[var-annotated, call-arg]
             contents=self.spec_raw, specification=referencing.jsonschema.DRAFT202012
         )
@@ -99,8 +100,3 @@ class OpenapiContext:
         if isinstance(ref, osp.Parameter):
             return ref
         return osp.Parameter.parse_obj(self._component_from_reference(ref))
-
-    def get_security_scheme(self, name: str) -> SecurityScheme:
-        if name in self.security_schemes:
-            return self.security_schemes[name]
-        return None

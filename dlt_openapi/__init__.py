@@ -5,6 +5,8 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Optional, cast
 
+import httpcore
+import httpx
 from loguru import logger
 
 from dlt_openapi.utils.misc import import_class_from_string
@@ -31,18 +33,20 @@ class Project:  # pylint: disable=too-many-instance-attributes
     def __init__(
         self,
         *,
+        doc: bytes,
         openapi: OpenapiParser,
         detector: BaseDetector,
         renderer: BaseRenderer,
         config: Config,
     ) -> None:
+        self.doc = doc
         self.openapi = openapi
         self.detector = detector
         self.renderer = renderer
         self.config = config
 
     def parse(self) -> None:
-        self.openapi.parse()
+        self.openapi.parse(self.doc)
 
     def detect(self) -> None:
         logger.info("Running heuristics on parsed output")
@@ -80,16 +84,37 @@ class Project:  # pylint: disable=too-many-instance-attributes
                     logger.warning(w.msg)
 
 
+def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, timeout: int = 60) -> bytes:
+    if url is not None and path is not None:
+        raise ValueError("Provide URL or Path, not both.")
+    if url is not None:
+        logger.info(f"Downloading spec from {url}")
+        try:
+            response = httpx.get(url, timeout=timeout)
+            logger.success("Download complete")
+            return response.content
+        except (httpx.HTTPError, httpcore.NetworkError) as e:
+            raise ValueError("Could not get OpenAPI document from provided URL") from e
+    elif path is not None:
+        logger.info(f"Reading spec from {path}")
+        return Path(path).read_bytes()
+    else:
+        raise ValueError("No URL or Path provided")
+
+
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
     url: Optional[str],
     path: Optional[Path],
     config: Config = None,
 ) -> Project:
+    doc = _get_document(url=url, path=path)
+
     renderer_cls = cast(BaseRenderer, import_class_from_string(config.renderer_class))
     detector_cls = cast(BaseDetector, import_class_from_string(config.detector_class))
 
     return Project(
-        openapi=OpenapiParser(config, url or path),
+        doc=doc,
+        openapi=OpenapiParser(config),
         detector=detector_cls(config),  # type: ignore
         renderer=renderer_cls(config),  # type: ignore
         config=config,

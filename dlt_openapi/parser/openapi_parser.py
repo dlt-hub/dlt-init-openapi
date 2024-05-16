@@ -1,6 +1,6 @@
 import json
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import openapi_schema_pydantic as osp
 import yaml
@@ -10,23 +10,25 @@ from yaml import BaseLoader
 from dlt_openapi.exceptions import DltOpenAPIException
 from dlt_openapi.parser.config import Config
 from dlt_openapi.parser.context import OpenapiContext
-from dlt_openapi.parser.credentials import CredentialsProperty
 from dlt_openapi.parser.endpoints import EndpointCollection
 from dlt_openapi.parser.info import OpenApiInfo
+from dlt_openapi.parser.security import SecurityScheme
 
 
 class OpenapiParser:
     info: OpenApiInfo
-    credentials: Optional[CredentialsProperty] = None
-
     context: OpenapiContext = None
     endpoints: EndpointCollection = None
+    security_schemes: Dict[str, SecurityScheme] = {}
+
+    detected_default_security_scheme: SecurityScheme = None
 
     def __init__(self, config: Config) -> None:
         self.config = config
 
     def parse(self, data: bytes) -> None:
         self.spec_raw = self._load_yaml_or_json(data)
+        self.security_schemes = {}
 
         logger.info("Validating spec structure")
         try:
@@ -37,9 +39,19 @@ class OpenapiParser:
 
         logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
-        self.credentials = CredentialsProperty.from_context(self.context)
         self.info = OpenApiInfo.from_context(self.context)
         logger.success("Completed extracting openapi metadata and credentials.")
+
+        logger.info("Extracting security schemes")
+        if self.context.spec.components and self.context.spec.components.securitySchemes:
+            for name, scheme in self.context.spec.components.securitySchemes.items():
+                self.security_schemes[name] = SecurityScheme(
+                    name=scheme.name,  # type: ignore
+                    type=scheme.type,  # type: ignore
+                    scheme=scheme.scheme,  # type: ignore
+                    location=scheme.security_scheme_in,  # type: ignore
+                )
+        logger.success("Completed extracting security schemes.")
 
         logger.info("Parsing openapi endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)

@@ -1,16 +1,16 @@
 from dataclasses import dataclass
-from typing import Optional
-
-from dlt_openapi.parser.context import OpenapiContext
 
 
 @dataclass
-class CredentialsProperty:
+class SecurityScheme:
 
     type: str
     scheme: str
     name: str
     location: str
+
+    detected_credentials_string: str = ""
+    detected_auth_statement: str = ""
 
     @property
     def supported(self) -> bool:
@@ -61,16 +61,3 @@ class CredentialsProperty:
             "token": token,
         }"""
         return ""
-
-    @classmethod
-    def from_context(cls, context: OpenapiContext) -> Optional["CredentialsProperty"]:
-        """Create property from global definition"""
-        """TODO: make nested defs work"""
-
-        if not context.spec.components or not context.spec.components.securitySchemes:
-            return None
-        scheme = list(context.spec.components.securitySchemes.values())[0]
-        instance = cls(name=scheme.name, type=scheme.type, scheme=scheme.scheme, location=scheme.security_scheme_in)
-        if not instance.supported:
-            return None
-        return instance

@@ -24,7 +24,6 @@ class OpenapiContext:
     config: Config
 
     _component_cache: Dict[str, Dict[str, Any]] = {}
-    # security_schemes: Dict[str, SecurityScheme] = {}
 
     def __init__(self, config: Config, spec: osp.OpenAPI, spec_raw: Dict[str, Any]) -> None:
         self.config = config

@@ -62,6 +62,11 @@ class Endpoint:
     detected_transformer_settings: Optional[TransformerSetting] = None
 
     @property
+    def id(self) -> str:
+        """unique identifier"""
+        return self.operation_id
+
+    @property
     def payload(self) -> Optional[DataPropertyPath]:
         """gets payload dataproperty path if detected"""
         return self.detected_data_response.detected_payload if self.detected_data_response else None
@@ -159,15 +164,15 @@ class Endpoint:
 @dataclass
 class EndpointCollection:
     endpoints: List[Endpoint]
-    names_to_render: Set[str] = field(default_factory=set)
-    names_to_deselect: Set[str] = field(default_factory=set)
+    ids_to_render: Set[str] = field(default_factory=set)
+    ids_to_deselect: Set[str] = field(default_factory=set)
 
     @property
     def all_endpoints_to_render(self) -> List[Endpoint]:
         """get all endpoints we want to render"""
-        if not self.names_to_render:
+        if not self.ids_to_render:
             return self.endpoints
-        return [e for e in self.endpoints if e.detected_resource_name in self.names_to_render]
+        return [e for e in self.endpoints if e.detected_resource_name in self.ids_to_render]
 
     @property
     def all_endpoints_for_selector(self) -> List[Endpoint]:
@@ -179,26 +184,26 @@ class EndpointCollection:
         return {ep.path: ep for ep in self.endpoints}
 
     @property
-    def endpoints_by_detected_resource_name(self) -> Dict[str, Endpoint]:
+    def endpoints_by_id(self) -> Dict[str, Endpoint]:
         """Endpoints by path"""
-        return {ep.detected_resource_name: ep for ep in self.endpoints}
+        return {ep.id: ep for ep in self.endpoints}
 
-    def set_names_to_render(self, names: Set[str]) -> None:
-        selected_names = set()
-        render_names = set()
+    def set_ids_to_render(self, ids: Set[str]) -> None:
+        selected_ids = set()
+        ids_to_render = set()
 
         # traverse ancestry chain and make sure parent endpoints are also marked for rendering
         # but deselected
-        for name in names:
-            ep = self.endpoints_by_detected_resource_name[name]
-            render_names.add(ep.detected_resource_name)
-            selected_names.add(ep.detected_resource_name)
+        for endpoint_id in ids:
+            ep = self.endpoints_by_id[endpoint_id]
+            ids_to_render.add(ep.id)
+            selected_ids.add(ep.id)
             while ep.transformer and ep.parent:
-                render_names.add(ep.parent.detected_resource_name)
+                ids_to_render.add(ep.parent.id)
                 ep = ep.parent
 
-        self.names_to_render = render_names
-        self.names_to_deselect = render_names - selected_names
+        self.ids_to_render = ids_to_render
+        self.ids_to_deselect = ids_to_render - selected_ids
 
     @classmethod
     def from_context(cls, context: OpenapiContext) -> "EndpointCollection":

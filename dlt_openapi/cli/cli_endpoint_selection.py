@@ -25,4 +25,4 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:
     ).ask()
 
     # return resource names of selected endpoints
-    return {e.detected_resource_name for e in selected_endpoints}
+    return {e.id for e in selected_endpoints}

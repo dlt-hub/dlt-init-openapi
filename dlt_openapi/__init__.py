@@ -10,7 +10,7 @@ from loguru import logger
 from dlt_openapi.utils.misc import import_class_from_string
 
 from .config import Config
-from .detector.base_detector import BaseDetector
+from .detector.base_detector import GLOBAL_WARNING_KEY, BaseDetector
 from .parser.openapi_parser import OpenapiParser
 from .renderer.base_renderer import BaseRenderer
 
@@ -53,10 +53,31 @@ class Project:  # pylint: disable=too-many-instance-attributes
         logger.info("Rendering project")
         if self.config.endpoint_filter:
             filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
-            self.openapi.endpoints.set_names_to_render(filtered_endpoints)
+            self.openapi.endpoints.set_ids_to_render(filtered_endpoints)
         self.renderer.run(self.openapi, dry=dry)
         logger.success(f"Rendered project to: {self.config.project_dir}")
         logger.info("You can now run your pipeline from this folder with 'python pipeline.py'.")
+
+    def print_warnings(self) -> None:
+        """print warnings to logger if any where encountered for endpoints that are being rendered"""
+        warnings = self.detector.get_warnings()
+        if not warnings:
+            logger.info("No warnings generated during parsing and detection")
+            return
+
+        # print the global warnings
+        if global_warnings := warnings.get(GLOBAL_WARNING_KEY):
+            logger.warning("Global warnings:")
+            for w in global_warnings:
+                logger.warning(w.msg)
+
+        # print warnings, but only for endpoints that where rendered
+        for endpoint_id, endpoint_warnings in warnings.items():
+            if endpoint_id in self.openapi.endpoints.ids_to_render or not self.openapi.endpoints.ids_to_render:
+                e = self.openapi.endpoints.endpoints_by_id[endpoint_id]
+                logger.warning(f"Warnings for endpoint {e.method} {e.path}:")
+                for w in endpoint_warnings:
+                    logger.warning(w.msg)
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
@@ -95,4 +116,5 @@ def create_new_client(
     project.parse()
     project.detect()
     project.render()
+    project.print_warnings()
     return project

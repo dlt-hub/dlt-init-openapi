@@ -5,7 +5,7 @@ Default open source detector
 from typing import Dict, List, Optional, Tuple, Union, cast
 
 from dlt_openapi.config import Config
-from dlt_openapi.detector.base_detector import BaseDetector
+from dlt_openapi.detector.base_detector import GLOBAL_WARNING_KEY, BaseDetector
 from dlt_openapi.detector.default import utils
 from dlt_openapi.detector.default.primary_key import detect_primary_key_by_name
 from dlt_openapi.parser.endpoints import Endpoint, EndpointCollection, Response, TransformerSetting
@@ -36,11 +36,15 @@ from .const import (
     RE_UNIQUE_KEY,
 )
 from .utils import to_int
+from .warnings import BaseDetectionWarning, PrimaryKeyNotFoundWarning
 
 Tree = Dict[str, Union["str", "Tree"]]
 
 
 class DefaultDetector(BaseDetector):
+
+    warnings: Dict[str, List[BaseDetectionWarning]] = {}
+
     def __init__(self, config: Config) -> None:
         self.config = config
 
@@ -144,9 +148,9 @@ class DefaultDetector(BaseDetector):
                 endpoint.detected_data_response.detected_payload = self.detect_response_payload(
                     endpoint.detected_data_response, expect_list=expect_list
                 )
-                self.detect_primary_key(endpoint.detected_data_response, endpoint.path)
+                self.detect_primary_key(endpoint, endpoint.detected_data_response, endpoint.path)
 
-    def detect_primary_key(self, response: Response, path: str) -> None:
+    def detect_primary_key(self, e: Endpoint, response: Response, path: str) -> None:
         """detect the primary key from the payload"""
         if not response.detected_payload:
             return
@@ -178,6 +182,9 @@ class DefaultDetector(BaseDetector):
             response.detected_primary_key = description_paths[0]
         elif uuid_paths:
             response.detected_primary_key = uuid_paths[0]
+
+        if not response.detected_primary_key:
+            self._add_warning(PrimaryKeyNotFoundWarning(), e)
 
     def detect_main_response(self, endpoint: Endpoint) -> Optional[Response]:
         """Get main response and pagination for endpoint"""
@@ -397,3 +404,11 @@ class DefaultDetector(BaseDetector):
             endpoint.detected_parent = find_nearest_list_parent(endpoint)
             if endpoint.detected_parent:
                 endpoint.detected_parent.detected_children.append(endpoint)
+
+    def get_warnings(self) -> Dict[str, List[BaseDetectionWarning]]:
+        return self.warnings
+
+    def _add_warning(self, warning: BaseDetectionWarning, e: Optional[Endpoint] = None) -> None:
+        key = e.id if e else GLOBAL_WARNING_KEY
+        warning_list = self.warnings.setdefault(key, [])
+        warning_list.append(warning)

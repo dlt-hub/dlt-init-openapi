@@ -3,7 +3,8 @@ from typing import Any, Dict
 import pytest
 
 from dlt_openapi.config import Config
-from tests.integration.utils import get_indexed_resources
+from dlt_openapi.detector.default.warnings import PossiblePaginatorWarning
+from tests.integration.utils import get_dict_by_case, get_indexed_resources, get_project_by_case
 
 
 @pytest.fixture(scope="module")
@@ -57,3 +58,38 @@ def test_page_number_paginator_with_count(paginators: Dict[str, Any]) -> None:
         "page_param": "page",
         "total_path": "count",
     }
+
+
+def test_global_paginator() -> None:
+    api_dict = get_dict_by_case("artificial", "global_pagination.yml", config=Config(name_resources_by_operation=True))
+    # we have a global cursor paginator
+    assert api_dict["client"]["paginator"] == {
+        "type": "cursor",
+        "cursor_path": "cursor",
+        "cursor_param": "cursor",
+    }
+
+    # check endpoint pagination settings
+    resources: Any = {entry["name"]: entry for entry in api_dict["resources"]}  # type: ignore
+    assert not resources["item_endpoint"]["endpoint"].get("paginator")
+    assert not resources["collection_1"]["endpoint"].get("paginator")
+    assert not resources["collection_2"]["endpoint"].get("paginator")
+
+    # there is a different paginator on the diverging endpoint
+    assert resources["collection_other_paginator"]["endpoint"].get("paginator") == {
+        "page_param": "page",
+        "total_path": "count",
+        "type": "page_number",
+    }
+
+
+def test_incomplete_paginator_warning() -> None:
+    project = get_project_by_case("artificial", "pagination.yml", config=Config(name_resources_by_operation=True))
+
+    # check if the warnings exist that we expect
+    warnings = project.detector.get_warnings()
+
+    # warning for possible paginator
+    assert len(warnings.get("cursor_pagination_incomplete")) == 2
+    assert type(warnings.get("cursor_pagination_incomplete")[0]) == PossiblePaginatorWarning
+    assert warnings.get("cursor_pagination_incomplete")[0].params == ["cursor"]  # type: ignore

@@ -150,3 +150,27 @@ paths:
                   count:
                     type: integer
                     example: 3
+
+
+  /cursor_pagination_incomplete/:
+    get:
+      operationId: cursor_pagination_incomplete
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          description: Put cursor here
+          title: Cursor
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  other_value:
+                    type: string
+                  results:
+                    type: array

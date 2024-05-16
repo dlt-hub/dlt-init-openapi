@@ -54,6 +54,7 @@ class Endpoint:
 
     # detected values
     detected_pagination: Optional[Pagination] = None
+    detected_global_pagination: Optional[Pagination] = None
     detected_data_response: Optional[Response] = None
     detected_resource_name: Optional[str] = None
     detected_table_name: Optional[str] = None
@@ -89,7 +90,10 @@ class Endpoint:
         return list(self.parameters.values())
 
     @property
-    def pagination_args(self) -> Optional[Dict[str, Union[str, int]]]:
+    def render_pagination_args(self) -> Optional[Dict[str, Union[str, int]]]:
+        # if own paginator equals global paginator, do not render anything
+        if self.detected_pagination == self.detected_global_pagination:
+            return None
         return self.detected_pagination.paginator_config if self.detected_pagination else None
 
     @property

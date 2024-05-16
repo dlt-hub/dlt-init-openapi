@@ -6,7 +6,7 @@ from typing import Dict, Iterable, List, Literal, Union, cast
 from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
 
-from dlt_openapi import _get_project_for_url_or_path
+from dlt_openapi import Project, _get_project_for_url_or_path
 from dlt_openapi.config import Config
 from dlt_openapi.renderer.default import REST_API_SOURCE_LOCATION
 from sources.sources.rest_api.typing import EndpointResource, RESTAPIConfig
@@ -15,6 +15,18 @@ from tests.cases import case_path
 LOCAL_DIR = "tests/_local/"
 
 TType = Literal["artificial", "original", "extracted"]
+
+
+def get_detected_project_from_open_api(case: str, name_resources_by_operation: bool) -> Project:
+
+    config = Config(name_resources_by_operation=name_resources_by_operation, project_name="test", package_name="test")
+
+    # get project and render source into string
+    project = _get_project_for_url_or_path(url=None, path=case, config=config)  # type: ignore
+    project.parse()
+    project.detect()
+
+    return project
 
 
 def get_source_or_dict_from_open_api(
@@ -36,12 +48,7 @@ from typing import Any
 Oauth20Credentials = Any
 """
 
-    config = Config(name_resources_by_operation=name_resources_by_operation, project_name="test", package_name="test")
-
-    # get project and render source into string
-    project = _get_project_for_url_or_path(url=None, path=case, config=config)  # type: ignore
-    project.parse()
-    project.detect()
+    project = get_detected_project_from_open_api(case, name_resources_by_operation)
     project.render(dry=True)
     source = project.renderer._render_source()  # type: ignore
 

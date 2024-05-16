@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+  title: 'warnings'
+  version: 1.0.0
+  description: 'different warnings examples'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+
+  #
+  # Simple collection, match by primary key
+  #
+
+  /endpoint_ok/:
+    get:
+      operationId: endpoint_ok
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 3
+                    otherval: 
+                      type: string
+
+  /endpoint_no_primary_key/:
+    get:
+      operationId: endpoint_no_primary_key
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    someval:
+                      type: integer
+                      example: 3
+                    otherval: 
+                      type: string
+
+  /endpoint_no_body/:
+    get:
+      operationId: endpoint_no_body
+      responses:
+        '200':
+          description: "OK"
+
+
+  /endpoint_no_response/:
+    get:
+      operationId: endpoint_no_response
+      responses:
+        '404':
+          description: "OK"
+
+
+  /endpoints_unresolved_path_params/{hello}/something/{dave}:
+    get:
+      operationId: endpoints_unresolved_path_params
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 3
+                    otherval: 

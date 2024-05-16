@@ -10,7 +10,7 @@ from rest_api import rest_api_source
 @dlt.source(name="{{source_name}}", max_table_nesting=2)
 def {{ source_name }}(
         {% if credentials %}
-        {{ credentials.credentials_string }},
+        {{ credentials.detected_secret_name }}: str = dlt.secrets.value,
         {% endif %}
         base_url: str = dlt.config.value,
 ) -> List[DltResource]:
@@ -20,7 +20,9 @@ def {{ source_name }}(
         "client": {
             "base_url": base_url,
             {% if credentials %}
-            "auth": {{ credentials.auth_statement }},
+            "auth": {
+                {{ credentials.detected_auth_vars }}
+            },
             {% endif %}
         },
         "resources": 

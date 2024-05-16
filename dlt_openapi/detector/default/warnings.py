@@ -26,3 +26,12 @@ class DataResponseNoBodyWarning(BaseDetectionWarning):
         "No json response schema defined on main data response. "
         + "Will not be able to detect primary key and some paginators."
     )
+
+
+class UnsupportedSecuritySchemeWarning(BaseDetectionWarning):
+    def __init__(self, security_scheme: str) -> None:
+        self.security_scheme = security_scheme
+        self.msg = (
+            f"Security Scheme {security_scheme} is not supported natively at this time. "
+            + "Please provide a custom implementation."
+        )

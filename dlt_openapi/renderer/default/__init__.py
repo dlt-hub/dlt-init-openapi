@@ -125,7 +125,7 @@ class DefaultRenderer(BaseRenderer):
             source_name=self.source_name,
             endpoint_collection=self.openapi.endpoints,
             imports=[],
-            credentials=self.openapi.credentials,
+            credentials=self.openapi.detected_default_security_scheme,
         )
 
     def _build_pipeline(self) -> None:

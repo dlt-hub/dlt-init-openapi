@@ -41,6 +41,7 @@ from .warnings import (
     BaseDetectionWarning,
     DataResponseNoBodyWarning,
     DataResponseUndetectedWarning,
+    PossiblePaginatorWarning,
     PrimaryKeyNotFoundWarning,
     UnresolvedPathParametersWarning,
     UnsupportedSecuritySchemeWarning,
@@ -454,6 +455,10 @@ class DefaultDetector(BaseDetector):
         #
         # Nothing found :(
         #
+        pagination_params = [*cursor_params, *offset_params, *limit_params, *page_params]
+        if pagination_params:
+            self._add_warning(PossiblePaginatorWarning([p.name for p in pagination_params]), endpoint)
+
         return None
 
     def detect_parent_child_relationships(self, endpoints: EndpointCollection) -> None:

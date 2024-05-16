@@ -3,7 +3,8 @@ from typing import Any, Dict
 import pytest
 
 from dlt_openapi.config import Config
-from tests.integration.utils import get_dict_by_case, get_indexed_resources
+from dlt_openapi.detector.default.warnings import PossiblePaginatorWarning
+from tests.integration.utils import get_dict_by_case, get_indexed_resources, get_project_by_case
 
 
 @pytest.fixture(scope="module")
@@ -80,3 +81,15 @@ def test_global_paginator() -> None:
         "total_path": "count",
         "type": "page_number",
     }
+
+
+def test_incomplete_paginator_warning() -> None:
+    project = get_project_by_case("artificial", "pagination.yml", config=Config(name_resources_by_operation=True))
+
+    # check if the warnings exist that we expect
+    warnings = project.detector.get_warnings()
+
+    # warning for possible paginator
+    assert len(warnings.get("cursor_pagination_incomplete")) == 2
+    assert type(warnings.get("cursor_pagination_incomplete")[0]) == PossiblePaginatorWarning
+    assert warnings.get("cursor_pagination_incomplete")[0].params == ["cursor"]  # type: ignore

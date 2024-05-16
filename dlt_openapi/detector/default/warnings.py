@@ -11,7 +11,7 @@ class UnresolvedPathParametersWarning(BaseDetectionWarning):
 
     def __init__(self, params: List[str]) -> None:
         self.params = params
-        self.msg = f"Could not resolve all path params, setting default values for: {','.join(params)}"
+        self.msg = f"Could not resolve all path params, setting default values for: {', '.join(params)}"
 
 
 class DataResponseUndetectedWarning(BaseDetectionWarning):
@@ -34,4 +34,13 @@ class UnsupportedSecuritySchemeWarning(BaseDetectionWarning):
         self.msg = (
             f"Security Scheme {security_scheme} is not supported natively at this time. "
             + "Please provide a custom implementation."
+        )
+
+
+class PossiblePaginatorWarning(BaseDetectionWarning):
+    def __init__(self, params: List[str]) -> None:
+        self.params = params
+        self.msg = (
+            "Found params that suggest this endpoint is paginated, but could not discover pagination mechnanism. "
+            + f"Params: {', '.join(params)}"
         )

@@ -2,12 +2,13 @@ from typing import Any, Dict
 
 import pytest
 
+from dlt_openapi.config import Config
 from tests.integration.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")
 def paginators() -> Dict[str, Any]:
-    resources = get_indexed_resources("artificial", "pagination.yml", name_resources_by_operation=True)
+    resources = get_indexed_resources("artificial", "pagination.yml", config=Config(name_resources_by_operation=True))
     return {name: resource.get("endpoint").get("paginator") for name, resource in resources.items()}  # type: ignore
 
 

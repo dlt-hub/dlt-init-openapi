@@ -2,12 +2,13 @@ from typing import Any, Dict
 
 import pytest
 
+from dlt_openapi.config import Config
 from tests.integration.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")
 def resources() -> Dict[str, Any]:
-    return get_indexed_resources("artificial", "transformer.yml", name_resources_by_operation=True)
+    return get_indexed_resources("artificial", "transformer.yml", config=Config(name_resources_by_operation=True))
 
 
 def test_simple_transformer(resources: Dict[str, Any]) -> None:

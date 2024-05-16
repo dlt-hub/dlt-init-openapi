@@ -43,13 +43,18 @@ class Config(BaseModel):
     global_limit: int = 0
     """Set a limit on how many items are emitted from a resource"""
 
+    # internal, do not set via config file
     project_dir: Path = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Config, self).__init__(*args, **kwargs)
-        base_dir = Path.cwd() if not self.output_path else Path.cwd() / self.output_path
-        project_folder = self.project_name + self.project_folder_suffix
-        self.project_dir = base_dir / project_folder
+        self.prepare()
+
+    def prepare(self) -> None:
+        if self.project_name and self.project_folder_suffix:
+            base_dir = Path.cwd() if not self.output_path else Path.cwd() / self.output_path
+            project_folder = self.project_name + self.project_folder_suffix
+            self.project_dir = base_dir / project_folder
 
     @staticmethod
     def load_from_path(path: Path, *args: Any, **kwargs: Any) -> "Config":

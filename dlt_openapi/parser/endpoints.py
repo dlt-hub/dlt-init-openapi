@@ -170,9 +170,7 @@ class EndpointCollection:
     @property
     def all_endpoints_to_render(self) -> List[Endpoint]:
         """get all endpoints we want to render"""
-        if not self.ids_to_render:
-            return self.endpoints
-        return [e for e in self.endpoints if e.detected_resource_name in self.ids_to_render]
+        return [e for e in self.endpoints if e.id in self.ids_to_render]
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
@@ -222,4 +220,4 @@ class EndpointCollection:
                         context=context,
                     )
                 )
-        return cls(endpoints=endpoints)
+        return cls(endpoints=endpoints, ids_to_render={e.id for e in endpoints})

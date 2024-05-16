@@ -1,3 +1,4 @@
+from dlt_openapi.config import Config
 from dlt_openapi.detector.base_detector import GLOBAL_WARNING_KEY
 from dlt_openapi.detector.default.warnings import (
     DataResponseNoBodyWarning,
@@ -11,7 +12,7 @@ from tests.integration.utils import get_detected_project_from_open_api
 
 def test_warnings() -> None:
     path = case_path("artificial", "warnings.yml")
-    project = get_detected_project_from_open_api(path, name_resources_by_operation=True)
+    project = get_detected_project_from_open_api(path, config=Config(name_resources_by_operation=True))
 
     # check if the warnings exist that we expect
     warnings = project.detector.get_warnings()

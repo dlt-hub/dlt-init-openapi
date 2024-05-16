@@ -1,8 +1,11 @@
+from dlt_openapi.config import Config
 from tests.integration.utils import get_dict_by_case
 
 
 def test_bearer_auth() -> None:
-    source_dict = get_dict_by_case("artificial", "auth/bearer_token_auth.yml", name_resources_by_operation=True)
+    source_dict = get_dict_by_case(
+        "artificial", "auth/bearer_token_auth.yml", config=Config(name_resources_by_operation=True)
+    )
     assert source_dict["client"]["auth"] == {"type": "bearer", "token": "SECRET_VALUE"}
 
 

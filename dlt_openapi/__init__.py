@@ -73,7 +73,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
 
         # print warnings, but only for endpoints that where rendered
         for endpoint_id, endpoint_warnings in warnings.items():
-            if endpoint_id in self.openapi.endpoints.ids_to_render or not self.openapi.endpoints.ids_to_render:
+            if endpoint_id in self.openapi.endpoints.endpoint_ids_to_render:
                 e = self.openapi.endpoints.endpoints_by_id[endpoint_id]
                 logger.warning(f"Warnings for endpoint {e.method} {e.path}:")
                 for w in endpoint_warnings:

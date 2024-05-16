@@ -2,12 +2,13 @@ from typing import Any, Dict
 
 import pytest
 
+from dlt_openapi.config import Config
 from tests.integration.utils import get_indexed_resources
 
 
 @pytest.fixture(scope="module")
 def resources() -> Dict[str, Any]:
-    return get_indexed_resources("artificial", "transformer.yml", name_resources_by_operation=True)
+    return get_indexed_resources("artificial", "transformer.yml", config=Config(name_resources_by_operation=True))
 
 
 def test_simple_transformer(resources: Dict[str, Any]) -> None:
@@ -16,6 +17,37 @@ def test_simple_transformer(resources: Dict[str, Any]) -> None:
         "table_name": "collection",
         "primary_key": "id",
         "write_disposition": "merge",
+        "endpoint": {"data_selector": "$", "path": "/collection/"},
+    }
+    assert resources["single_collection"] == {
+        "name": "single_collection",
+        "table_name": "collection",
+        "primary_key": "id",
+        "write_disposition": "merge",
+        "endpoint": {
+            "data_selector": "$",
+            "path": "/collection/{collection_id}",
+            "params": {"collection_id": {"type": "resolve", "resource": "collections", "field": "id"}},
+        },
+    }
+
+
+def test_simple_transformer_with_deselected_parent() -> None:
+    resources = get_indexed_resources(
+        "artificial",
+        "transformer.yml",
+        config=Config(name_resources_by_operation=True, endpoint_filter=lambda _c: {"single_collection"}),
+    )
+
+    print(resources.keys())
+    assert len(resources) == 2
+
+    assert resources["collections"] == {
+        "name": "collections",
+        "table_name": "collection",
+        "primary_key": "id",
+        "write_disposition": "merge",
+        "selected": False,
         "endpoint": {"data_selector": "$", "path": "/collection/"},
     }
     assert resources["single_collection"] == {

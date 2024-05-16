@@ -56,6 +56,7 @@ class DefaultDetector(BaseDetector):
 
     def run(self, open_api: OpenapiParser) -> None:
         """Run the detector"""
+        self.warnings = {}
 
         # discover stuff from responses
         self.detect_paginators_and_responses(open_api.endpoints)

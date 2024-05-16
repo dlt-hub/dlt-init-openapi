@@ -78,6 +78,7 @@ Oauth20Credentials = Any
     os.environ["API_KEY"] = "some api key"
 
     module = importlib.import_module(local.replace("/", "."))
+    importlib.reload(module)
 
     remove_tree(LOCAL_DIR + "rest_api")
 

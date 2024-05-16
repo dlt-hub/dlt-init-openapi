@@ -164,13 +164,13 @@ class Endpoint:
 @dataclass
 class EndpointCollection:
     endpoints: List[Endpoint]
-    ids_to_render: Set[str] = field(default_factory=set)
-    ids_to_deselect: Set[str] = field(default_factory=set)
+    endpoint_ids_to_render: Set[str] = field(default_factory=set)
+    endpoint_ids_to_deselect: Set[str] = field(default_factory=set)
 
     @property
     def all_endpoints_to_render(self) -> List[Endpoint]:
         """get all endpoints we want to render"""
-        return [e for e in self.endpoints if e.id in self.ids_to_render]
+        return [e for e in self.endpoints if e.id in self.endpoint_ids_to_render]
 
     @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
@@ -195,9 +195,8 @@ class EndpointCollection:
             while ep.transformer and ep.parent:
                 ids_to_render.add(ep.parent.id)
                 ep = ep.parent
-
-        self.ids_to_render = ids_to_render
-        self.ids_to_deselect = ids_to_render - selected_ids
+        self.endpoint_ids_to_render = ids_to_render
+        self.endpoint_ids_to_deselect = ids_to_render - selected_ids
 
     @classmethod
     def from_context(cls, context: OpenapiContext) -> "EndpointCollection":
@@ -220,4 +219,4 @@ class EndpointCollection:
                         context=context,
                     )
                 )
-        return cls(endpoints=endpoints, ids_to_render={e.id for e in endpoints})
+        return cls(endpoints=endpoints, endpoint_ids_to_render={e.id for e in endpoints})

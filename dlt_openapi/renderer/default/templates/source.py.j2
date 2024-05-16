@@ -32,7 +32,7 @@ def {{ source_name }}(
             {% if endpoint.primary_key %}
             "primary_key": "{{ endpoint.primary_key }}",
             "write_disposition": "merge",
-            {% if endpoint.detected_resource_name in endpoint_collection.names_to_deselect %}
+            {% if endpoint.id in endpoint_collection.endpoint_ids_to_deselect %}
             "selected": False,
             {% endif %}
             {% endif %}

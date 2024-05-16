@@ -111,6 +111,11 @@ def get_dict_by_case(type: TType, case: str, validate: bool = True, config: Conf
     return get_dict_by_path(path, validate=validate, config=config)
 
 
+def get_project_by_case(type: TType, case: str, config: Config = None) -> Project:
+    path = case_path(type, case)
+    return get_detected_project_from_open_api(path, config)
+
+
 def get_indexed_resources(type: TType, case: str, config: Config = None) -> Dict[str, EndpointResource]:
     """get all found resources indexed by name"""
     rendered_dict = get_dict_by_case(type, case, config=config)

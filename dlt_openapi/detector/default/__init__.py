@@ -42,6 +42,7 @@ from .warnings import (
     DataResponseUndetectedWarning,
     PrimaryKeyNotFoundWarning,
     UnresolvedPathParametersWarning,
+    UnsupportedSecuritySchemeWarning,
 )
 
 Tree = Dict[str, Union["str", "Tree"]]
@@ -112,6 +113,8 @@ class DefaultDetector(BaseDetector):
         # find default scheme
         if len(schemes) and schemes[0].supported:
             open_api.detected_default_security_scheme = schemes[0]
+        elif len(schemes) and not schemes[0].supported:
+            self._add_warning(UnsupportedSecuritySchemeWarning(schemes[0].name))
 
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""

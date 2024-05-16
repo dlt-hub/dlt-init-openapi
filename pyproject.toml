@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dlt-openapi"
-version = "0.0.1"
+version = "0.0.2"
 description = "Generate dlt Python clients from OpenAPI"
 repository = "https://github.com/dlt-hub/dlt-openapi"
 license = "MIT"

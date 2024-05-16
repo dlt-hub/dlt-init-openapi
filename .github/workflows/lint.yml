@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - master
+      - devel
   pull_request:
     branches:
       - master
+      - devel
   workflow_dispatch:
 
 concurrency:

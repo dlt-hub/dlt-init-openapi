@@ -8,6 +8,14 @@ def test_simple_observer_load() -> None:
     source = get_dict_by_case("extracted", "observer_with_pagination.yml")
     assert len(source["resources"]) == 2
 
+    assert source["client"]["paginator"] == {
+        "type": "offset",
+        "limit": 100,
+        "offset_param": "offset",
+        "limit_param": "limit",
+        "total_path": "total",
+    }
+
     assert source["resources"][1] == {
         "name": "user_response",
         "table_name": "user_response",
@@ -16,13 +24,6 @@ def test_simple_observer_load() -> None:
         "endpoint": {
             "data_selector": "items",
             "path": "/admin/users",
-            "paginator": {
-                "type": "offset",
-                "limit": 100,
-                "offset_param": "offset",
-                "limit_param": "limit",
-                "total_path": "total",
-            },
         },
     }
     assert source["resources"][0] == {
@@ -33,12 +34,5 @@ def test_simple_observer_load() -> None:
         "endpoint": {
             "data_selector": "items",
             "path": "/offices",
-            "paginator": {
-                "type": "offset",
-                "limit": 100,
-                "offset_param": "offset",
-                "limit_param": "limit",
-                "total_path": "total",
-            },
         },
     }

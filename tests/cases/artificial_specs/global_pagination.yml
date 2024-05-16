@@ -1,0 +1,92 @@
+openapi: 3.0.0
+info:
+  title: 'pagination'
+  version: 1.0.0
+  description: 'pagination example with global pagination'
+servers:
+- url: 'https://pokeapi.co/'
+
+paths:
+
+  /collection_1/:
+    get:
+      operationId: collection_1
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          description: Put cursor here
+          title: Cursor
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cursor:
+                    type: string
+                  results:
+                    type: array
+
+  /collection_2/:
+    get:
+      operationId: collection_2
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          description: Put cursor here
+          title: Cursor
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cursor:
+                    type: string
+                  other_value:
+                    type: array
+
+
+  /collection_other_paginator/:
+    get:
+      operationId: collection_other_paginator
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: string
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 3
+
+  /item_endpoint/{some_id}:
+    get:
+      operationId: item_endpoint
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: str

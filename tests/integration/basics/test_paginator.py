@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pytest
 
 from dlt_openapi.config import Config
-from tests.integration.utils import get_indexed_resources
+from tests.integration.utils import get_dict_by_case, get_indexed_resources
 
 
 @pytest.fixture(scope="module")
@@ -56,4 +56,27 @@ def test_page_number_paginator_with_count(paginators: Dict[str, Any]) -> None:
         "type": "page_number",
         "page_param": "page",
         "total_path": "count",
+    }
+
+
+def test_global_paginator() -> None:
+    api_dict = get_dict_by_case("artificial", "global_pagination.yml", config=Config(name_resources_by_operation=True))
+    # we have a global cursor paginator
+    assert api_dict["client"]["paginator"] == {
+        "type": "cursor",
+        "cursor_path": "cursor",
+        "cursor_param": "cursor",
+    }
+
+    # check endpoint pagination settings
+    resources: Any = {entry["name"]: entry for entry in api_dict["resources"]}  # type: ignore
+    assert not resources["item_endpoint"]["endpoint"].get("paginator")
+    assert not resources["collection_1"]["endpoint"].get("paginator")
+    assert not resources["collection_2"]["endpoint"].get("paginator")
+
+    # there is a different paginator on the diverging endpoint
+    assert resources["collection_other_paginator"]["endpoint"].get("paginator") == {
+        "page_param": "page",
+        "total_path": "count",
+        "type": "page_number",
     }

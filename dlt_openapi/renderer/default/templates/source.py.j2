@@ -24,6 +24,18 @@ def {{ source_name }}(
                 {{ credentials.detected_auth_vars }}
             },
             {% endif %}
+            {% if global_paginator_config %}
+            "paginator": {
+                {% for key, value in global_paginator_config.items() %}
+                "{{key}}":
+                    {% if value is integer %}
+                    {{value}},
+                    {% else %}
+                    "{{value}}",
+                    {% endif %}
+                {% endfor %}
+            },
+            {% endif %}
         },
         "resources": 
         [
@@ -60,9 +72,9 @@ def {{ source_name }}(
                     {% endfor %}
                 },
                 {% endif %}
-                {% if endpoint.pagination_args %}
+                {% if endpoint.render_pagination_args %}
                 "paginator": {
-                    {% for key, value in endpoint.pagination_args.items() %}
+                    {% for key, value in endpoint.render_pagination_args.items() %}
                     "{{key}}":
                         {% if value is integer %}
                         {{value}},

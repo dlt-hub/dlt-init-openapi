@@ -12,6 +12,7 @@ from dlt_openapi.parser.config import Config
 from dlt_openapi.parser.context import OpenapiContext
 from dlt_openapi.parser.endpoints import EndpointCollection
 from dlt_openapi.parser.info import OpenApiInfo
+from dlt_openapi.parser.pagination import Pagination
 from dlt_openapi.parser.security import SecurityScheme
 
 
@@ -21,7 +22,8 @@ class OpenapiParser:
     endpoints: EndpointCollection = None
     security_schemes: Dict[str, SecurityScheme] = {}
 
-    detected_default_security_scheme: SecurityScheme = None
+    detected_global_security_scheme: SecurityScheme = None
+    detected_global_pagination: Pagination = None
 
     def __init__(self, config: Config) -> None:
         self.config = config

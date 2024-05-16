@@ -2,6 +2,7 @@
 Default open source detector
 """
 
+import json
 from typing import Dict, List, Optional, Tuple, Union, cast
 
 from dlt_openapi.config import Config
@@ -64,6 +65,7 @@ class DefaultDetector(BaseDetector):
 
         # discover stuff from responses
         self.detect_paginators_and_responses(open_api.endpoints)
+        self.detect_global_pagination(open_api)
 
         # discover parent child relationship
         self.detect_parent_child_relationships(open_api.endpoints)
@@ -86,6 +88,7 @@ class DefaultDetector(BaseDetector):
         schemes = list(open_api.security_schemes.values())
 
         # detect scheme settings
+        # TODO: make this a bit nicer
         for scheme in schemes:
 
             if scheme.type == "apiKey":
@@ -112,7 +115,7 @@ class DefaultDetector(BaseDetector):
 
         # find default scheme
         if len(schemes) and schemes[0].supported:
-            open_api.detected_default_security_scheme = schemes[0]
+            open_api.detected_global_security_scheme = schemes[0]
         elif len(schemes) and not schemes[0].supported:
             self._add_warning(UnsupportedSecuritySchemeWarning(schemes[0].name))
 
@@ -199,6 +202,40 @@ class DefaultDetector(BaseDetector):
                     endpoint.detected_data_response, expect_list=expect_list
                 )
                 self.detect_primary_key(endpoint, endpoint.detected_data_response, endpoint.path)
+
+    def detect_global_pagination(self, open_api: OpenapiParser) -> None:
+        """go through all detected paginators and see which one we can set as global"""
+        paginator_by_key: Dict[str, Pagination] = {}
+        paginator_count: Dict[str, int] = {}
+
+        # count how many every paginator appears
+        for endpoint in open_api.endpoints.endpoints:
+            if not endpoint.detected_pagination:
+                continue
+            params = endpoint.detected_pagination.paginator_config
+            key = json.dumps(params, sort_keys=True)
+            paginator_by_key[key] = endpoint.detected_pagination
+            paginator_count.setdefault(key, 0)
+            paginator_count[key] += 1
+
+        # no paginators found
+        if len(paginator_by_key) == 0:
+            return
+
+        # sort dict by value descending, so most used paginator is at the top
+        sorted_paginator_count = sorted(paginator_count.items(), key=lambda item: item[1] * -1)
+
+        # we only set a global paginator, if we found one paginator, or if the top paginator has
+        # a higher count than the second most used one
+        if not (len(paginator_by_key) == 1 or sorted_paginator_count[0][1] > sorted_paginator_count[1][1]):
+            return
+
+        global_paginator = paginator_by_key[sorted_paginator_count[0][0]]
+
+        # set global paginator on base object but also set on all endpoints
+        open_api.detected_global_pagination = global_paginator
+        for e in open_api.endpoints.endpoints:
+            e.detected_global_pagination = global_paginator
 
     def detect_primary_key(self, e: Endpoint, response: Response, path: str) -> None:
         """detect the primary key from the payload"""

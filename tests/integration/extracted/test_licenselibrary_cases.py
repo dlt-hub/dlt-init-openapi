@@ -14,12 +14,5 @@ def test_simple_licenselibrary_load() -> None:
         "endpoint": {
             "data_selector": "$",
             "path": "/licenselibrary/list",
-            "paginator": {
-                "limit": 10,
-                "limit_param": "limit",
-                "maximum_offset": 20,
-                "offset_param": "skip",
-                "type": "offset",
-            },
         },
     }

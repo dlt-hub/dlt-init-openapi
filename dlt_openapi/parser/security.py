@@ -9,8 +9,8 @@ class SecurityScheme:
     name: str
     location: str
 
-    detected_credentials_string: str = ""
-    detected_auth_statement: str = ""
+    detected_secret_name: str = ""
+    detected_auth_vars: str = ""
 
     @property
     def supported(self) -> bool:
@@ -21,43 +21,3 @@ class SecurityScheme:
         elif self.type == "http" and self.scheme == "bearer":
             return True
         return False
-
-    @property
-    def credentials_string(self) -> str:
-        key = "password"
-        """We assume one scheme for now"""
-        if self.type == "apiKey":
-            key = "api_key"
-        elif self.type == "http" and self.scheme == "basic":
-            key = "password"
-        elif self.type == "http" and self.scheme == "bearer":
-            key = "token"
-        if key:
-            return f"{key}: str = dlt.secrets.value"
-        return ""
-
-    @property
-    def auth_statement(self) -> str:
-        if self.type == "apiKey":
-            result = f"""
-        {{
-            "type": "api_key",
-            "api_key": api_key,
-            "name": "{self.name}",
-            "location": "{self.location}"
-        }}"""
-            return result
-        elif self.type == "http" and self.scheme == "basic":
-            return """
-        {
-            "type": "http_basic",
-            "username": "username",
-            "password": password,
-        }"""
-        elif self.type == "http" and self.scheme == "bearer":
-            return """
-        {
-            "type": "bearer",
-            "token": token,
-        }"""
-        return ""

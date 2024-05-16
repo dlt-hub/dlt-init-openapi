@@ -58,6 +58,9 @@ class DefaultDetector(BaseDetector):
         """Run the detector"""
         self.warnings = {}
 
+        # detect security stuff
+        self.detect_security_schemes(open_api)
+
         # discover stuff from responses
         self.detect_paginators_and_responses(open_api.endpoints)
 
@@ -77,6 +80,38 @@ class DefaultDetector(BaseDetector):
         for e in open_api.endpoints.endpoints:
             if params := e.unresolvable_path_param_names:
                 self._add_warning(UnresolvedPathParametersWarning(params), e)
+
+    def detect_security_schemes(self, open_api: OpenapiParser) -> None:
+        schemes = list(open_api.security_schemes.values())
+
+        # detect scheme settings
+        for scheme in schemes:
+
+            if scheme.type == "apiKey":
+                scheme.detected_secret_name = "api_key"
+                scheme.detected_auth_vars = f"""
+            "type": "api_key",
+            "api_key": api_key,
+            "name": "{scheme.name}",
+            "location": "{scheme.location}"
+"""
+            elif scheme.type == "http" and scheme.scheme == "basic":
+                scheme.detected_secret_name = "password"
+                scheme.detected_auth_vars = """
+            "type": "http_basic",
+            "username": "username",
+            "password": password,
+"""
+            elif scheme.type == "http" and scheme.scheme == "bearer":
+                scheme.detected_secret_name = "token"
+                scheme.detected_auth_vars = """
+            "type": "bearer",
+            "token": token,
+"""
+
+        # find default scheme
+        if len(schemes) and schemes[0].supported:
+            open_api.detected_default_security_scheme = schemes[0]
 
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""

@@ -175,10 +175,6 @@ class EndpointCollection:
         return [e for e in self.endpoints if e.detected_resource_name in self.ids_to_render]
 
     @property
-    def all_endpoints_for_selector(self) -> List[Endpoint]:
-        pass
-
-    @property
     def endpoints_by_path(self) -> Dict[str, Endpoint]:
         """Endpoints by path"""
         return {ep.path: ep for ep in self.endpoints}

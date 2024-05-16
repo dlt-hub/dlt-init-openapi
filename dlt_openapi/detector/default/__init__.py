@@ -36,7 +36,7 @@ from .const import (
     RE_UNIQUE_KEY,
 )
 from .utils import to_int
-from .warnings import BaseDetectionWarning, PrimaryKeyNotFoundWarning
+from .warnings import BaseDetectionWarning, PrimaryKeyNotFoundWarning, UnresolvedPathParametersWarning
 
 Tree = Dict[str, Union["str", "Tree"]]
 
@@ -65,6 +65,11 @@ class DefaultDetector(BaseDetector):
 
         # and sort resources by table name
         open_api.endpoints.endpoints.sort(key=lambda e: e.detected_table_name)
+
+        # add some warnings
+        for e in open_api.endpoints.endpoints:
+            if params := e.unresolvable_path_param_names:
+                self._add_warning(UnresolvedPathParametersWarning(params), e)
 
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""

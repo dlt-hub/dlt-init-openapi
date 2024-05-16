@@ -125,7 +125,12 @@ class DefaultRenderer(BaseRenderer):
             source_name=self.source_name,
             endpoint_collection=self.openapi.endpoints,
             imports=[],
-            credentials=self.openapi.credentials,
+            credentials=self.openapi.detected_global_security_scheme,
+            global_paginator_config=(
+                self.openapi.detected_global_pagination.paginator_config
+                if self.openapi.detected_global_pagination
+                else None
+            ),
         )
 
     def _build_pipeline(self) -> None:

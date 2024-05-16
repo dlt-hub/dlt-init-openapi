@@ -2,6 +2,7 @@ from typing import Any, Dict
 
 import pytest
 
+from dlt_openapi.config import Config
 from tests.integration.utils import get_indexed_resources
 
 DEFAULT_VALUE = "FILL_ME_IN"
@@ -9,7 +10,7 @@ DEFAULT_VALUE = "FILL_ME_IN"
 
 @pytest.fixture(scope="module")
 def resources() -> Dict[str, Any]:
-    return get_indexed_resources("artificial", "params.yml", name_resources_by_operation=True)
+    return get_indexed_resources("artificial", "params.yml", config=Config(name_resources_by_operation=True))
 
 
 def test_simple_unresolvable_path_params(resources: Dict[str, Any]) -> None:

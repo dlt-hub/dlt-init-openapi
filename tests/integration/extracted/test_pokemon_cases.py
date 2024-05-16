@@ -19,6 +19,14 @@ def test_paged_poke_load() -> None:
     source = get_dict_by_case("extracted", "pokeapi_one_endpoint.yml")
     assert len(source["resources"]) == 1
 
+    assert source["client"]["paginator"] == {
+        "limit": 20,
+        "limit_param": "limit",
+        "offset_param": "offset",
+        "type": "offset",
+        "total_path": "count",
+    }
+
     assert source["resources"][0] == {
         "name": "pokemon",
         "table_name": "pokemon",
@@ -27,13 +35,6 @@ def test_paged_poke_load() -> None:
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
-            "paginator": {
-                "limit": 20,
-                "limit_param": "limit",
-                "offset_param": "offset",
-                "type": "offset",
-                "total_path": "count",
-            },
             "path": "/api/v2/pokemon/",
         },
     }
@@ -44,6 +45,14 @@ def test_simple_child_table_poke_load() -> None:
 
     assert len(source["resources"]) == 2
 
+    assert source["client"]["paginator"] == {
+        "limit": 20,
+        "limit_param": "limit",
+        "offset_param": "offset",
+        "type": "offset",
+        "total_path": "count",
+    }
+
     # root resource
     assert source["resources"][0] == {
         "name": "pokemon_list",
@@ -53,13 +62,6 @@ def test_simple_child_table_poke_load() -> None:
         "endpoint": {
             "path": "/api/v2/pokemon/",
             "data_selector": "results",
-            "paginator": {
-                "limit": 20,
-                "limit_param": "limit",
-                "offset_param": "offset",
-                "type": "offset",
-                "total_path": "count",
-            },
         },
     }
 

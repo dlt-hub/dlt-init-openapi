@@ -14,3 +14,8 @@ class Pagination:
     def param_names(self) -> List[str]:
         """All params used for pagination"""
         return [param.name for param in self.pagination_params]
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Pagination):
+            return other.paginator_config == self.paginator_config
+        return False

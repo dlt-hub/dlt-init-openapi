@@ -8,6 +8,12 @@ def test_teamgpt_load() -> None:
     source = get_dict_by_case("extracted", "teamgpt_with_pagination.yml")
     assert len(source["resources"]) == 1
 
+    assert source["client"]["paginator"] == {
+        "maximum_page": 20,
+        "page_param": "page",
+        "type": "page_number",
+    }
+
     # FIXME: they use page and page_size parameters
     assert source["resources"][0] == {
         "name": "response_get_filesystem_objects_api_companies_uuid_filesystem_objects_get",
@@ -16,10 +22,5 @@ def test_teamgpt_load() -> None:
             "data_selector": "$",
             "path": "/api/companies/{uuid}/filesystem_objects",
             "params": {"uuid": "FILL_ME_IN"},
-            "paginator": {
-                "maximum_page": 20,
-                "page_param": "page",
-                "type": "page_number",
-            },
         },
     }

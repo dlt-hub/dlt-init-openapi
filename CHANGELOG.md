@@ -1,2 +1,9 @@
-## 0.0.1
-First version of dlt-openapi
+[Go to GitHub Releases](https://github.com/dlt-hub/dlt-openapi/releases)
+
+0.0.2
+* Add warnings to logger for certain scenarios
+* Add global paginator support
+* Internally refactor auth and add warning for unsupported auth types
+
+0.0.1 
+* Initial Release

@@ -36,7 +36,13 @@ from .const import (
     RE_UNIQUE_KEY,
 )
 from .utils import to_int
-from .warnings import BaseDetectionWarning, PrimaryKeyNotFoundWarning, UnresolvedPathParametersWarning
+from .warnings import (
+    BaseDetectionWarning,
+    DataResponseNoBodyWarning,
+    DataResponseUndetectedWarning,
+    PrimaryKeyNotFoundWarning,
+    UnresolvedPathParametersWarning,
+)
 
 Tree = Dict[str, Union["str", "Tree"]]
 
@@ -202,6 +208,12 @@ class DefaultDetector(BaseDetector):
                 break  # this will always be the right one
             if response.status_code.startswith("2") and not main_response:
                 main_response = response
+
+        if not main_response:
+            self._add_warning(DataResponseUndetectedWarning(), endpoint)
+
+        if main_response and not main_response.schema:
+            self._add_warning(DataResponseNoBodyWarning(), endpoint)
 
         return main_response
 

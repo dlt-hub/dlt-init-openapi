@@ -1,5 +1,10 @@
 from dlt_openapi.detector.base_detector import GLOBAL_WARNING_KEY
-from dlt_openapi.detector.default.warnings import PrimaryKeyNotFoundWarning, UnresolvedPathParametersWarning
+from dlt_openapi.detector.default.warnings import (
+    DataResponseNoBodyWarning,
+    DataResponseUndetectedWarning,
+    PrimaryKeyNotFoundWarning,
+    UnresolvedPathParametersWarning,
+)
 from tests.cases import case_path
 from tests.integration.utils import get_detected_project_from_open_api
 
@@ -25,3 +30,11 @@ def test_warnings() -> None:
     assert len(warnings.get("endpoints_unresolved_path_params")) == 1
     assert type(warnings.get("endpoints_unresolved_path_params")[0]) == UnresolvedPathParametersWarning
     assert warnings.get("endpoints_unresolved_path_params")[0].params == ["hello", "dave"]  # type: ignore
+
+    # missing data response
+    assert len(warnings.get("endpoint_no_response")) == 1
+    assert type(warnings.get("endpoint_no_response")[0]) == DataResponseUndetectedWarning
+
+    # missing body from data response
+    assert len(warnings.get("endpoint_no_body")) == 1
+    assert type(warnings.get("endpoint_no_body")[0]) == DataResponseNoBodyWarning

@@ -12,6 +12,7 @@ def test_simple_museums_load() -> None:
         "maximum_page": 20,
         "page_param": "page",
         "type": "page_number",
+        "total_path": "",
     }
 
     assert source["resources"][0] == {
@@ -34,6 +35,7 @@ def test_simple_museums_pagination() -> None:
         "maximum_page": 20,
         "page_param": "page",
         "type": "page_number",
+        "total_path": "",
     }
 
     assert source["resources"][0] == {

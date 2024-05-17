@@ -14,6 +14,7 @@ def test_simple_openartnft_load() -> None:
         "maximum_offset": 20,
         "offset_param": "skip",
         "type": "offset",
+        "total_path": "",
     }
 
     assert source["resources"][0] == {

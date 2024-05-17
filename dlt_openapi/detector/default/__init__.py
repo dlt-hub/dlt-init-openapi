@@ -400,7 +400,9 @@ class DefaultDetector(BaseDetector):
             # 20 should be safe for most APIs
             limit_initial = to_int(limit_param.maximum) if limit_param.maximum else to_int(limit_param.default)
         total_prop = (
-            response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+            response_schema.nested_properties.find_property(
+                RE_TOTAL_PROPERTY, require_type="integer", allow_unknown_types=True
+            )
             if response_schema
             else None
         )
@@ -415,6 +417,7 @@ class DefaultDetector(BaseDetector):
             if total_prop:
                 pagination_config["total_path"] = total_prop.json_path
             else:
+                pagination_config["total_path"] = ""
                 pagination_config["maximum_offset"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
 
             return Pagination(
@@ -440,6 +443,7 @@ class DefaultDetector(BaseDetector):
             if total_prop:
                 pagination_config["total_path"] = total_prop.json_path
             else:
+                pagination_config["total_path"] = ""
                 pagination_config["maximum_page"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
 
             return Pagination(

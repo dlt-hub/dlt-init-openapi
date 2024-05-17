@@ -30,6 +30,7 @@ def test_offset_limit_pagination_no_count_1(paginators: Dict[str, Any]) -> None:
         "offset_param": "offset",
         "type": "offset",
         "maximum_offset": 20,
+        "total_path": "",
     }
 
 
@@ -49,6 +50,7 @@ def test_page_number_paginator_no_count(paginators: Dict[str, Any]) -> None:
         "type": "page_number",
         "page_param": "page",
         "maximum_page": 20,
+        "total_path": "",
     }
 
 

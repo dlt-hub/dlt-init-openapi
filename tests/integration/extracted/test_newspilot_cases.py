@@ -13,6 +13,7 @@ def test_newspilot_load() -> None:
         "maximum_page": 20,
         "page_param": "page",
         "type": "page_number",
+        "total_path": "",
     }
 
     # FIXME: they use page and articles_per_page query parameters

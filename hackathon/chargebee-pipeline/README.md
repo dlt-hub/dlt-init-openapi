@@ -10,3 +10,11 @@ Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. 0.0.1
 * list_customers  
   _GET /customers_  
 Retrieves a list of customers added to your Chargebee site. The list contains the necessary customer details such as First Name, Last Name and the Customer ID.
+
+
+## Usage
+
+To generate the Chargebee source run the command:
+```sh
+dlt-openapi init chargebee --url https://openapi.chargebee.com/v2-pcv2/index.yaml 
+```

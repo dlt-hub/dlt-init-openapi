@@ -31,7 +31,7 @@ def test_simple_unresolvable_transformer_path_params(resources: Dict[str, Any]) 
 
 
 def test_optional_query_param(resources: Dict[str, Any]) -> None:
-    assert resources["optional_query_param"]["endpoint"].get("params") is None
+    assert resources["optional_query_param"]["endpoint"].get("params") == {}
 
 
 def test_non_optional_query_param(resources: Dict[str, Any]) -> None:

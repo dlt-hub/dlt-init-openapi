@@ -18,6 +18,7 @@ def test_simple_museums_load() -> None:
         "name": "museum_daily_hours",
         "table_name": "museum_daily_hours",
         "endpoint": {
+            "params": {},
             "path": "/museum-hours",
             "data_selector": "$",
         },
@@ -41,6 +42,7 @@ def test_simple_museums_pagination() -> None:
         "endpoint": {
             "path": "/special-events",
             "data_selector": "$",
+            "params": {},
         },
         "primary_key": "eventId",
         "write_disposition": "merge",

@@ -20,6 +20,7 @@ def test_newspilot_load() -> None:
         "name": "article",
         "table_name": "article",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/api/articles/",
         },

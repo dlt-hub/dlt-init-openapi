@@ -12,6 +12,7 @@ def test_simple_licenselibrary_load() -> None:
         "name": "list",
         "table_name": "list",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/licenselibrary/list",
         },

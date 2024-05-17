@@ -38,6 +38,7 @@ class Response:
 @dataclass()
 class Endpoint:
     osp_operation: osp.Operation
+    context: OpenapiContext
 
     # basic parser results
     method: TMethod
@@ -117,9 +118,22 @@ class Endpoint:
         paginator_params = self.detected_pagination.param_names if self.detected_pagination else []
         query_param_names = []
         for param in self.list_all_parameters:
-            if param.name not in paginator_params and param.location == "query" and param.required:
+            if param.name not in paginator_params and param.location == "query":
                 query_param_names.append(param.name)
         return query_param_names
+
+    def is_query_param_required(self, param_name: str) -> bool:
+        for key, p in self.parameters.items():
+            if p.name == param_name and p.location == "query":
+                return p.required
+        return False
+
+    def default_for_param(self, location: Literal["path", "query"], param_name: str) -> str:
+        """get's a default value for the given param, returns"""
+        for key, p in self.parameters.items():
+            if p.name == param_name and p.location == location and p.default:
+                return p.default
+        return self.context.config.parameter_default_value
 
     @classmethod
     def from_operation(
@@ -162,6 +176,7 @@ class Endpoint:
             description=osp_operation.description,
             path_summary=path_summary,
             path_description=path_description,
+            context=context,
         )
 
 

@@ -20,6 +20,7 @@ def test_simple_openartnft_load() -> None:
         "name": "gallery",
         "table_name": "gallery",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/galleries/",
         },
@@ -28,6 +29,7 @@ def test_simple_openartnft_load() -> None:
         "name": "item",
         "table_name": "item",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/items/",
         },

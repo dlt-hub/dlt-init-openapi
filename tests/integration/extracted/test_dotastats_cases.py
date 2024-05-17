@@ -12,6 +12,7 @@ def test_simple_dotastats_load() -> None:
         "maximum_page": 20,
         "page_param": "page",
         "type": "page_number",
+        "total_path": "",
     }
 
     # use page query parameter

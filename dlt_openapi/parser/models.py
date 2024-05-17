@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Literal, Optional, 
 import openapi_schema_pydantic as osp
 from dlt.common.utils import digest128
 
-from dlt_openapi.parser.properties.converter import convert
 from dlt_openapi.parser.types import DataType, TOpenApiType
 from dlt_openapi.utils.misc import unique_list
 
@@ -237,11 +236,7 @@ class SchemaWrapper:
             types=cast(List[TSchemaType], unique_list(schema_types)),
             nullable=nullable,
             array_item=array_item,
-            default=(
-                convert("str", schema.default)
-                if (isinstance(schema.default, str) and "integer" not in schema_types)
-                else schema.default
-            ),
+            default=schema.default,
             nested_properties=NestedProperties(),
             hash_key=digest128(schema.json(sort_keys=True)),
             type_format=schema.schema_format,

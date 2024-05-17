@@ -16,6 +16,7 @@ def test_simple_quotesapi_load() -> None:
         "maximum_offset": 20,
         "offset_param": "start",
         "type": "offset",
+        "total_path": "",
     }
 
     assert source["resources"][0] == {

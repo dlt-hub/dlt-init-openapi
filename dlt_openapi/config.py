@@ -1,5 +1,6 @@
 import json
 import mimetypes
+import pathlib
 from pathlib import Path
 from typing import Any, List, Optional
 
@@ -7,6 +8,8 @@ import yaml
 from pydantic import BaseModel
 
 from .typing import TEndpointFilter
+
+REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../rest_api")
 
 
 class Config(BaseModel):
@@ -42,6 +45,8 @@ class Config(BaseModel):
     """Which class to use for detecting"""
     global_limit: int = 0
     """Set a limit on how many items are emitted from a resource"""
+    parameter_default_value: str = "FILL_ME_IN"
+    """default to render for required parameters that do not have a default in the spec"""
 
     # internal, do not set via config file
     project_dir: Path = None

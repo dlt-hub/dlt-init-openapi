@@ -86,11 +86,10 @@ class DefaultDetector(BaseDetector):
                 self._add_warning(UnresolvedPathParametersWarning(params), e)
 
     def detect_security_schemes(self, open_api: OpenapiParser) -> None:
-        schemes = list(open_api.security_schemes.values())
 
         # detect scheme settings
         # TODO: make this a bit nicer
-        for scheme in schemes:
+        for name, scheme in open_api.security_schemes.items():
 
             if scheme.type == "apiKey":
                 scheme.detected_secret_name = "api_key"
@@ -115,10 +114,17 @@ class DefaultDetector(BaseDetector):
 """
 
         # find default scheme
-        if len(schemes) and schemes[0].supported:
-            open_api.detected_global_security_scheme = schemes[0]
-        elif len(schemes) and not schemes[0].supported:
-            self._add_warning(UnsupportedSecuritySchemeWarning(schemes[0].name))
+        if open_api.global_security_name:
+            global_scheme = None
+            for name, scheme in open_api.security_schemes.items():
+                if name == open_api.global_security_name:
+                    global_scheme = scheme
+                    break
+
+            if global_scheme and global_scheme.supported:
+                open_api.detected_global_security_scheme = global_scheme
+            elif global_scheme and not global_scheme.supported:
+                self._add_warning(UnsupportedSecuritySchemeWarning(global_scheme.type))
 
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""
@@ -394,7 +400,9 @@ class DefaultDetector(BaseDetector):
             # 20 should be safe for most APIs
             limit_initial = to_int(limit_param.maximum) if limit_param.maximum else to_int(limit_param.default)
         total_prop = (
-            response_schema.nested_properties.find_property(RE_TOTAL_PROPERTY, require_type="integer")
+            response_schema.nested_properties.find_property(
+                RE_TOTAL_PROPERTY, require_type="integer", allow_unknown_types=True
+            )
             if response_schema
             else None
         )
@@ -409,6 +417,7 @@ class DefaultDetector(BaseDetector):
             if total_prop:
                 pagination_config["total_path"] = total_prop.json_path
             else:
+                pagination_config["total_path"] = ""
                 pagination_config["maximum_offset"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
 
             return Pagination(
@@ -434,6 +443,7 @@ class DefaultDetector(BaseDetector):
             if total_prop:
                 pagination_config["total_path"] = total_prop.json_path
             else:
+                pagination_config["total_path"] = ""
                 pagination_config["maximum_page"] = DEFAULT_MAXIMUM_PAGINATOR_OFFSET
 
             return Pagination(

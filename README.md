@@ -31,13 +31,10 @@ You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.
 # 1. Checkout this repository locally
 $ git clone git@github.com:dlt-hub/dlt-openapi.git
 
-# 2. Init git submodules, this contains our verified sources for now
-$ git submodule update --init --recursive
-
-# 3. Install required poetry dependencies
+# 2. Install required poetry dependencies
 $ poetry install
 
-# 4. Start the poetry shell
+# 3. Start the poetry shell
 $ poetry shell
 ```
 
@@ -128,3 +125,7 @@ And use it with the config argument:
 ```console
 $ dlt-openapi init pokemon --url ... --config config.yml
 ```
+
+## Implementation notes
+* OAuth Authentication currently is not natively supported, you can supply your own
+* Per endpoint authentication currently is not supported by the generator, only the first globally set securityScheme will be applied. You can add your own per endpoint if you need to.

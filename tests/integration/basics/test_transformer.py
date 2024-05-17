@@ -39,7 +39,6 @@ def test_simple_transformer_with_deselected_parent() -> None:
         config=Config(name_resources_by_operation=True, endpoint_filter=lambda _c: {"single_collection"}),
     )
 
-    print(resources.keys())
     assert len(resources) == 2
 
     assert resources["collections"] == {

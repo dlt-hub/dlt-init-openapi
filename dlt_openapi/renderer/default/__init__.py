@@ -2,7 +2,6 @@
 Default renderer
 """
 
-import pathlib
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
@@ -10,12 +9,11 @@ from distutils.dir_util import copy_tree
 from jinja2 import Environment, PackageLoader
 from loguru import logger
 
-from dlt_openapi.config import Config
+from dlt_openapi.config import REST_API_SOURCE_LOCATION, Config
 from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.renderer.base_renderer import BaseRenderer
 from dlt_openapi.utils import misc
 
-REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../../../sources/sources/rest_api")
 FILE_ENCODING = "utf-8"
 TEMPLATE_FILTERS = {
     "snakecase": misc.snake_case,
@@ -56,6 +54,7 @@ class DefaultRenderer(BaseRenderer):
             class_name=lambda x: misc.ClassName(x, ""),
             package_name=self.package_name,
             project_name=self.config.project_name,
+            credentials=self.openapi.detected_global_security_scheme,
         )
 
         if dry:
@@ -112,6 +111,13 @@ class DefaultRenderer(BaseRenderer):
             encoding=FILE_ENCODING,
         )
 
+        secrets_template = self.env.get_template("dlt_secrets.toml.j2")
+        secrets_path = config_dir / "secrets.toml"
+        secrets_path.write_text(
+            secrets_template.render(),
+            encoding=FILE_ENCODING,
+        )
+
     def _build_source(self) -> None:
         module_path = self.package_dir / "__init__.py"
         module_path.write_text(
@@ -125,7 +131,6 @@ class DefaultRenderer(BaseRenderer):
             source_name=self.source_name,
             endpoint_collection=self.openapi.endpoints,
             imports=[],
-            credentials=self.openapi.detected_global_security_scheme,
             global_paginator_config=(
                 self.openapi.detected_global_pagination.paginator_config
                 if self.openapi.detected_global_pagination

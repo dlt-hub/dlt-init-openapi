@@ -6,6 +6,12 @@ Created with [dlt-openapi](https://github.com/dlt-hub/dlt-openapi) v. {{version}
 * https://github.com/dlt-hub/dlt
 * https://github.com/dlt-hub/dlt-openapi
 
+{% if credentials %}
+## Credentials
+This API uses {{ credentials.type }} authentication. Please fill in the required variable {{ credentials.detected_secret_name }} in your 
+secrets.toml.
+{% endif %}
+
 ## Available resources
 {% for endpoint in endpoint_collection.all_endpoints_to_render %}
 * {{ endpoint.detected_resource_name }}  

@@ -22,6 +22,7 @@ def test_simple_observer_load() -> None:
         "primary_key": "id",
         "write_disposition": "merge",
         "endpoint": {
+            "params": {},
             "data_selector": "items",
             "path": "/admin/users",
         },
@@ -32,6 +33,7 @@ def test_simple_observer_load() -> None:
         "primary_key": "id",
         "write_disposition": "merge",
         "endpoint": {
+            "params": {},
             "data_selector": "items",
             "path": "/offices",
         },

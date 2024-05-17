@@ -12,6 +12,7 @@ def test_teamgpt_load() -> None:
         "maximum_page": 20,
         "page_param": "page",
         "type": "page_number",
+        "total_path": "",
     }
 
     # FIXME: they use page and page_size parameters

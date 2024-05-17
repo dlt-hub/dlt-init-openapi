@@ -14,12 +14,14 @@ def test_simple_openartnft_load() -> None:
         "maximum_offset": 20,
         "offset_param": "skip",
         "type": "offset",
+        "total_path": "",
     }
 
     assert source["resources"][0] == {
         "name": "gallery",
         "table_name": "gallery",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/galleries/",
         },
@@ -28,6 +30,7 @@ def test_simple_openartnft_load() -> None:
         "name": "item",
         "table_name": "item",
         "endpoint": {
+            "params": {},
             "data_selector": "$",
             "path": "/items/",
         },

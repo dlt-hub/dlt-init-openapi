@@ -14,6 +14,8 @@ components:
           scopes:
             read: Grants read access
             write: Grants write access
+security:
+  - oauth2: [] 
 paths:
   /api/v2/pokemon/:
     get:

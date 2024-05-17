@@ -30,6 +30,11 @@ def test_basic_auth() -> None:
     }
 
 
+def test_unused_auth() -> None:
+    source_dict = get_dict_by_case("artificial", "auth/basic_auth_not_used.yml")
+    assert not source_dict["client"].get("auth")
+
+
 def test_oauth_warning() -> None:
     source_dict = get_dict_by_case("artificial", "auth/oauth.yml")
     assert not source_dict["client"].get("auth")

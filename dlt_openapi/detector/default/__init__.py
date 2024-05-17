@@ -118,7 +118,7 @@ class DefaultDetector(BaseDetector):
         if len(schemes) and schemes[0].supported:
             open_api.detected_global_security_scheme = schemes[0]
         elif len(schemes) and not schemes[0].supported:
-            self._add_warning(UnsupportedSecuritySchemeWarning(schemes[0].name))
+            self._add_warning(UnsupportedSecuritySchemeWarning(schemes[0].type))
 
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""

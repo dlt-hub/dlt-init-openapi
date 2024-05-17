@@ -1,0 +1,11 @@
+[runtime]
+log_level="INFO"
+
+[sources]
+# Base URL for the API
+# Live Site
+base_url = "https://dlttest-test.chargebee.com/api/v2"
+
+# Alternative servers found in openapi spec:
+# Test Site
+# base_url = "{protocol}://{site}-test.{environment}:{port}/api/v2"

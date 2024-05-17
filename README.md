@@ -31,13 +31,10 @@ You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.
 # 1. Checkout this repository locally
 $ git clone git@github.com:dlt-hub/dlt-openapi.git
 
-# 2. Init git submodules, this contains our verified sources for now
-$ git submodule update --init --recursive
-
-# 3. Install required poetry dependencies
+# 2. Install required poetry dependencies
 $ poetry install
 
-# 4. Start the poetry shell
+# 3. Start the poetry shell
 $ poetry shell
 ```
 

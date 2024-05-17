@@ -22,6 +22,8 @@ class OpenapiParser:
     endpoints: EndpointCollection = None
     security_schemes: Dict[str, SecurityScheme] = {}
 
+    global_security_name: str = None
+
     detected_global_security_scheme: SecurityScheme = None
     detected_global_pagination: Pagination = None
 
@@ -29,6 +31,7 @@ class OpenapiParser:
         self.config = config
 
     def parse(self, data: bytes) -> None:
+
         self.spec_raw = self._load_yaml_or_json(data)
         self.security_schemes = {}
 
@@ -45,6 +48,8 @@ class OpenapiParser:
         logger.success("Completed extracting openapi metadata and credentials.")
 
         logger.info("Extracting security schemes")
+        if spec.security:
+            self.global_security_name = list(spec.security[0].keys())[0]
         if self.context.spec.components and self.context.spec.components.securitySchemes:
             for name, scheme in self.context.spec.components.securitySchemes.items():
                 self.security_schemes[name] = SecurityScheme(

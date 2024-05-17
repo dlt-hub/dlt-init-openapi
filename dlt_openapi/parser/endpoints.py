@@ -38,6 +38,7 @@ class Response:
 @dataclass()
 class Endpoint:
     osp_operation: osp.Operation
+    context: OpenapiContext
 
     # basic parser results
     method: TMethod
@@ -121,6 +122,14 @@ class Endpoint:
                 query_param_names.append(param.name)
         return query_param_names
 
+    def default_for_param(self, location: Literal["path", "query"], param_name: str) -> str:
+        """get's a default value for the given param, returns"""
+        for key, p in self.parameters.items():
+            print(p.default)
+            if p.name == param_name and p.location == location and p.default:
+                return p.default
+        return self.context.config.parameter_default_value
+
     @classmethod
     def from_operation(
         cls,
@@ -162,6 +171,7 @@ class Endpoint:
             description=osp_operation.description,
             path_summary=path_summary,
             path_description=path_description,
+            context=context,
         )
 
 

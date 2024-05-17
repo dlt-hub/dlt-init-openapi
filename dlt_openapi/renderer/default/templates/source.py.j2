@@ -65,10 +65,10 @@ def {{ source_name }}(
                     {% endfor %}
                     {% endif %}
                     {% for param_name in endpoint.unresolvable_path_param_names %}
-                    "{{param_name}}": "FILL_ME_IN", # TODO: fill in required path parameter
+                    "{{param_name}}": "{{ endpoint.default_for_param('path', param_name) }}", # TODO: fill in required path parameter
                     {% endfor %}
                     {% for param_name in endpoint.unresolvable_query_param_names %}
-                    "{{param_name}}": "FILL_ME_IN", # TODO: fill in required query parameter
+                    "{{param_name}}": "{{ endpoint.default_for_param('query', param_name) }}", # TODO: fill in required query parameter
                     {% endfor %}
                 },
                 {% endif %}

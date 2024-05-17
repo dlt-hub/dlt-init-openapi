@@ -109,3 +109,32 @@ paths:
                     type: string
                   results:
                     type: array
+
+
+  #
+  # params with default and without
+  #
+  /param_defaults/{path_param}/{path_param_2}:
+    get:
+      operationId: param_defaults
+      parameters:
+      - in: query
+        name: search
+        schema:
+          default: search_default
+        required: True
+      - in: query
+        name: cursor
+        required: True
+      - in: path
+        name: path_param
+        schema:
+          default: path_param_default
+        required: True
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object

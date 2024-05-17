@@ -110,6 +110,15 @@ class DefaultRenderer(BaseRenderer):
             encoding=FILE_ENCODING,
         )
 
+        secrets_template = self.env.get_template("dlt_secrets.toml.j2")
+        secrets_path = config_dir / "secrets.toml"
+        secrets_path.write_text(
+            secrets_template.render(
+                credentials=self.openapi.detected_global_security_scheme,
+            ),
+            encoding=FILE_ENCODING,
+        )
+
     def _build_source(self) -> None:
         module_path = self.package_dir / "__init__.py"
         module_path.write_text(

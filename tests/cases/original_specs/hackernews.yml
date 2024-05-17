@@ -1,0 +1,183 @@
+openapi: 3.0.1
+info:
+  title: Hacker News
+  description: |
+    <p>Hacker News API</p>
+  version: 1.0.1
+servers:
+- url: https://hacker-news.firebaseio.com/v0
+tags:
+- name: Item
+  description: Operations about Item
+- name: Maxitem
+  description: Operations about Maxitem
+- name: Topstories
+  description: Operations about Topstories
+- name: Updates
+  description: Operations about Updates
+- name: User
+  description: Operations about User
+paths:
+  /updates.json:
+    get:
+      tags:
+      - HackerNews
+      summary: Get the changed items and profiles
+      description: Get the changed items and profiles
+      operationId: get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Updates'
+      security: []
+  /topstories.json:
+    get:
+      tags:
+      - HackerNews
+      summary: Returns the current top 100 stories.
+      description: Returns the current top 100 stories.
+      operationId: get_top_stories
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  format: int32
+      security: []
+  /user/{id}.json:
+    get:
+      tags:
+      - HackerNews
+      summary: Users are identified by case-sensitive ids
+      description: Users are identified by case-sensitive ids
+      operationId: get_user
+      parameters:
+      - name: id
+        in: path
+        description: User ID
+        required: true
+        schema:
+          type: string
+        example: wing328hk
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      security: []
+  /maxitem.json:
+    get:
+      tags:
+      - HackerNews
+      summary: Get the current largest item id
+      description: Get the current largest item id
+      operationId: get_max_item
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int32
+      security: []
+  /item/{id}.json:
+    get:
+      tags:
+      - HackerNews
+      summary: "Get the Item (story, comment, jobs, Ask HN, etc)"
+      description: "Stories, comments, jobs, Ask HNs and even polls are just items.\
+        \ They're identified by their ids, which are unique integers."
+      operationId: get_item
+      parameters:
+      - name: id
+        in: path
+        description: Item ID
+        required: true
+        schema:
+          type: string
+        example: "10000"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+      security: []
+components:
+  schemas:
+    Updates:
+      required:
+      - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: integer
+        profiles:
+          type: array
+          items:
+            type: string
+    Item:
+      required:
+      - by
+      type: object
+      properties:
+        by:
+          type: string
+        id:
+          type: integer
+          format: int32
+        kids:
+          type: integer
+          format: int32
+        parent:
+          type: integer
+          format: int32
+        parts:
+          type: integer
+          format: int32
+        score:
+          type: integer
+          format: int32
+        text:
+          type: string
+        time:
+          type: integer
+          format: int32
+        title:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+    User:
+      required:
+      - about
+      type: object
+      properties:
+        about:
+          type: string
+        created:
+          type: integer
+        delay:
+          type: integer
+        id:
+          type: string
+        karma:
+          type: integer
+        submitted:
+          type: array
+          items:
+            type: integer

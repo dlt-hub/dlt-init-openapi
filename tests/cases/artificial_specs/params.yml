@@ -138,3 +138,15 @@ paths:
             application/json:
               schema:
                 type: object
+
+
+  /path_param_file_ending/{path_param}/{path_param_2}.json:
+    get:
+      operationId: path_param_file_ending
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object

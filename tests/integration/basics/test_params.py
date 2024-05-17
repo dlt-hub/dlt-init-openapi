@@ -54,3 +54,10 @@ def test_param_defaults(resources: Dict[str, Any]) -> None:
         "path_param": "path_param_default",
         "path_param_2": DEFAULT_VALUE,
     }
+
+
+def test_path_param_with_file_ending(resources: Dict[str, Any]) -> None:
+    assert resources["path_param_file_ending"]["endpoint"]["params"] == {
+        "path_param": DEFAULT_VALUE,
+        "path_param_2": DEFAULT_VALUE,
+    }

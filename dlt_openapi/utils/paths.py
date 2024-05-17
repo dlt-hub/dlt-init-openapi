@@ -88,6 +88,7 @@ def get_path_parts(path: str) -> List[str]:
     """convert path into parts"""
     if not path:
         return []
+    path = path.split(".")[0]
     return path.strip("/").split("/")
 
 

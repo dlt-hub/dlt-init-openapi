@@ -1,0 +1,153 @@
+version: 2
+version_hash: cOXusHXc73TPOD7voQMpIoeVAGOH/EcqZIu8Zz23Olg=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  asset_network_v_1:
+    columns:
+      asset_id:
+        nullable: false
+        primary_key: true
+        data_type: text
+      asset_uuid:
+        data_type: text
+        nullable: true
+      asset_name:
+        data_type: text
+        nullable: true
+      network_arn_id:
+        data_type: text
+        nullable: true
+      min_withdrawal_amt:
+        data_type: text
+        nullable: true
+      max_withdrawal_amt:
+        data_type: text
+        nullable: true
+      network_confirms:
+        data_type: bigint
+        nullable: true
+      processing_time:
+        data_type: bigint
+        nullable: true
+      is_default:
+        data_type: bool
+        nullable: true
+      network_name:
+        data_type: text
+        nullable: true
+      display_name:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: merge
+    resource: get_asset_networks
+    x-merge-strategy: delete-insert
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+      propagation:
+        tables:
+          asset_network_v_1:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- tF6PaTwOVnrHqoTktKRbgsxaknB0dVKjfX72PrPy6lA=
+- 7cbyiIRtnmt+P52lzVnGNr9O2UrIdjK0uF6XDLCEPI0=

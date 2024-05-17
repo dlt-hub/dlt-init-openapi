@@ -8,6 +8,7 @@ from loguru import logger
 
 from dlt_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_openapi.config import Config
+from dlt_openapi.utils import update_rest_api
 
 app = typer.Typer()
 
@@ -69,6 +70,9 @@ def init(
     if url and path:
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
+
+    # synch rest api
+    update_rest_api.update_rest_api()
 
     config = _load_config(
         path=config_path,

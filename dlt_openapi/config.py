@@ -1,5 +1,6 @@
 import json
 import mimetypes
+import pathlib
 from pathlib import Path
 from typing import Any, List, Optional
 
@@ -7,6 +8,8 @@ import yaml
 from pydantic import BaseModel
 
 from .typing import TEndpointFilter
+
+REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../rest_api")
 
 
 class Config(BaseModel):

@@ -2,7 +2,6 @@
 Default renderer
 """
 
-import pathlib
 import shutil
 import subprocess
 from distutils.dir_util import copy_tree
@@ -10,12 +9,11 @@ from distutils.dir_util import copy_tree
 from jinja2 import Environment, PackageLoader
 from loguru import logger
 
-from dlt_openapi.config import Config
+from dlt_openapi.config import REST_API_SOURCE_LOCATION, Config
 from dlt_openapi.parser.openapi_parser import OpenapiParser
 from dlt_openapi.renderer.base_renderer import BaseRenderer
 from dlt_openapi.utils import misc
 
-REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../../../sources/sources/rest_api")
 FILE_ENCODING = "utf-8"
 TEMPLATE_FILTERS = {
     "snakecase": misc.snake_case,

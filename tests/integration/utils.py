@@ -7,9 +7,8 @@ from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
 
 from dlt_openapi import Project, _get_project_for_url_or_path
-from dlt_openapi.config import Config
-from dlt_openapi.renderer.default import REST_API_SOURCE_LOCATION
-from sources.sources.rest_api.typing import EndpointResource, RESTAPIConfig
+from dlt_openapi.config import REST_API_SOURCE_LOCATION, Config
+from rest_api.typing import EndpointResource, RESTAPIConfig
 from tests.cases import case_path
 
 LOCAL_DIR = "tests/_local/"

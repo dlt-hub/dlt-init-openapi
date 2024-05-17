@@ -8,6 +8,7 @@ from loguru import logger
 
 from dlt_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_openapi.config import Config
+from dlt_openapi.utils import update_rest_api
 
 app = typer.Typer()
 
@@ -47,13 +48,16 @@ CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to 
 @app.command()
 def init(
     source: str = typer.Argument(None, help="A name of data source for which to generate a pipeline"),
-    url: Optional[str] = typer.Option(None, help="A URL to read the JSON from"),
-    path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON file"),
+    url: Optional[str] = typer.Option(None, help="A URL to read the JSON/YAML spec from"),
+    path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON/YAML spec file"),
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
     config_path: Optional[pathlib.Path] = CONFIG_OPTION,
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
     loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
     global_limit: int = typer.Option(0, help="Set a global limit on the generated source"),
+    update_rest_api_source: bool = typer.Option(
+        False, help="Wether to update the locally cached rest_api verified source"
+    ),
 ) -> None:
     """Generate a new OpenAPI Client library"""
     from dlt_openapi import create_new_client
@@ -69,6 +73,9 @@ def init(
     if url and path:
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
+
+    # synch rest api
+    update_rest_api.update_rest_api(force=update_rest_api_source)
 
     config = _load_config(
         path=config_path,

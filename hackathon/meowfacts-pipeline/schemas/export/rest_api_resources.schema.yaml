@@ -1,0 +1,155 @@
+version: 4
+version_hash: TZZSCsf6fmVkSCagxInOGaCI+Za98Twt54Gaiqvrgjk=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  fact:
+    columns:
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+  fact__data:
+    columns:
+      value:
+        data_type: text
+        nullable: true
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+    parent: fact
+    x-normalizer:
+      seen-data: true
+  healthcheck_data:
+    columns:
+      uptime:
+        data_type: text
+        nullable: true
+      version:
+        data_type: text
+        nullable: true
+      requests:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+previous_hashes:
+- Lz3KkfrUj34lJmK9rCSdwVG2a04Qduzacd2UVePL5rE=
+- InlT0o381KHHAvForR7xjMLK+HmU4lrC5wu7QdtFWIM=
+- lyqZcwBC28/NCNeDnfqis0LlKgY06JfHqbH8P+TURsk=
+- 6t306kXK2ObcSwq4dPi0m6YpGUiTVL11tgJ99TCQ/pM=

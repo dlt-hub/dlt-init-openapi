@@ -1,0 +1,138 @@
+version: 2
+version_hash: tM7Awfw4ZIi5CSqMlcSNgD0O+NM4aLhd8Cp+bFMQRQ0=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  season_base:
+    columns:
+      uid:
+        nullable: false
+        primary_key: true
+        data_type: text
+      title:
+        data_type: text
+        nullable: true
+      series__uid:
+        data_type: text
+        nullable: true
+      series__title:
+        data_type: text
+        nullable: true
+      season_number:
+        data_type: bigint
+        nullable: true
+      number_of_episodes:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: merge
+    resource: v1_rest_season_search
+    x-merge-strategy: delete-insert
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+      propagation:
+        tables:
+          season_base:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- PsRc2x7rf0/qQIHsTGLIXQsv5nXpSUUEMv8D+xCqaIA=
+- BRYrnuXKGKNWyXbReE/O+Y6OEAhVz2EwV76hYtOWqzY=

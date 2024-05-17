@@ -1,0 +1,11 @@
+[runtime]
+log_level="INFO"
+
+[sources]
+# Base URL for the API
+# STAPI over secure HTTPS protocol
+base_url = "https://stapi.co/api"
+
+# Alternative servers found in openapi spec:
+# STAPI over plain HTTP protocol
+# base_url = "http://stapi.co/api"

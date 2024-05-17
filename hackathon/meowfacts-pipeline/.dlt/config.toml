@@ -1,0 +1,8 @@
+[runtime]
+log_level="INFO"
+
+[sources]
+# Base URL for the API
+# Documentation for https://meowfacts.herokuapp.com, an api for facts about cats, meow facts.
+base_url = "https://meowfacts.herokuapp.com"
+

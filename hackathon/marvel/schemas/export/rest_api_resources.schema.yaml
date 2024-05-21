@@ -1,0 +1,1161 @@
+version: 2
+version_hash: 95I189WZZ0FNz8js7duqRJlK2NpQUwevPAvhgKh0DWg=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  character_details:
+    columns:
+      id:
+        data_type: bigint
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      description:
+        data_type: text
+        nullable: true
+      modified:
+        data_type: timestamp
+        nullable: true
+      thumbnail__path:
+        data_type: text
+        nullable: true
+      thumbnail__extension:
+        data_type: text
+        nullable: true
+      resource_uri:
+        data_type: text
+        nullable: true
+      comics__available:
+        data_type: bigint
+        nullable: true
+      comics__collection_uri:
+        data_type: text
+        nullable: true
+      comics__returned:
+        data_type: bigint
+        nullable: true
+      series__available:
+        data_type: bigint
+        nullable: true
+      series__collection_uri:
+        data_type: text
+        nullable: true
+      series__returned:
+        data_type: bigint
+        nullable: true
+      stories__available:
+        data_type: bigint
+        nullable: true
+      stories__collection_uri:
+        data_type: text
+        nullable: true
+      stories__returned:
+        data_type: bigint
+        nullable: true
+      events__available:
+        data_type: bigint
+        nullable: true
+      events__collection_uri:
+        data_type: text
+        nullable: true
+      events__returned:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    resource: get_character_individual
+    x-normalizer:
+      seen-data: true
+  characters:
+    columns:
+      id:
+        data_type: bigint
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      description:
+        data_type: text
+        nullable: true
+      modified:
+        data_type: timestamp
+        nullable: true
+      thumbnail__path:
+        data_type: text
+        nullable: true
+      thumbnail__extension:
+        data_type: text
+        nullable: true
+      resource_uri:
+        data_type: text
+        nullable: true
+      comics__available:
+        data_type: bigint
+        nullable: true
+      comics__collection_uri:
+        data_type: text
+        nullable: true
+      comics__returned:
+        data_type: bigint
+        nullable: true
+      series__available:
+        data_type: bigint
+        nullable: true
+      series__collection_uri:
+        data_type: text
+        nullable: true
+      series__returned:
+        data_type: bigint
+        nullable: true
+      stories__available:
+        data_type: bigint
+        nullable: true
+      stories__collection_uri:
+        data_type: text
+        nullable: true
+      stories__returned:
+        data_type: bigint
+        nullable: true
+      events__available:
+        data_type: bigint
+        nullable: true
+      events__collection_uri:
+        data_type: text
+        nullable: true
+      events__returned:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    resource: get_characters
+    x-normalizer:
+      seen-data: true
+  comic_details:
+    columns:
+      id:
+        data_type: bigint
+        nullable: true
+      digital_id:
+        data_type: bigint
+        nullable: true
+      title:
+        data_type: text
+        nullable: true
+      issue_number:
+        data_type: bigint
+        nullable: true
+      variant_description:
+        data_type: text
+        nullable: true
+      description:
+        data_type: text
+        nullable: true
+      modified:
+        data_type: timestamp
+        nullable: true
+      isbn:
+        data_type: text
+        nullable: true
+      upc:
+        data_type: text
+        nullable: true
+      diamond_code:
+        data_type: text
+        nullable: true
+      ean:
+        data_type: text
+        nullable: true
+      issn:
+        data_type: text
+        nullable: true
+      format:
+        data_type: text
+        nullable: true
+      page_count:
+        data_type: bigint
+        nullable: true
+      resource_uri:
+        data_type: text
+        nullable: true
+      series__resource_uri:
+        data_type: text
+        nullable: true
+      series__name:
+        data_type: text
+        nullable: true
+      thumbnail__path:
+        data_type: text
+        nullable: true
+      thumbnail__extension:
+        data_type: text
+        nullable: true
+      creators__available:
+        data_type: bigint
+        nullable: true
+      creators__collection_uri:
+        data_type: text
+        nullable: true
+      creators__returned:
+        data_type: bigint
+        nullable: true
+      characters__available:
+        data_type: bigint
+        nullable: true
+      characters__collection_uri:
+        data_type: text
+        nullable: true
+      characters__returned:
+        data_type: bigint
+        nullable: true
+      stories__available:
+        data_type: bigint
+        nullable: true
+      stories__collection_uri:
+        data_type: text
+        nullable: true
+      stories__returned:
+        data_type: bigint
+        nullable: true
+      events__available:
+        data_type: bigint
+        nullable: true
+      events__collection_uri:
+        data_type: text
+        nullable: true
+      events__returned:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      modified__v_text:
+        data_type: text
+        nullable: true
+        variant: true
+    write_disposition: append
+    resource: get_comic_individual
+    x-normalizer:
+      seen-data: true
+  comics:
+    columns:
+      id:
+        data_type: bigint
+        nullable: true
+      digital_id:
+        data_type: bigint
+        nullable: true
+      title:
+        data_type: text
+        nullable: true
+      issue_number:
+        data_type: bigint
+        nullable: true
+      variant_description:
+        data_type: text
+        nullable: true
+      description:
+        data_type: text
+        nullable: true
+      modified:
+        data_type: timestamp
+        nullable: true
+      isbn:
+        data_type: text
+        nullable: true
+      upc:
+        data_type: text
+        nullable: true
+      diamond_code:
+        data_type: text
+        nullable: true
+      ean:
+        data_type: text
+        nullable: true
+      issn:
+        data_type: text
+        nullable: true
+      format:
+        data_type: text
+        nullable: true
+      page_count:
+        data_type: bigint
+        nullable: true
+      resource_uri:
+        data_type: text
+        nullable: true
+      series__resource_uri:
+        data_type: text
+        nullable: true
+      series__name:
+        data_type: text
+        nullable: true
+      thumbnail__path:
+        data_type: text
+        nullable: true
+      thumbnail__extension:
+        data_type: text
+        nullable: true
+      creators__available:
+        data_type: bigint
+        nullable: true
+      creators__collection_uri:
+        data_type: text
+        nullable: true
+      creators__returned:
+        data_type: bigint
+        nullable: true
+      characters__available:
+        data_type: bigint
+        nullable: true
+      characters__collection_uri:
+        data_type: text
+        nullable: true
+      characters__returned:
+        data_type: bigint
+        nullable: true
+      stories__available:
+        data_type: bigint
+        nullable: true
+      stories__collection_uri:
+        data_type: text
+        nullable: true
+      stories__returned:
+        data_type: bigint
+        nullable: true
+      events__available:
+        data_type: bigint
+        nullable: true
+      events__collection_uri:
+        data_type: text
+        nullable: true
+      events__returned:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      modified__v_text:
+        data_type: text
+        nullable: true
+        variant: true
+    write_disposition: append
+    resource: get_comics_collection
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+  character_details__comics__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: character_details
+    x-normalizer:
+      seen-data: true
+  character_details__series__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: character_details
+    x-normalizer:
+      seen-data: true
+  character_details__stories__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      type:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: character_details
+    x-normalizer:
+      seen-data: true
+  character_details__events__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: character_details
+    x-normalizer:
+      seen-data: true
+  character_details__urls:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: character_details
+    x-normalizer:
+      seen-data: true
+  characters__comics__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: characters
+    x-normalizer:
+      seen-data: true
+  characters__series__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: characters
+    x-normalizer:
+      seen-data: true
+  characters__stories__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      type:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: characters
+    x-normalizer:
+      seen-data: true
+  characters__events__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: characters
+    x-normalizer:
+      seen-data: true
+  characters__urls:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: characters
+    x-normalizer:
+      seen-data: true
+  comic_details__urls:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__variants:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__dates:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      date:
+        data_type: timestamp
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      date__v_text:
+        data_type: text
+        nullable: true
+        variant: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__prices:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      price:
+        data_type: bigint
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      price__v_double:
+        data_type: double
+        nullable: true
+        variant: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__creators__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      role:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__stories__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      type:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__images:
+    columns:
+      path:
+        data_type: text
+        nullable: true
+      extension:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__text_objects:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      language:
+        data_type: text
+        nullable: true
+      text:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__characters__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comic_details__collected_issues:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comic_details
+    x-normalizer:
+      seen-data: true
+  comics__urls:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__variants:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__dates:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      date:
+        data_type: timestamp
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      date__v_text:
+        data_type: text
+        nullable: true
+        variant: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__prices:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      price:
+        data_type: bigint
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      price__v_double:
+        data_type: double
+        nullable: true
+        variant: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__creators__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      role:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__stories__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      type:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__images:
+    columns:
+      path:
+        data_type: text
+        nullable: true
+      extension:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__text_objects:
+    columns:
+      type:
+        data_type: text
+        nullable: true
+      language:
+        data_type: text
+        nullable: true
+      text:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__characters__items:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+  comics__collected_issues:
+    columns:
+      resource_uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: comics
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+previous_hashes:
+- Bl63J0QmdkbU7HYp5qeZ5ACynnDgDMJ4NdP1cVdaH+M=
+- 1vldNFNH5bDWP2jFb4PfIGVC8LQwOoBoaXkfr3Q6w6g=

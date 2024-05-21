@@ -35,3 +35,4 @@ tests/_local/
 .DS_Store
 !hackathon/*-pipeline/
 rest_api
+*.duckdb

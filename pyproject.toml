@@ -1,90 +1,58 @@
 [tool.poetry]
-name = "dlt-openapi"
-version = "0.0.2"
+name = "dlt-init-openapi"
+version = "0.0.5a1"
 description = "Generate dlt Python clients from OpenAPI"
-repository = "https://github.com/dlt-hub/dlt-openapi"
+homepage = "https://dlthub.com"
+repository = "https://github.com/dlt-hub/dlt-init-openapi"
 license = "MIT"
 keywords=["OpenAPI", "Client", "Generator"]
-authors = ["Dylan Anthony <danthony@triaxtec.com>"]
+authors = ["David Scharf <david@dlthub.com>"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Code Generators",
     "Typing :: Typed",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows"
 ]
 readme = "README.md"
 packages = [
-    {include = "dlt_openapi"},
+    {include = "dlt_init_openapi"},
 ]
-include = ["CHANGELOG.md", "dlt_openapi/py.typed"]
+include = ["CHANGELOG.md", "dlt_init_openapi/py.typed", "LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.13"
+dlt = {extras = ["duckdb"], version = "^0.4.11"}
 jinja2 = "^3.0.0"
 typer = "^0.9"
-colorama = {version = "^0.4.3", markers = "sys_platform == 'win32'"}
-shellingham = "^1.3.2"
 black = ">=23"
 isort = "^5.0.5"
 pydantic = "^1.6.1"
-attrs = ">=21.3.0"
-python-dateutil = "^2.8.1"
 httpx = ">=0.15.4,<0.25.0"
 autoflake = "^1.4 || ^2.0.0"
-PyYAML = "^6.0"
-
-dlt = {extras = ["duckdb"], version = "^0.4.11"}
 requests = "^2.30.0"
 questionary = "^1.10.0"
-enlighten = "^1.11.2"
 openapi-schema-pydantic = "^1.2.4"
-pyjwt = "^2.8.0"
-cryptography = "^42.0.5"
 referencing = "^0.34.0"
 inflector = "^3.1.1"
 loguru = "^0.7.2"
-types-requests = "^2.31.0.20240406"
 
 [tool.poetry.scripts]
-dlt-openapi = "dlt_openapi.cli:app"
+dlt-init-openapi = "dlt_init_openapi.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
 pytest = "*"
 pytest-mock = "*"
 mypy = "*"
-taskipy = "*"
-safety = "*"
 pytest-cov = "*"
 python-multipart = "*"
 types-PyYAML = "^6.0.3"
 types-certifi = "^2020.0.0"
 types-python-dateutil = "^2.0.0"
-
-[tool.taskipy.tasks]
-check = """
-isort .\
- && black .\
- && poetry export -f requirements.txt | poetry run safety check --bare --stdin\
- && mypy dlt_openapi\
- && flake8 dlt_openapi\
- && TASKIPY=true pytest --cov dlt_openapi tests --cov-report=term-missing --basetemp=tests/tmp\
- && rm -r tests/tmp\
-"""
-regen = """
-task regen_e2e\
-&& task regen_integration\
-"""
-e2e = "pytest dlt_openapi end_to_end_tests/test_end_to_end.py"
-re = """
-task regen\
-&& task e2e\
-"""
-regen_e2e = "python -m end_to_end_tests.regen_golden_record"
-regen_integration = """
-dlt-openapi update --url https://raw.githubusercontent.com/openapi-generators/openapi-test-server/main/openapi.json --config integration-tests-config.yaml\
-&& mypy integration-tests --strict
-"""
+types-requests = "^2.31.0.20240406"
 
 [tool.black]
 line-length = 120
@@ -96,7 +64,7 @@ exclude = '''
     | \.venv
     | env
     | \.mypy_cache
-    | dlt_openapi/templates
+    | dlt_init_openapi/templates
     | tests/test_templates
     | end_to_end_tests/test_custom_templates
     | end_to_end_tests/golden-record-custom
@@ -110,8 +78,7 @@ profile = "black"
 skip = [".venv", "tests/test_templates", "integration-tests", "env"]
 
 [tool.coverage.run]
-omit = ["dlt_openapi/templates/*"]
-
+omit = ["dlt_init_openapi/templates/*"]
 
 [tool.mypy]
 plugins = ["pydantic.mypy"]

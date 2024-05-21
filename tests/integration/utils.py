@@ -6,8 +6,8 @@ from typing import Dict, Iterable, List, Literal, Union, cast
 from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
 
-from dlt_openapi import Project, _get_project_for_url_or_path
-from dlt_openapi.config import REST_API_SOURCE_LOCATION, Config
+from dlt_init_openapi import Project, _get_project_for_url_or_path
+from dlt_init_openapi.config import REST_API_SOURCE_LOCATION, Config
 from rest_api.typing import EndpointResource, RESTAPIConfig
 from tests.cases import case_path
 

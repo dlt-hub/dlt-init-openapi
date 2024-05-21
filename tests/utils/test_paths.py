@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import pytest
 
-from dlt_openapi.utils.paths import (
+from dlt_init_openapi.utils.paths import (
     find_longest_common_prefix,
     get_non_var_path_parts,
     get_path_parts,

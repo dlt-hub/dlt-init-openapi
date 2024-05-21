@@ -2,8 +2,8 @@ from typing import Any, Dict
 
 import pytest
 
-from dlt_openapi.config import Config
-from dlt_openapi.detector.default.warnings import PossiblePaginatorWarning
+from dlt_init_openapi.config import Config
+from dlt_init_openapi.detector.default.warnings import PossiblePaginatorWarning
 from tests.integration.utils import get_dict_by_case, get_indexed_resources, get_project_by_case
 
 

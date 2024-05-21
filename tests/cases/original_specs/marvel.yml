@@ -1,0 +1,5746 @@
+openapi: 3.0.0
+info:
+  title: gateway.marvel.com
+  version: Cable
+servers:
+  - url: 'http://gateway.marvel.com/'
+paths:
+  /v1/public/characters:
+    get:
+      parameters:
+        - description: >-
+            Return only characters matching the specified full character name
+            (e.g. Spider-Man).
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return characters with names that begin with the specified string
+            (e.g. Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only characters which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only characters which appear in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic characters with optional filters. See notes on
+        individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of characters.
+  '/v1/public/characters/{characterId}':
+    get:
+      parameters:
+        - description: A single character id.
+          in: path
+          name: characterId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single character resource.  It is the canonical
+        URI for any character resource provided by the API.
+      operationId: getCharacterIndividual
+      summary: Fetches a single character by id.
+  '/v1/public/characters/{characterId}/comics':
+    get:
+      parameters:
+        - description: The character id.
+          in: path
+          name: characterId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: Exclude variant comics from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            type: boolean
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            type: boolean
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear).
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics containing a specific character, with optional
+        filters. See notes on individual parameters below.
+      operationId: getComicsCharacterCollection
+      summary: Fetches lists of comics filtered by a character id.
+  '/v1/public/characters/{characterId}/events':
+    get:
+      parameters:
+        - description: The character ID.
+          in: path
+          name: characterId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter the event list by name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events in which a specific character appears, with
+        optional filters. See notes on individual parameters below.
+      operationId: getCharacterEventsCollection
+      summary: Fetches lists of events filtered by a character id.
+  '/v1/public/characters/{characterId}/series':
+    get:
+      parameters:
+        - description: The character ID
+          in: path
+          name: characterId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by series title.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return series with titles that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only series matching the specified start year.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only series which contain the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which have comics that take place during the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter the series by publication frequency type.
+          in: query
+          name: seriesType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only series containing one or more comics with the specified
+            format.
+          in: query
+          name: contains
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic series in which a specific character appears,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCharacterSeriesCollection
+      summary: Fetches lists of series filtered by a character id.
+  '/v1/public/characters/{characterId}/stories':
+    get:
+      parameters:
+        - description: The character ID.
+          in: path
+          name: characterId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained in the specified (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories contained the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which take place during the specified events
+            (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories  featuring a specific character with
+        optional filters. See notes on individual parameters below.
+      operationId: getCharacterStoryCollection
+      summary: Fetches lists of stories filtered by a character id.
+  /v1/public/comics:
+    get:
+      parameters:
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Exclude variants (alternate covers, secondary printings, director's
+            cuts, etc.) from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            type: boolean
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            type: boolean
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear). Accepts
+            a comma-separated list of ids.
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+            Accepts a comma-separated list of ids.
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics with optional filters. See notes on individual
+        parameters below.
+      operationId: getComicsCollection
+      summary: Fetches lists of comics.
+  '/v1/public/comics/{comicId}':
+    get:
+      parameters:
+        - description: A single comic.
+          in: path
+          name: comicId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single comic resource.  It is the canonical URI
+        for any comic resource provided by the API.
+      operationId: getComicIndividual
+      summary: Fetches a single comic by id.
+  '/v1/public/comics/{comicId}/characters':
+    get:
+      parameters:
+        - description: The comic id.
+          in: path
+          name: comicId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only characters matching the specified full character name
+            (e.g. Spider-Man).
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return characters with names that begin with the specified string
+            (e.g. Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only characters which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only characters which appear the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of characters which appear in a specific comic with
+        optional filters. See notes on individual parameters below.
+      operationId: getComicCharacterCollection
+      summary: Fetches lists of characters filtered by a comic id.
+  '/v1/public/comics/{comicId}/creators':
+    get:
+      parameters:
+        - description: The comic id.
+          in: path
+          name: comicId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by creator first name (e.g. brian).
+          in: query
+          name: firstName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle name (e.g. Michael).
+          in: query
+          name: middleName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last name (e.g. Bendis).
+          in: query
+          name: lastName
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by suffix or honorific (e.g. Jr., Sr.).'
+          in: query
+          name: suffix
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator names that match critera (e.g. B, St L).'
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator first names that match critera (e.g. B, St L).'
+          in: query
+          name: firstNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle names that match critera (e.g. Mi).
+          in: query
+          name: middleNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last names that match critera (e.g. Ben).
+          in: query
+          name: lastNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only creators which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only creators who worked on in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic creators whose work appears in a specific comic,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of creators filtered by a comic id.
+  '/v1/public/comics/{comicId}/events':
+    get:
+      parameters:
+        - description: The comic ID.
+          in: path
+          name: comicId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter the event list by name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events in which a specific comic appears, with optional
+        filters. See notes on individual parameters below.
+      operationId: getIssueEventsCollection
+      summary: Fetches lists of events filtered by a comic id.
+  '/v1/public/comics/{comicId}/stories':
+    get:
+      parameters:
+        - description: The comic ID.
+          in: path
+          name: comicId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which take place during the specified events
+            (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature the specified characters (accepts
+            a comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories in a specific comic issue, with optional
+        filters. See notes on individual parameters below.
+      operationId: getComicStoryCollection
+      summary: Fetches lists of stories filtered by a comic id.
+  /v1/public/creators:
+    get:
+      parameters:
+        - description: Filter by creator first name (e.g. Brian).
+          in: query
+          name: firstName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle name (e.g. Michael).
+          in: query
+          name: middleName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last name (e.g. Bendis).
+          in: query
+          name: lastName
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by suffix or honorific (e.g. Jr., Sr.).'
+          in: query
+          name: suffix
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator names that match critera (e.g. B, St L).'
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator first names that match critera (e.g. B, St L).'
+          in: query
+          name: firstNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle names that match critera (e.g. Mi).
+          in: query
+          name: middleNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last names that match critera (e.g. Ben).
+          in: query
+          name: lastNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only creators which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only creators who worked on in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic creators with optional filters. See notes on
+        individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of creators.
+  '/v1/public/creators/{creatorId}':
+    get:
+      parameters:
+        - description: A single creator id.
+          in: path
+          name: creatorId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single creator resource.  It is the canonical URI
+        for any creator resource provided by the API.
+      operationId: getCreatorIndividual
+      summary: Fetches a single creator by id.
+  '/v1/public/creators/{creatorId}/comics':
+    get:
+      parameters:
+        - description: The creator ID.
+          in: path
+          name: creatorId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: Exclude variant comics from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            type: boolean
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear).
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics in which the work of a specific creator appears,
+        with optional filters. See notes on individual parameters below.
+      operationId: getComicsCollection
+      summary: Fetches lists of comics filtered by a creator id.
+  '/v1/public/creators/{creatorId}/events':
+    get:
+      parameters:
+        - description: The creator ID.
+          in: path
+          name: creatorId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter the event list by name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events featuring the work of a specific creator with
+        optional filters. See notes on individual parameters below.
+      operationId: getCreatorEventsCollection
+      summary: Fetches lists of events filtered by a creator id.
+  '/v1/public/creators/{creatorId}/series':
+    get:
+      parameters:
+        - description: The creator ID.
+          in: path
+          name: creatorId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by series title.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return series with titles that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only series matching the specified start year.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only series which contain the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which have comics that take place during the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter the series by publication frequency type.
+          in: query
+          name: seriesType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only series containing one or more comics with the specified
+            format.
+          in: query
+          name: contains
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic series in which a specific creator's work
+        appears, with optional filters. See notes on individual parameters
+        below.
+      operationId: getCreatorSeriesCollection
+      summary: Fetches lists of series filtered by a creator id.
+  '/v1/public/creators/{creatorId}/stories':
+    get:
+      parameters:
+        - description: The ID of the creator.
+          in: path
+          name: creatorId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained in the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories contained the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which take place during the specified events
+            (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature the specified characters (accepts
+            a comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories by a specific creator with optional
+        filters. See notes on individual parameters below.
+      operationId: getCreatorStoryCollection
+      summary: Fetches lists of stories filtered by a creator id.
+  /v1/public/events:
+    get:
+      parameters:
+        - description: Return only events which match the specified name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified stories
+            (accepts a comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events with optional filters. See notes on individual
+        parameters below.
+      operationId: getEventsCollection
+      summary: Fetches lists of events.
+  '/v1/public/events/{eventId}':
+    get:
+      parameters:
+        - description: A single event.
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single event resource.  It is the canonical URI
+        for any event resource provided by the API.
+      operationId: getEventIndividual
+      summary: Fetches a single event by id.
+  '/v1/public/events/{eventId}/characters':
+    get:
+      parameters:
+        - description: The event ID
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only characters matching the specified full character name
+            (e.g. Spider-Man).
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return characters with names that begin with the specified string
+            (e.g. Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only characters which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only characters which appear in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of characters which appear in a specific event, with
+        optional filters. See notes on individual parameters below.
+      operationId: getEventCharacterCollection
+      summary: Fetches lists of characters filtered by an event id.
+  '/v1/public/events/{eventId}/comics':
+    get:
+      parameters:
+        - description: The event id.
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: Exclude variant comics from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear).
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics which take place during a specific event, with
+        optional filters. See notes on individual parameters below.
+      operationId: getComicsCollection
+      summary: Fetches lists of comics filtered by an event id.
+  '/v1/public/events/{eventId}/creators':
+    get:
+      parameters:
+        - description: The event ID.
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by creator first name (e.g. brian).
+          in: query
+          name: firstName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle name (e.g. Michael).
+          in: query
+          name: middleName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last name (e.g. Bendis).
+          in: query
+          name: lastName
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by suffix or honorific (e.g. Jr., Sr.).'
+          in: query
+          name: suffix
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator names that match critera (e.g. B, St L).'
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator first names that match critera (e.g. B, St L).'
+          in: query
+          name: firstNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle names that match critera (e.g. Mi).
+          in: query
+          name: middleNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last names that match critera (e.g. Ben).
+          in: query
+          name: lastNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only creators which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only creators who worked on in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic creators whose work appears in a specific event,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of creators filtered by an event id.
+  '/v1/public/events/{eventId}/series':
+    get:
+      parameters:
+        - description: The event ID.
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by series title.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return series with titles that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only series matching the specified start year.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only series which contain the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter the series by publication frequency type.
+          in: query
+          name: seriesType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only series containing one or more comics with the specified
+            format.
+          in: query
+          name: contains
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic series in which a specific event takes place,
+        with optional filters. See notes on individual parameters below.
+      operationId: getEventSeriesCollection
+      summary: Fetches lists of series filtered by an event id.
+  '/v1/public/events/{eventId}/stories':
+    get:
+      parameters:
+        - description: The ID of the event.
+          in: path
+          name: eventId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained in the specified (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories contained the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature the specified characters (accepts
+            a comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories from a specific event, with optional
+        filters. See notes on individual parameters below.
+      operationId: getEventStoryCollection
+      summary: Fetches lists of stories filtered by an event id.
+  /v1/public/series:
+    get:
+      parameters:
+        - description: Return only series matching the specified title.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return series with titles that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only series matching the specified start year.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only series which contain the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which have comics that take place during the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter the series by publication frequency type.
+          in: query
+          name: seriesType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only series containing one or more comics with the specified
+            format.
+          in: query
+          name: contains
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic series with optional filters. See notes on
+        individual parameters below.
+      operationId: getSeriesCollection
+      summary: Fetches lists of series.
+  '/v1/public/series/{seriesId}':
+    get:
+      parameters:
+        - description: Filter by series title.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single comic series resource.  It is the canonical
+        URI for any comic series resource provided by the API.
+      operationId: getSeriesIndividual
+      summary: Fetches a single comic series by id.
+  '/v1/public/series/{seriesId}/characters':
+    get:
+      parameters:
+        - description: The series id.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only characters matching the specified full character name
+            (e.g. Spider-Man).
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return characters with names that begin with the specified string
+            (e.g. Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only characters which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only characters which appear in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of characters which appear in specific series, with
+        optional filters. See notes on individual parameters below.
+      operationId: getSeriesCharacterWrapper
+      summary: Fetches lists of characters filtered by a series id.
+  '/v1/public/series/{seriesId}/comics':
+    get:
+      parameters:
+        - description: The series ID.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: Exclude variant comics from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear).
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics which are published as part of a specific
+        series, with optional filters. See notes on individual parameters below.
+      operationId: getComicsCollection
+      summary: Fetches lists of comics filtered by a series id.
+  '/v1/public/series/{seriesId}/creators':
+    get:
+      parameters:
+        - description: The series ID.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by creator first name (e.g. brian).
+          in: query
+          name: firstName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle name (e.g. Michael).
+          in: query
+          name: middleName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last name (e.g. Bendis).
+          in: query
+          name: lastName
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by suffix or honorific (e.g. Jr., Sr.).'
+          in: query
+          name: suffix
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator names that match critera (e.g. B, St L).'
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator first names that match critera (e.g. B, St L).'
+          in: query
+          name: firstNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle names that match critera (e.g. Mi).
+          in: query
+          name: middleNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last names that match critera (e.g. Ben).
+          in: query
+          name: lastNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only creators which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only creators who worked on in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic creators whose work appears in a specific series,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of creators filtered by a series id.
+  '/v1/public/series/{seriesId}/events':
+    get:
+      parameters:
+        - description: The series ID.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter the event list by name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which contain the specified stories (accepts a
+            comma-separated list of ids).
+          in: query
+          name: stories
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events which occur in a specific series, with optional
+        filters. See notes on individual parameters below.
+      operationId: getEventsCollection
+      summary: Fetches lists of events filtered by a series id.
+  '/v1/public/series/{seriesId}/stories':
+    get:
+      parameters:
+        - description: The series ID.
+          in: path
+          name: seriesId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained in the specified (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which take place during the specified events
+            (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature the specified characters (accepts
+            a comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories from a specific series with optional
+        filters. See notes on individual parameters below.
+      operationId: getSeriesStoryCollection
+      summary: Fetches lists of stories filtered by a series id.
+  /v1/public/stories:
+    get:
+      parameters:
+        - description: >-
+            Return only stories which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only stories contained in the specified (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories contained the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which take place during the specified events
+            (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only stories which feature the specified characters (accepts
+            a comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic stories with optional filters. See notes on
+        individual parameters below.
+      operationId: getStoryCollection
+      summary: Fetches lists of stories.
+  '/v1/public/stories/{storyId}':
+    get:
+      parameters:
+        - description: Filter by story id.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StoryDataWrapper'
+          description: No response was specified
+      description: >-
+        This method fetches a single comic story resource.  It is the canonical
+        URI for any comic story resource provided by the API.
+      operationId: getStoryIndividual
+      summary: Fetches a single comic story by id.
+  '/v1/public/stories/{storyId}/characters':
+    get:
+      parameters:
+        - description: The story ID.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only characters matching the specified full character name
+            (e.g. Spider-Man).
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return characters with names that begin with the specified string
+            (e.g. Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only characters which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only characters which appear in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only characters which appear comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CharacterDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic characters appearing in a single story, with
+        optional filters. See notes on individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of characters filtered by a story id.
+  '/v1/public/stories/{storyId}/comics':
+    get:
+      parameters:
+        - description: The story ID.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: 'Filter by the issue format (e.g. comic, digital comic, hardcover).'
+          in: query
+          name: format
+          required: false
+          schema:
+            type: string
+        - description: Filter by the issue format type (comic or collection).
+          in: query
+          name: formatType
+          required: false
+          schema:
+            type: string
+        - description: Exclude variant comics from the result set.
+          in: query
+          name: noVariants
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: Return comics within a predefined date range.
+          in: query
+          name: dateDescriptor
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Return comics within a predefined date range.  Dates must be
+            specified as date1,date2 (e.g. 2013-01-01,2013-01-02).  Dates are
+            preferably formatted as YYYY-MM-DD but may be sent as any common
+            date format.
+          in: query
+          name: dateRange
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Return only issues in series whose title matches the input.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose title starts with the input.
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only issues in series whose start year matches the input.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Return only issues in series whose issue number matches the input.
+          in: query
+          name: issueNumber
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by diamond code.
+          in: query
+          name: diamondCode
+          required: false
+          schema:
+            type: string
+        - description: Filter by digital comic id.
+          in: query
+          name: digitalId
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by UPC.
+          in: query
+          name: upc
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISBN.
+          in: query
+          name: isbn
+          required: false
+          schema:
+            type: string
+        - description: Filter by EAN.
+          in: query
+          name: ean
+          required: false
+          schema:
+            type: string
+        - description: Filter by ISSN.
+          in: query
+          name: issn
+          required: false
+          schema:
+            type: string
+        - description: Include only results which are available digitally.
+          in: query
+          name: hasDigitalIssue
+          required: false
+          schema:
+            items:
+              type: boolean
+            type: array
+        - description: >-
+            Return only comics which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only comics which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics which take place in the specified events (accepts
+            a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified characters appear together
+            (for example in which BOTH Spider-Man and Wolverine appear).
+          in: query
+          name: sharedAppearances
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only comics in which the specified creators worked together
+            (for example in which BOTH Stan Lee and Jack Kirby did work).
+          in: query
+          name: collaborators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ComicDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comics in which a specific story appears, with optional
+        filters. See notes on individual parameters below.
+      operationId: getComicsCollection
+      summary: Fetches lists of comics filtered by a story id.
+  '/v1/public/stories/{storyId}/creators':
+    get:
+      parameters:
+        - description: The story ID.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter by creator first name (e.g. brian).
+          in: query
+          name: firstName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle name (e.g. Michael).
+          in: query
+          name: middleName
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last name (e.g. Bendis).
+          in: query
+          name: lastName
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by suffix or honorific (e.g. Jr., Sr.).'
+          in: query
+          name: suffix
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator names that match critera (e.g. B, St L).'
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: 'Filter by creator first names that match critera (e.g. B, St L).'
+          in: query
+          name: firstNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator middle names that match critera (e.g. Mi).
+          in: query
+          name: middleNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Filter by creator last names that match critera (e.g. Ben).
+          in: query
+          name: lastNameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only creators which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only creators who worked on in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only creators who worked on comics that took place in the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatorDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic creators whose work appears in a specific story,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCreatorCollection
+      summary: Fetches lists of creators filtered by a story id.
+  '/v1/public/stories/{storyId}/events':
+    get:
+      parameters:
+        - description: The story ID.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: Filter the event list by name.
+          in: query
+          name: name
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return events with names that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: nameStartsWith
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only events which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only events which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which are part of the specified series (accepts a
+            comma-separated list of ids).
+          in: query
+          name: series
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only events which take place in the specified comics (accepts
+            a comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of events in which a specific story appears, with optional
+        filters. See notes on individual parameters below.
+      operationId: getEventsCollection
+      summary: Fetches lists of events filtered by a story id.
+  '/v1/public/stories/{storyId}/series':
+    get:
+      parameters:
+        - description: The story ID.
+          in: path
+          name: storyId
+          required: true
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have comics that take place during the
+            specified events (accepts a comma-separated list of ids).
+          in: query
+          name: events
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter by series title.
+          in: query
+          name: title
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return series with titles that begin with the specified string (e.g.
+            Sp).
+          in: query
+          name: titleStartsWith
+          required: false
+          schema:
+            type: string
+        - description: Return only series matching the specified start year.
+          in: query
+          name: startYear
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: >-
+            Return only series which have been modified since the specified
+            date.
+          in: query
+          name: modifiedSince
+          required: false
+          schema:
+            format: date
+            type: string
+        - description: >-
+            Return only series which contain the specified comics (accepts a
+            comma-separated list of ids).
+          in: query
+          name: comics
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature work by the specified creators
+            (accepts a comma-separated list of ids).
+          in: query
+          name: creators
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: >-
+            Return only series which feature the specified characters (accepts a
+            comma-separated list of ids).
+          in: query
+          name: characters
+          required: false
+          schema:
+            items:
+              format: int32
+              type: integer
+            type: array
+        - description: Filter the series by publication frequency type.
+          in: query
+          name: seriesType
+          required: false
+          schema:
+            type: string
+        - description: >-
+            Return only series containing one or more comics with the specified
+            format.
+          in: query
+          name: contains
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: >-
+            Order the result set by a field or fields. Add a "-" to the value
+            sort in descending order. Multiple values are given priority in the
+            order in which they are passed.
+          in: query
+          name: orderBy
+          required: false
+          schema:
+            items:
+              type: string
+            type: array
+        - description: Limit the result set to the specified number of resources.
+          in: query
+          name: limit
+          required: false
+          schema:
+            format: int32
+            type: integer
+        - description: Skip the specified number of resources in the result set.
+          in: query
+          name: offset
+          required: false
+          schema:
+            format: int32
+            type: integer
+      responses:
+        '200':
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SeriesDataWrapper'
+          description: No response was specified
+      description: >-
+        Fetches lists of comic series in which the specified story takes place.
+        See notes on individual parameters below.
+      operationId: getStorySeriesCollection
+      summary: Fetches lists of series filtered by a story id.
+components:
+  schemas:
+    Character:
+      properties:
+        comics:
+          $ref: '#/components/schemas/ComicList'
+          description: A resource list containing comics which feature this character.
+        description:
+          description: A short bio or description of the character.
+          type: string
+        events:
+          $ref: '#/components/schemas/EventList'
+          description: A resource list of events in which this character appears.
+        id:
+          description: The unique ID of the character resource.
+          format: int32
+          type: integer
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        name:
+          description: The name of the character.
+          type: string
+        resourceURI:
+          description: The canonical URL identifier for this resource.
+          type: string
+        series:
+          $ref: '#/components/schemas/SeriesList'
+          description: A resource list of series in which this character appears.
+        stories:
+          $ref: '#/components/schemas/StoryList'
+          description: A resource list of stories in which this character appears.
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this character.
+        urls:
+          description: A set of public web site URLs for the resource.
+          items:
+            $ref: '#/components/schemas/Url'
+          type: array
+      type: object
+    CharacterDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of characters returned by the call.
+          items:
+            $ref: '#/components/schemas/Character'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    CharacterDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/CharacterDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    CharacterList:
+      properties:
+        available:
+          description: >-
+            The number of total available characters in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of characters in this collection.
+          type: string
+        items:
+          description: The list of returned characters in this collection.
+          items:
+            $ref: '#/components/schemas/CharacterSummary'
+          type: array
+        returned:
+          description: The number of characters returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    CharacterSummary:
+      properties:
+        name:
+          description: The full name of the character.
+          type: string
+        resourceURI:
+          description: The path to the individual character resource.
+          type: string
+        role:
+          description: The role of the creator in the parent entity.
+          type: string
+      type: object
+    Comic:
+      properties:
+        characters:
+          $ref: '#/components/schemas/CharacterList'
+          description: >-
+            A resource list containing the characters which appear in this
+            comic.
+        collectedIssues:
+          description: >-
+            A list of issues collected in this comic (will generally be empty
+            for periodical formats such as "comic" or "magazine").
+          items:
+            $ref: '#/components/schemas/ComicSummary'
+          type: array
+        collections:
+          description: >-
+            A list of collections which include this comic (will generally be
+            empty if the comic's format is a collection).
+          items:
+            $ref: '#/components/schemas/ComicSummary'
+          type: array
+        creators:
+          $ref: '#/components/schemas/CreatorList'
+          description: A resource list containing the creators associated with this comic.
+        dates:
+          description: A list of key dates for this comic.
+          items:
+            $ref: '#/components/schemas/ComicDate'
+          type: array
+        description:
+          description: The preferred description of the comic.
+          type: string
+        diamondCode:
+          description: The Diamond code for the comic.
+          type: string
+        digitalId:
+          description: >-
+            The ID of the digital comic representation of this comic. Will be 0
+            if the comic is not available digitally.
+          format: int32
+          type: integer
+        ean:
+          description: The EAN barcode for the comic.
+          type: string
+        events:
+          $ref: '#/components/schemas/EventList'
+          description: A resource list containing the events in which this comic appears.
+        format:
+          description: >-
+            The publication format of the comic e.g. comic, hardcover, trade
+            paperback.
+          type: string
+        id:
+          description: The unique ID of the comic resource.
+          format: int32
+          type: integer
+        images:
+          description: A list of promotional images associated with this comic.
+          items:
+            $ref: '#/components/schemas/Image'
+          type: array
+        isbn:
+          description: >-
+            The ISBN for the comic (generally only populated for collection
+            formats).
+          type: string
+        issn:
+          description: The ISSN barcode for the comic.
+          type: string
+        issueNumber:
+          description: >-
+            The number of the issue in the series (will generally be 0 for
+            collection formats).
+          format: double
+          type: number
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        pageCount:
+          description: The number of story pages in the comic.
+          format: int32
+          type: integer
+        prices:
+          description: A list of prices for this comic.
+          items:
+            $ref: '#/components/schemas/ComicPrice'
+          type: array
+        resourceURI:
+          description: The canonical URL identifier for this resource.
+          type: string
+        series:
+          $ref: '#/components/schemas/SeriesSummary'
+          description: A summary representation of the series to which this comic belongs.
+        stories:
+          $ref: '#/components/schemas/StoryList'
+          description: A resource list containing the stories which appear in this comic.
+        textObjects:
+          description: A set of descriptive text blurbs for the comic.
+          items:
+            $ref: '#/components/schemas/TextObject'
+          type: array
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this comic.
+        title:
+          description: The canonical title of the comic.
+          type: string
+        upc:
+          description: >-
+            The UPC barcode number for the comic (generally only populated for
+            periodical formats).
+          type: string
+        urls:
+          description: A set of public web site URLs for the resource.
+          items:
+            $ref: '#/components/schemas/Url'
+          type: array
+        variantDescription:
+          description: >-
+            If the issue is a variant (e.g. an alternate cover, second printing,
+            or director’s cut), a text description of the variant.
+          type: string
+        variants:
+          description: >-
+            A list of variant issues for this comic (includes the "original"
+            issue if the current issue is a variant).
+          items:
+            $ref: '#/components/schemas/ComicSummary'
+          type: array
+      type: object
+    ComicDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of comics returned by the call
+          items:
+            $ref: '#/components/schemas/Comic'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    ComicDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/ComicDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    ComicDate:
+      properties:
+        date:
+          description: The date.
+          format: date
+          type: string
+        type:
+          description: 'A description of the date (e.g. onsale date, FOC date).'
+          type: string
+      type: object
+    ComicList:
+      properties:
+        available:
+          description: >-
+            The number of total available issues in this list. Will always be
+            greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of issues in this collection.
+          type: string
+        items:
+          description: The list of returned issues in this collection.
+          items:
+            $ref: '#/components/schemas/ComicSummary'
+          type: array
+        returned:
+          description: The number of issues returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    ComicPrice:
+      properties:
+        price:
+          description: The price (all prices in USD).
+          format: float
+          type: number
+        type:
+          description: 'A description of the price (e.g. print price, digital price).'
+          type: string
+      type: object
+    ComicSummary:
+      properties:
+        name:
+          description: The canonical name of the comic.
+          type: string
+        resourceURI:
+          description: The path to the individual comic resource.
+          type: string
+      type: object
+    Creator:
+      properties:
+        comics:
+          $ref: '#/components/schemas/ComicList'
+          description: >-
+            A resource list containing the comics which feature work by this
+            creator.
+        events:
+          $ref: '#/components/schemas/EventList'
+          description: >-
+            A resource list containing the events which feature work by this
+            creator.
+        firstName:
+          description: The first name of the creator.
+          type: string
+        fullName:
+          description: >-
+            The full name of the creator (a space-separated concatenation of the
+            above four fields).
+          type: string
+        id:
+          description: The unique ID of the creator resource.
+          format: int32
+          type: integer
+        lastName:
+          description: The last name of the creator.
+          type: string
+        middleName:
+          description: The middle name of the creator.
+          type: string
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        resourceURI:
+          description: The canonical URL identifier for this resource.
+          type: string
+        series:
+          $ref: '#/components/schemas/SeriesList'
+          description: >-
+            A resource list containing the series which feature work by this
+            creator.
+        stories:
+          $ref: '#/components/schemas/StoryList'
+          description: >-
+            A resource list containing the stories which feature work by this
+            creator.
+        suffix:
+          description: The suffix or honorific for the creator.
+          type: string
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this creator.
+        urls:
+          description: A set of public web site URLs for the resource.
+          items:
+            $ref: '#/components/schemas/Url'
+          type: array
+      type: object
+    CreatorDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of creators returned by the call.
+          items:
+            $ref: '#/components/schemas/Creator'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    CreatorDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/CreatorDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    CreatorList:
+      properties:
+        available:
+          description: >-
+            The number of total available creators in this list. Will always be
+            greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of creators in this collection.
+          type: string
+        items:
+          description: The list of returned creators in this collection.
+          items:
+            $ref: '#/components/schemas/CreatorSummary'
+          type: array
+        returned:
+          description: The number of creators returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    CreatorSummary:
+      properties:
+        name:
+          description: The full name of the creator.
+          type: string
+        resourceURI:
+          description: The path to the individual creator resource.
+          type: string
+        role:
+          description: The role of the creator in the parent entity.
+          type: string
+      type: object
+    Event:
+      properties:
+        characters:
+          $ref: '#/components/schemas/CharacterList'
+          description: >-
+            A resource list containing the characters which appear in this
+            event.
+        comics:
+          $ref: '#/components/schemas/ComicList'
+          description: A resource list containing the comics in this event.
+        creators:
+          $ref: '#/components/schemas/CreatorList'
+          description: >-
+            A resource list containing creators whose work appears in this
+            event.
+        description:
+          description: A description of the event.
+          type: string
+        end:
+          description: The date of publication of the last issue in this event.
+          format: date
+          type: string
+        id:
+          description: The unique ID of the event resource.
+          format: int32
+          type: integer
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        next:
+          $ref: '#/components/schemas/EventSummary'
+          description: A summary representation of the event which follows this event.
+        previous:
+          $ref: '#/components/schemas/EventSummary'
+          description: A summary representation of the event which preceded this event.
+        resourceURI:
+          description: The canonical URL identifier for this resource.
+          type: string
+        series:
+          $ref: '#/components/schemas/SeriesList'
+          description: A resource list containing the series in this event.
+        start:
+          description: The date of publication of the first issue in this event.
+          format: date
+          type: string
+        stories:
+          $ref: '#/components/schemas/StoryList'
+          description: A resource list containing the stories in this event.
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this event.
+        title:
+          description: The title of the event.
+          type: string
+        urls:
+          description: A set of public web site URLs for the event.
+          items:
+            $ref: '#/components/schemas/Url'
+          type: array
+      type: object
+    EventDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of events returned by the call
+          items:
+            $ref: '#/components/schemas/Event'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    EventDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/EventDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    EventList:
+      properties:
+        available:
+          description: >-
+            The number of total available events in this list. Will always be
+            greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of events in this collection.
+          type: string
+        items:
+          description: The list of returned events in this collection.
+          items:
+            $ref: '#/components/schemas/EventSummary'
+          type: array
+        returned:
+          description: The number of events returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    EventSummary:
+      properties:
+        name:
+          description: The name of the event.
+          type: string
+        resourceURI:
+          description: The path to the individual event resource.
+          type: string
+      type: object
+    Image:
+      properties:
+        extension:
+          description: The file extension for the image.
+          type: string
+        path:
+          description: The directory path of to the image.
+          type: string
+      type: object
+    Series:
+      properties:
+        characters:
+          $ref: '#/components/schemas/CharacterList'
+          description: >-
+            A resource list containing characters which appear in comics in this
+            series.
+        comics:
+          $ref: '#/components/schemas/ComicList'
+          description: A resource list containing comics in this series.
+        creators:
+          $ref: '#/components/schemas/CreatorList'
+          description: >-
+            A resource list of creators whose work appears in comics in this
+            series.
+        description:
+          description: A description of the series.
+          type: string
+        endYear:
+          description: >-
+            The last year of publication for the series (conventionally, 2099
+            for ongoing series) .
+          format: int32
+          type: integer
+        events:
+          $ref: '#/components/schemas/EventList'
+          description: >-
+            A resource list containing events which take place in comics in this
+            series.
+        id:
+          description: The unique ID of the series resource.
+          format: int32
+          type: integer
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        next:
+          $ref: '#/components/schemas/SeriesSummary'
+          description: A summary representation of the series which follows this series.
+        previous:
+          $ref: '#/components/schemas/SeriesSummary'
+          description: A summary representation of the series which preceded this series.
+        rating:
+          description: The age-appropriateness rating for the series.
+          type: string
+        resourceURI:
+          description: The canonical URL identifier for this resource.
+          type: string
+        startYear:
+          description: The first year of publication for the series.
+          format: int32
+          type: integer
+        stories:
+          $ref: '#/components/schemas/StoryList'
+          description: >-
+            A resource list containing stories which occur in comics in this
+            series.
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this series.
+        title:
+          description: The canonical title of the series.
+          type: string
+        urls:
+          description: A set of public web site URLs for the resource.
+          items:
+            $ref: '#/components/schemas/Url'
+          type: array
+      type: object
+    SeriesDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of series returned by the call
+          items:
+            $ref: '#/components/schemas/Series'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    SeriesDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/SeriesDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    SeriesList:
+      properties:
+        available:
+          description: >-
+            The number of total available series in this list. Will always be
+            greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of series in this collection.
+          type: string
+        items:
+          description: The list of returned series in this collection.
+          items:
+            $ref: '#/components/schemas/SeriesSummary'
+          type: array
+        returned:
+          description: The number of series returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    SeriesSummary:
+      properties:
+        name:
+          description: The canonical name of the series.
+          type: string
+        resourceURI:
+          description: The path to the individual series resource.
+          type: string
+      type: object
+    Story:
+      properties:
+        characters:
+          $ref: '#/components/schemas/CharacterList'
+          description: A resource list of characters which appear in this story.
+        comics:
+          $ref: '#/components/schemas/ComicList'
+          description: A resource list containing comics in which this story takes place.
+        creators:
+          $ref: '#/components/schemas/CreatorList'
+          description: A resource list of creators who worked on this story.
+        description:
+          description: A short description of the story.
+          type: string
+        events:
+          $ref: '#/components/schemas/EventList'
+          description: A resource list of the events in which this story appears.
+        id:
+          description: The unique ID of the story resource.
+          format: int32
+          type: integer
+        modified:
+          description: The date the resource was most recently modified.
+          format: date
+          type: string
+        originalissue:
+          $ref: '#/components/schemas/ComicSummary'
+          description: >-
+            A summary representation of the issue in which this story was
+            originally published.
+        resourceURI:
+          description: 'The canonical URL identifier for this resource. '
+          type: string
+        series:
+          $ref: '#/components/schemas/SeriesList'
+          description: A resource list containing series in which this story appears.
+        thumbnail:
+          $ref: '#/components/schemas/Image'
+          description: The representative image for this story.
+        title:
+          description: The story title.
+          type: string
+        type:
+          description: 'The story type e.g. interior story, cover, text story.'
+          type: string
+      type: object
+    StoryDataContainer:
+      properties:
+        count:
+          description: The total number of results returned by this call.
+          format: int32
+          type: integer
+        limit:
+          description: The requested result limit.
+          format: int32
+          type: integer
+        offset:
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+          type: integer
+        results:
+          description: The list of stories returned by the call
+          items:
+            $ref: '#/components/schemas/Story'
+          type: array
+        total:
+          description: >-
+            The total number of resources available given the current filter
+            set.
+          format: int32
+          type: integer
+      type: object
+    StoryDataWrapper:
+      properties:
+        attributionHTML:
+          description: >-
+            An HTML representation of the attribution notice for this result. 
+            Please display either this notice or the contents of the
+            attributionText field on all screens which contain data from the
+            Marvel Comics API.
+          type: string
+        attributionText:
+          description: >-
+            The attribution notice for this result.  Please display either this
+            notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+          type: string
+        code:
+          description: The HTTP status code of the returned result.
+          format: int32
+          type: integer
+        copyright:
+          description: The copyright notice for the returned result.
+          type: string
+        data:
+          $ref: '#/components/schemas/StoryDataContainer'
+          description: The results returned by the call.
+        etag:
+          description: A digest value of the content returned by the call.
+          type: string
+        status:
+          description: A string description of the call status.
+          type: string
+      type: object
+    StoryList:
+      properties:
+        available:
+          description: >-
+            The number of total available stories in this list. Will always be
+            greater than or equal to the "returned" value.
+          format: int32
+          type: integer
+        collectionURI:
+          description: The path to the full list of stories in this collection.
+          type: string
+        items:
+          description: The list of returned stories in this collection.
+          items:
+            $ref: '#/components/schemas/StorySummary'
+          type: array
+        returned:
+          description: The number of stories returned in this collection (up to 20).
+          format: int32
+          type: integer
+      type: object
+    StorySummary:
+      properties:
+        name:
+          description: The canonical name of the story.
+          type: string
+        resourceURI:
+          description: The path to the individual story resource.
+          type: string
+        type:
+          description: The type of the story (interior or cover).
+          type: string
+      type: object
+    TextObject:
+      properties:
+        language:
+          description: >-
+            The IETF language tag denoting the language the text object is
+            written in.
+          type: string
+        text:
+          description: The text.
+          type: string
+        type:
+          description: >-
+            The canonical type of the text object (e.g. solicit text, preview
+            text, etc.).
+          type: string
+      type: object
+    Url:
+      properties:
+        type:
+          description: A text identifier for the URL.
+          type: string
+        url:
+          description: 'A full URL (including scheme, domain, and path).'
+          type: string
+      type: object

@@ -1,5 +1,5 @@
-# dlt-openapi
-`dlt-openapi` generates [`dlt`](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents/specs using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know `dlt` or our `verified sources`, please read:
+# dlt-init-openapi
+`dlt-init-openapi` generates [`dlt`](https://dlthub.com/docs) pipelines from OpenAPI 3.x documents/specs using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api). If you do not know `dlt` or our `verified sources`, please read:
 
 * [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics
 * [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our `rest_api` source works
@@ -13,7 +13,7 @@ This project started as a fork of [openapi-python-client](https://github.com/ope
 
 
 ## Features
-The dlt-openapi generates code from an OpenAPI spec that you can use to extract data from a `rest_api` into any [`destination`](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. Postgres, BigQuery, Redshift...) `dlt` supports.
+The dlt-init-openapi generates code from an OpenAPI spec that you can use to extract data from a `rest_api` into any [`destination`](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. Postgres, BigQuery, Redshift...) `dlt` supports.
 
 Features include
 
@@ -29,7 +29,7 @@ You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.
 
 ```console
 # 1. Checkout this repository locally
-$ git clone git@github.com:dlt-hub/dlt-openapi.git
+$ git clone git@github.com:dlt-hub/dlt-init-openapi.git
 
 # 2. Install required poetry dependencies
 $ poetry install
@@ -43,8 +43,8 @@ $ poetry shell
 Let's create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenAPI Spec instead if you like.
 
 ```console
-# 1. Run the generator with the dlt-openapi init command:
-$ dlt-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+# 1. Run the generator with the dlt-init-openapi init command:
+$ dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
 # 2. You can now pick the endpoints you need from the popup
 
@@ -90,14 +90,14 @@ $ dlt-init init pokemon --path ./path/to/my_spec.yml
 
 - `init`: Generate a new `dlt` `rest_api` `source`
 
-### `dlt-openapi init`
+### `dlt-init-openapi init`
 
 Generate a new `dlt` `rest_api` `source`
 
 **Usage**:
 
 ```console
-$ dlt-openapi init pokemon --path ./path/to/my_spec.yml
+$ dlt-init-openapi init pokemon --path ./path/to/my_spec.yml
 ```
 
 **Options**:
@@ -111,7 +111,7 @@ $ dlt-openapi init pokemon --path ./path/to/my_spec.yml
 - `--help`: Show this message and exit.
 
 ## Config options
-You can pass a path to a config file with the `--config PATH` argument. To see available config values, go to https://github.com/dlt-hub/dlt-openapi/blob/master/dlt_openapi/config.py and read the information below each field on the `Config` class.
+You can pass a path to a config file with the `--config PATH` argument. To see available config values, go to https://github.com/dlt-hub/dlt-init-openapi/blob/master/dlt_init_openapi/config.py and read the information below each field on the `Config` class.
 
 The config file can be supplied as json or yaml dictionary. For example to change the package name, you can create a yaml file:
 
@@ -123,7 +123,7 @@ package_name: "other_package_name"
 And use it with the config argument:
 
 ```console
-$ dlt-openapi init pokemon --url ... --config config.yml
+$ dlt-init-openapi init pokemon --url ... --config config.yml
 ```
 
 ## Implementation notes

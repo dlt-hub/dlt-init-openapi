@@ -1,0 +1,7 @@
+[runtime]
+log_level="WARNING"
+
+[sources]
+# Base URL for the API
+base_url = "https://hacker-news.firebaseio.com/v0"
+

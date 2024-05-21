@@ -5,7 +5,7 @@ update-rest-api:
 	poetry run python dlt_init_openapi/utils/update_rest_api.py
 
 dev:
-	poetry install
+	poetry install --all-extras
 
 # lint
 lint: update-rest-api

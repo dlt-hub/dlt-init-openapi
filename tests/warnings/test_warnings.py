@@ -1,6 +1,6 @@
-from dlt_openapi.config import Config
-from dlt_openapi.detector.base_detector import GLOBAL_WARNING_KEY
-from dlt_openapi.detector.default.warnings import (
+from dlt_init_openapi.config import Config
+from dlt_init_openapi.detector.base_detector import GLOBAL_WARNING_KEY
+from dlt_init_openapi.detector.default.warnings import (
     DataResponseNoBodyWarning,
     DataResponseUndetectedWarning,
     PrimaryKeyNotFoundWarning,

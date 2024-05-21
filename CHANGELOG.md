@@ -1,4 +1,4 @@
-[Go to GitHub Releases](https://github.com/dlt-hub/dlt-openapi/releases)
+[Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
 0.0.2
 * Add warnings to logger for certain scenarios

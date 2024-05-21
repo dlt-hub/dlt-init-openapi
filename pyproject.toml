@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "dlt-openapi"
-version = "0.0.2"
+name = "dlt-init-openapi"
+version = "0.0.4"
 description = "Generate dlt Python clients from OpenAPI"
-repository = "https://github.com/dlt-hub/dlt-openapi"
+repository = "https://github.com/dlt-hub/dlt-init-openapi"
 license = "MIT"
 keywords=["OpenAPI", "Client", "Generator"]
 authors = ["Dylan Anthony <danthony@triaxtec.com>"]
@@ -14,9 +14,9 @@ classifiers = [
 ]
 readme = "README.md"
 packages = [
-    {include = "dlt_openapi"},
+    {include = "dlt_init_openapi"},
 ]
-include = ["CHANGELOG.md", "dlt_openapi/py.typed"]
+include = ["CHANGELOG.md", "dlt_init_openapi/py.typed"]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.13"
@@ -46,7 +46,7 @@ loguru = "^0.7.2"
 types-requests = "^2.31.0.20240406"
 
 [tool.poetry.scripts]
-dlt-openapi = "dlt_openapi.cli:app"
+dlt-init-openapi = "dlt_init_openapi.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
@@ -66,23 +66,23 @@ check = """
 isort .\
  && black .\
  && poetry export -f requirements.txt | poetry run safety check --bare --stdin\
- && mypy dlt_openapi\
- && flake8 dlt_openapi\
- && TASKIPY=true pytest --cov dlt_openapi tests --cov-report=term-missing --basetemp=tests/tmp\
+ && mypy dlt_init_openapi\
+ && flake8 dlt_init_openapi\
+ && TASKIPY=true pytest --cov dlt_init_openapi tests --cov-report=term-missing --basetemp=tests/tmp\
  && rm -r tests/tmp\
 """
 regen = """
 task regen_e2e\
 && task regen_integration\
 """
-e2e = "pytest dlt_openapi end_to_end_tests/test_end_to_end.py"
+e2e = "pytest dlt_init_openapi end_to_end_tests/test_end_to_end.py"
 re = """
 task regen\
 && task e2e\
 """
 regen_e2e = "python -m end_to_end_tests.regen_golden_record"
 regen_integration = """
-dlt-openapi update --url https://raw.githubusercontent.com/openapi-generators/openapi-test-server/main/openapi.json --config integration-tests-config.yaml\
+dlt-init-openapi update --url https://raw.githubusercontent.com/openapi-generators/openapi-test-server/main/openapi.json --config integration-tests-config.yaml\
 && mypy integration-tests --strict
 """
 
@@ -96,7 +96,7 @@ exclude = '''
     | \.venv
     | env
     | \.mypy_cache
-    | dlt_openapi/templates
+    | dlt_init_openapi/templates
     | tests/test_templates
     | end_to_end_tests/test_custom_templates
     | end_to_end_tests/golden-record-custom
@@ -110,7 +110,7 @@ profile = "black"
 skip = [".venv", "tests/test_templates", "integration-tests", "env"]
 
 [tool.coverage.run]
-omit = ["dlt_openapi/templates/*"]
+omit = ["dlt_init_openapi/templates/*"]
 
 
 [tool.mypy]

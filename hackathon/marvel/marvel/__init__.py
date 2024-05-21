@@ -80,6 +80,11 @@ def marvel_source(
                     "path": "/v1/public/comics",
                     "params": {
                         **auth_params,
+                        "modifiedSince": {
+                            "type": "incremental",
+                            "cursor_path": "modified",
+                            "initial_value": "2010-08-21T17:11:27-0400"
+                        }
                         # "format": "FILL_ME_IN", # TODO: fill in query parameter
                         # "formatType": "FILL_ME_IN", # TODO: fill in query parameter
                         # "noVariants": "FILL_ME_IN", # TODO: fill in query parameter

@@ -61,8 +61,11 @@ jobs:
       - name: Install dependencies
         run: make dev
 
-      - name: Run make test
-        run: make test
+      - name: Run fast tests
+        run: make test-fast
+
+      - name: Run slow tests
+        run: make test-slow
 
       # TODO: the below does one full e2e test, make this a 
       # bit more generic and run a couple of these

@@ -30,6 +30,9 @@ test: update-rest-api
 test-fast: update-rest-api
 	poetry run pytest tests -m "not slow" --ignore=tests/e2e
 
+test-slow: update-rest-api
+	poetry run pytest tests -m "slow" --ignore=tests/e2e
+
 # dev helpers
 create-pokemon-pipeline:
 	poetry run dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml --no-interactive

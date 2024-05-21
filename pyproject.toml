@@ -44,8 +44,8 @@ dlt-init-openapi = "dlt_init_openapi.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
-pytest = "*"
-pytest-mock = "*"
+pytest = "^7.0.0"
+pytest-mock = "^3.14.0"
 mypy = "*"
 pytest-cov = "*"
 python-multipart = "*"

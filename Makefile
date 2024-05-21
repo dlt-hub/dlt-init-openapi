@@ -5,7 +5,7 @@ update-rest-api:
 	poetry run python dlt_init_openapi/utils/update_rest_api.py
 
 dev:
-	poetry install
+	poetry install --all-extras
 
 # lint
 lint: update-rest-api
@@ -29,6 +29,9 @@ test: update-rest-api
 # test without running all the specs through a source
 test-fast: update-rest-api
 	poetry run pytest tests -m "not slow" --ignore=tests/e2e
+
+test-slow: update-rest-api
+	poetry run pytest tests -m "slow" --ignore=tests/e2e
 
 # dev helpers
 create-pokemon-pipeline:

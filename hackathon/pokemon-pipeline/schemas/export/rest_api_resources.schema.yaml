@@ -1,0 +1,581 @@
+version: 2
+version_hash: S2JIoSgCAse/XYJX86PIPLXJVc2Kra4TXSIPh/4P460=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  pokemon:
+    columns:
+      base_experience:
+        data_type: bigint
+        nullable: true
+      cries__latest:
+        data_type: text
+        nullable: true
+      cries__legacy:
+        data_type: text
+        nullable: true
+      height:
+        data_type: bigint
+        nullable: true
+      id:
+        nullable: false
+        primary_key: true
+        data_type: bigint
+      is_default:
+        data_type: bool
+        nullable: true
+      location_area_encounters:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      order:
+        data_type: bigint
+        nullable: true
+      species__name:
+        data_type: text
+        nullable: true
+      species__url:
+        data_type: text
+        nullable: true
+      sprites__back_default:
+        data_type: text
+        nullable: true
+      sprites__back_shiny:
+        data_type: text
+        nullable: true
+      sprites__front_default:
+        data_type: text
+        nullable: true
+      sprites__front_shiny:
+        data_type: text
+        nullable: true
+      sprites__other__dream_world:
+        data_type: complex
+        nullable: true
+      sprites__other__home:
+        data_type: complex
+        nullable: true
+      sprites__other__official_artwork:
+        data_type: complex
+        nullable: true
+      sprites__other__showdown:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_i:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_ii:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_iii:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_iv:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_v:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_vi:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_vii:
+        data_type: complex
+        nullable: true
+      sprites__versions__generation_viii:
+        data_type: complex
+        nullable: true
+      weight:
+        data_type: bigint
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      sprites__back_female:
+        data_type: text
+        nullable: true
+      sprites__back_shiny_female:
+        data_type: text
+        nullable: true
+      sprites__front_female:
+        data_type: text
+        nullable: true
+      sprites__front_shiny_female:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+    write_disposition: merge
+    resource: pokemon_read
+    x-merge-strategy: delete-insert
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+  pokemon__abilities:
+    columns:
+      ability__name:
+        data_type: text
+        nullable: true
+      ability__url:
+        data_type: text
+        nullable: true
+      is_hidden:
+        data_type: bool
+        nullable: true
+      slot:
+        data_type: bigint
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__forms:
+    columns:
+      name:
+        data_type: text
+        nullable: true
+      url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__game_indices:
+    columns:
+      game_index:
+        data_type: bigint
+        nullable: true
+      version__name:
+        data_type: text
+        nullable: true
+      version__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__moves:
+    columns:
+      move__name:
+        data_type: text
+        nullable: true
+      move__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__moves__version_group_details:
+    columns:
+      level_learned_at:
+        data_type: bigint
+        nullable: true
+      move_learn_method:
+        data_type: complex
+        nullable: true
+      version_group:
+        data_type: complex
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon__moves
+    x-normalizer:
+      seen-data: true
+  pokemon__stats:
+    columns:
+      base_stat:
+        data_type: bigint
+        nullable: true
+      effort:
+        data_type: bigint
+        nullable: true
+      stat__name:
+        data_type: text
+        nullable: true
+      stat__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__types:
+    columns:
+      slot:
+        data_type: bigint
+        nullable: true
+      type__name:
+        data_type: text
+        nullable: true
+      type__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__held_items:
+    columns:
+      item__name:
+        data_type: text
+        nullable: true
+      item__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__held_items__version_details:
+    columns:
+      rarity:
+        data_type: bigint
+        nullable: true
+      version:
+        data_type: complex
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon__held_items
+    x-normalizer:
+      seen-data: true
+  pokemon__past_types:
+    columns:
+      generation__name:
+        data_type: text
+        nullable: true
+      generation__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__past_types__types:
+    columns:
+      slot:
+        data_type: bigint
+        nullable: true
+      type:
+        data_type: complex
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon__past_types
+    x-normalizer:
+      seen-data: true
+  pokemon__past_abilities:
+    columns:
+      generation__name:
+        data_type: text
+        nullable: true
+      generation__url:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon
+    x-normalizer:
+      seen-data: true
+  pokemon__past_abilities__abilities:
+    columns:
+      ability:
+        data_type: complex
+        nullable: true
+      is_hidden:
+        data_type: bool
+        nullable: true
+      slot:
+        data_type: bigint
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: pokemon__past_abilities
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+      propagation:
+        tables:
+          pokemon:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- cJ42x73wKmhhDewVGM4QcWsghWvbpl5sRdvTvGY2z2U=
+- DdrOuwwjQ6dr/4V6D7B37B9CQ8zLh5botwmShGHkIqo=

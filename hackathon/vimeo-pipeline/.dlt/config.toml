@@ -1,0 +1,8 @@
+[runtime]
+log_level="INFO"
+
+[sources]
+# Base URL for the API
+# Vimeo.com
+base_url = "https://api.vimeo.com"
+

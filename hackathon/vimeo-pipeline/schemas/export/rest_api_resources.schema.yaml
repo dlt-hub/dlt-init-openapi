@@ -1,0 +1,279 @@
+version: 2
+version_hash: /8/QE9QwRsO/9XQi1T+6CarBMU/UO2oi4Xqnpxqr0QY=
+engine_version: 9
+name: rest_api_resources
+tables:
+  _dlt_version:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: false
+      schema:
+        data_type: text
+        nullable: false
+    write_disposition: skip
+    description: Created by DLT. Tracks schema updates
+  _dlt_loads:
+    columns:
+      load_id:
+        data_type: text
+        nullable: false
+      schema_name:
+        data_type: text
+        nullable: true
+      status:
+        data_type: bigint
+        nullable: false
+      inserted_at:
+        data_type: timestamp
+        nullable: false
+      schema_version_hash:
+        data_type: text
+        nullable: true
+    write_disposition: skip
+    description: Created by DLT. Tracks completed loads
+  category:
+    columns:
+      uri:
+        nullable: false
+        primary_key: true
+        data_type: text
+      name:
+        data_type: text
+        nullable: true
+      link:
+        data_type: text
+        nullable: true
+      top_level:
+        data_type: bool
+        nullable: true
+      is_deprecated:
+        data_type: bool
+        nullable: true
+      pictures__uri:
+        data_type: text
+        nullable: true
+      pictures__active:
+        data_type: bool
+        nullable: true
+      pictures__type:
+        data_type: text
+        nullable: true
+      pictures__base_link:
+        data_type: text
+        nullable: true
+      pictures__resource_key:
+        data_type: text
+        nullable: true
+      pictures__default_picture:
+        data_type: bool
+        nullable: true
+      last_video_featured_time:
+        data_type: timestamp
+        nullable: true
+      metadata__connections__channels:
+        data_type: complex
+        nullable: true
+      metadata__connections__groups:
+        data_type: complex
+        nullable: true
+      metadata__connections__users:
+        data_type: complex
+        nullable: true
+      metadata__connections__videos:
+        data_type: complex
+        nullable: true
+      resource_key:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+      icon__uri:
+        data_type: text
+        nullable: true
+      icon__active:
+        data_type: bool
+        nullable: true
+      icon__type:
+        data_type: text
+        nullable: true
+      icon__base_link:
+        data_type: text
+        nullable: true
+      icon__resource_key:
+        data_type: text
+        nullable: true
+      icon__default_picture:
+        data_type: bool
+        nullable: true
+    write_disposition: merge
+    resource: get_category
+    x-merge-strategy: delete-insert
+    x-normalizer:
+      seen-data: true
+  _dlt_pipeline_state:
+    columns:
+      version:
+        data_type: bigint
+        nullable: false
+      engine_version:
+        data_type: bigint
+        nullable: false
+      pipeline_name:
+        data_type: text
+        nullable: false
+      state:
+        data_type: text
+        nullable: false
+      created_at:
+        data_type: timestamp
+        nullable: false
+      version_hash:
+        data_type: text
+        nullable: true
+      _dlt_load_id:
+        data_type: text
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    write_disposition: append
+    x-normalizer:
+      seen-data: true
+  category__pictures__sizes:
+    columns:
+      width:
+        data_type: bigint
+        nullable: true
+      height:
+        data_type: bigint
+        nullable: true
+      link:
+        data_type: text
+        nullable: true
+      link_with_play_button:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: category
+    x-normalizer:
+      seen-data: true
+  category__subcategories:
+    columns:
+      uri:
+        data_type: text
+        nullable: true
+      name:
+        data_type: text
+        nullable: true
+      link:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: category
+    x-normalizer:
+      seen-data: true
+  category__icon__sizes:
+    columns:
+      width:
+        data_type: bigint
+        nullable: true
+      height:
+        data_type: bigint
+        nullable: true
+      link:
+        data_type: text
+        nullable: true
+      _dlt_root_id:
+        data_type: text
+        nullable: false
+        root_key: true
+      _dlt_parent_id:
+        data_type: text
+        nullable: false
+        foreign_key: true
+      _dlt_list_idx:
+        data_type: bigint
+        nullable: false
+      _dlt_id:
+        data_type: text
+        nullable: false
+        unique: true
+    parent: category
+    x-normalizer:
+      seen-data: true
+settings:
+  detections:
+  - iso_timestamp
+  default_hints:
+    not_null:
+    - _dlt_id
+    - _dlt_root_id
+    - _dlt_parent_id
+    - _dlt_list_idx
+    - _dlt_load_id
+    foreign_key:
+    - _dlt_parent_id
+    root_key:
+    - _dlt_root_id
+    unique:
+    - _dlt_id
+normalizers:
+  names: snake_case
+  json:
+    module: dlt.common.normalizers.json.relational
+    config:
+      max_nesting: 2
+      propagation:
+        tables:
+          category:
+            _dlt_id: _dlt_root_id
+previous_hashes:
+- b8s2nyfMxJ6PFZr6YMaRJGCwjAiHTjh12zyIRg4wTYg=
+- 7B7QM19Y3u40xh1ofUjehGIp8+dtzi7zpTrS5EJT6RA=

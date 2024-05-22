@@ -74,7 +74,7 @@ def init(
     )
 
 
-@utils.track_command("init-openapi", False, "source")
+@utils.track_command("init-openapi", False, "source", "url", "path")
 def _init_command_wrapped(
     source: str,
     url: Optional[str] = None,

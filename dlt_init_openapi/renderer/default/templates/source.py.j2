@@ -84,6 +84,9 @@ def {{ source_name }}(
                     {% endfor %}
                 },
                 {% endif %}
+                {% if endpoint.render_auto_paginator %}
+                "paginator": "auto",
+                {% endif %}
             }
         },
         {% endfor %}

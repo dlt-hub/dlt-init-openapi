@@ -96,6 +96,11 @@ class Endpoint:
         if self.detected_pagination == self.detected_global_pagination:
             return None
         return self.detected_pagination.paginator_config if self.detected_pagination else None
+    
+    @property
+    def render_auto_paginator(self) -> Optional[Dict[str, Union[str, int]]]:
+        """if we could not figure out the paginator, set it to auto"""
+        return not (self.detected_pagination)
 
     @property
     def data_json_path(self) -> str:

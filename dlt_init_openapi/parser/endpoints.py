@@ -100,6 +100,10 @@ class Endpoint:
     @property
     def render_auto_paginator(self) -> bool:
         """if we could not figure out the paginator, set it to auto"""
+        # we do not set auto if there is a global paginator, this is a bug in the underlying layer, we have to fix this
+        # once rest_api is fixed
+        if self.detected_global_pagination:
+            return False
         return not (self.detected_pagination)
 
     @property

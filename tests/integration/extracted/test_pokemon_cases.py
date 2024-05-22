@@ -72,7 +72,7 @@ def test_simple_child_table_poke_load() -> None:
         "primary_key": "id",
         "write_disposition": "merge",
         "endpoint": {
-            "paginator": "auto",
+            # "paginator": "auto",
             "path": "/api/v2/pokemon/{name}/",
             "data_selector": "$",
             "params": {

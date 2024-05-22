@@ -98,8 +98,17 @@ class Endpoint:
         return self.detected_pagination.paginator_config if self.detected_pagination else None
 
     @property
+    def render_auto_paginator(self) -> bool:
+        """if we could not figure out the paginator, set it to auto"""
+        # we do not set auto if there is a global paginator, this is a bug in the underlying layer, we have to fix this
+        # once rest_api is fixed
+        if self.detected_global_pagination:
+            return False
+        return not (self.detected_pagination)
+
+    @property
     def data_json_path(self) -> str:
-        return self.payload.json_path if self.payload else "$"
+        return self.payload.json_path if self.payload else None
 
     @property
     def transformer(self) -> Optional[TransformerSetting]:

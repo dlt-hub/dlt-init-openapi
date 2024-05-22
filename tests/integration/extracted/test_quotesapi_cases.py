@@ -23,7 +23,6 @@ def test_simple_quotesapi_load() -> None:
         "name": "list",
         "table_name": "list",
         "endpoint": {
-            "data_selector": "$",
             "path": "/quote/list",
         },
     }

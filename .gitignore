@@ -37,3 +37,6 @@ tests/_local/
 !hackathon/*-pipeline/
 !hackathon/*_pipeline/
 rest_api
+
+*.duckdb
+secrets.toml

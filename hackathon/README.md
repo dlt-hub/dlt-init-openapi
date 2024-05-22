@@ -1,39 +1,100 @@
-# OpenAPI Generator Hackathon!
+# Google BigQuery source
 
-Welcome to our OpenAPI Generator Hackathon. We want to test how well our generator works. This includes testing the quality of the main repo's README.md file as well as the output and usage of the CLI. To complete the hackathon, simply follow these steps:
+## Feedback
 
-1. **Select an API** you wish to get data from, which has an OpenAPI spec. We have collected a bunch of specs in [this repo](https://github.com/dlt-hub/openapi-specs/tree/main/open_api_specs) which you can use, but any other will do. Do not forget you might need credentials to get data, so select something you have credentials for.
+### Pipeline didn't run
+I couldn't figure out where I should be passing the access token. The generated config had "access_token" as a parameter, but pasting the token here didn't work.
 
-2. **Create and run a pipeline** by following the steps outlined in the main readme of this repo (visible at https://github.com/dlt-hub/dlt-init-openapi) to generate and run a pipeline. Please **generate and run your pipeline from this hackathon folder** in this repo. Read additional docs as linked in the readme if something is unclear.
+Stack trace:
+```
+2024-05-22 14:15:57,304|[INFO                 ]|8304|15720|dlt|pipeline.py|_restore_state_from_destination:1414|The state was restored from the destination duckdb(dlt.destinations.duckdb):google_bigquery_data
+2024-05-22 14:15:57,360|[INFO                 ]|8304|15720|dlt|client.py|_send_request:128|Making GET request to https://bigquery.googleapis.com/bigquery/v2/projects with params={'pageToken': 0}, json=None
 
-3. **Make notes!** A couple of questions for inspiration are listed below. Positive feedback is also useful, as it indicates to us which parts work well and should not be changed too much or removed.
+Traceback (most recent call last):
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\extract\pipe_iterator.py", line 275, in _get_source_item
+    pipe_item = next(gen)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\hackathon\google_bigquery-pipeline\rest_api\__init__.py", line 263, in paginate_resource
+    yield from client.paginate(
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\sources\helpers\rest_client\client.py", line 211, in paginate
+    response = self._send_request(request)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\sources\helpers\rest_client\client.py", line 135, in _send_request
+    return self.session.send(prepared_request)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\requests\sessions.py", line 710, in send        
+    r = dispatch_hook("response", hooks, r, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\requests\hooks.py", line 30, in dispatch_hook   
+    _hook_data = hook(hook_data, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\sources\helpers\rest_client\client.py", line 197, in raise_for_status
+    response.raise_for_status()
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://bigquery.googleapis.com/bigquery/v2/projects?pageToken=0
 
-4. **Create a PR** on this repo which includes your generated files and the original spec (or a link to the original spec). Add all your notes in the PR comments.
+The above exception was the direct cause of the following exception:
 
-5. **That's it**, thanks for helping out :)
+Traceback (most recent call last):
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 431, in extract 
+    self._extract_source(extract_step, source, max_parallel_items, workers)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 1105, in _extract_source
+    load_id = extract.extract(source, max_parallel_items, workers)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\extract\extract.py", line 397, in extract   
+    self._extract_single_source(
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\extract\extract.py", line 326, in _extract_single_source
+    for pipe_item in pipes:
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\extract\pipe_iterator.py", line 159, in __next__
+    pipe_item = self._get_source_item()
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\extract\pipe_iterator.py", line 306, in _get_source_item
+    raise ResourceExtractionError(pipe.name, gen, str(ex), "generator") from ex
+dlt.extract.exceptions.ResourceExtractionError: In processing pipe bigquery_projects_list: extraction of resource bigquery_projects_list in generator paginate_resource caused an exception: 401 Client Error: Unauthorized for url: https://bigquery.googleapis.com/bigquery/v2/projects?pageToken=0       
 
-## Questions
+The above exception was the direct cause of the following exception:
 
-You can give us any notes you like. If you do not know what to write in your notes, here are some questions you can think about while creating the notes.
+Traceback (most recent call last):
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\hackathon\google_bigquery-pipeline\pipeline.py", line 15, in <module> 
+    info = pipeline.run(source)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 222, in _wrap   
+    step_info = f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 267, in _wrap   
+    return f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 673, in run     
+    self.extract(
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 222, in _wrap   
+    step_info = f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 176, in _wrap   
+    rv = f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 162, in _wrap   
+    return f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 267, in _wrap   
+    return f(self, *args, **kwargs)
+  File "C:\Users\rahul\OneDrive\Desktop\Work\openapi_hackathon\dlt-init-openapi\env\lib\site-packages\dlt\pipeline\pipeline.py", line 446, in extract 
+    raise PipelineStepFailed(
+dlt.pipeline.exceptions.PipelineStepFailed: Pipeline execution failed at stage extract when processing package 1716380157.3405726 with exception:     
 
-1. Is it clear why we have created this, why it is useful, and what it is about?
+<class 'dlt.extract.exceptions.ResourceExtractionError'>
+In processing pipe bigquery_projects_list: extraction of resource bigquery_projects_list in generator paginate_resource caused an exception: 401 Client Error: Unauthorized for url: https://bigquery.googleapis.com/bigquery/v2/projects?pageToken=0
+```
 
-2. Is it clear how the generator works? Did you manage to generate anything in the first 10 minutes after selecting a spec? What is missing from the setup instructions or the output of the generator?
+It was also not clear to me how I should define the `secrets.toml` section. I tried `[source.google_bigquery.credentials]`, `[source.rest_api.credentials]`, `[source.credentials]`. This is not a big problem, since I could anyway pass the token to by script using `dlt.secrets.value`, but it would be nice to have a template.
 
-3. Is the resulting dlt rest_api source legible? Should it be structured differently or annotated with comments better?
 
-4. Could you run the pipeline after generation? Did it produce some data?
+**Note**: The access token is valid. I was able to successfully execute this function by manually passing the access token in a python function 
+```
+def list_projects(access_token):
+    url = "https://bigquery.googleapis.com/bigquery/v2/projects"
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        projects = response.json().get('projects', [])
+        for project in projects:
+            print(f"Project ID: {project['id']}, Project Name: {project['friendlyName']}")
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.json())
+```
 
-5. If something failed, was the reason for the failure clear? What error message would have been better?
+### Debugging
 
-6. Was anything incorrectly converted from the spec to the rest_api definition although it is clear how it should have been generated? If so, which section and what should have been produced?
+Not really an actionable, but just an insight based on my usage:
 
-7. Are there any settings, options, or commands you are missing from the tool?
-
-## Notes
-
-* OAuth currently is not supported.
-
-* If you need better logging output while **running** the pipeline (after generating it), you can increase the dlt log level as described in the [docs](https://dlthub.com/docs/running-in-production/running#set-the-log-level-and-format).
-
-* Problems that happen during running of the pipeline may actually be stuff to fix in the rest_api or REST client, but you can add all of this feedback to this hackathon and we will figure out what goes where.
+I like the idea behind the open api generator, but I find it less customizable. Usually when I have errors when using a source, I am able to go inside the code, play with it, and find a workaround to get the pipeline to run. But with the rest_api source, there is only the api config, and if you're very familiar with REST API then the source code can be hard to debug and modify.

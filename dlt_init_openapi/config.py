@@ -7,6 +7,8 @@ from typing import Any, List, Optional
 import yaml
 from pydantic import BaseModel
 
+from dlt_init_openapi.utils.misc import snake_case
+
 from .typing import TEndpointFilter
 
 REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../rest_api")
@@ -31,8 +33,10 @@ class Config(BaseModel):
     """HTTP methods to render from OpenAPI spec"""
     fallback_openapi_title: str = "openapi"
     """Fallback title when openapi info.title is missing or empty"""
-    project_folder_suffix: str = "-pipeline"
+    project_folder_suffix: str = "_pipeline"
     """Suffix for project name"""
+    pipeline_file_suffix: str = "_pipeline.py"
+    """Suffix for pipeline file name"""
     dataset_name_suffix: str = "_data"
     """Suffix for dataset"""
     endpoint_filter: Optional[TEndpointFilter] = None
@@ -50,16 +54,22 @@ class Config(BaseModel):
 
     # internal, do not set via config file
     project_dir: Path = None
+    pipeline_file_name: str = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Config, self).__init__(*args, **kwargs)
         self.prepare()
 
     def prepare(self) -> None:
+        # normalize a couple of vars
+        self.project_name = snake_case(self.project_name)
+        self.package_name = snake_case(self.package_name)
+
         if self.project_name and self.project_folder_suffix:
             base_dir = Path.cwd() if not self.output_path else Path.cwd() / self.output_path
             project_folder = self.project_name + self.project_folder_suffix
             self.project_dir = base_dir / project_folder
+            self.pipeline_file_name = self.project_name + self.pipeline_file_suffix
 
     @staticmethod
     def load_from_path(path: Path, *args: Any, **kwargs: Any) -> "Config":

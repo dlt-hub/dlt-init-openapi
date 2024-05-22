@@ -139,7 +139,7 @@ class DefaultRenderer(BaseRenderer):
         )
 
     def _build_pipeline(self) -> None:
-        module_path = self.config.project_dir / "pipeline.py"
+        module_path = self.config.project_dir / self.config.pipeline_file_name
 
         template = self.env.get_template("pipeline.py.j2")
         module_path.write_text(

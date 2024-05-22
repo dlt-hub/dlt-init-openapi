@@ -38,5 +38,5 @@ def test_load_from_path(tmp_path: Path, filename, dump, relative):
     yml_file.write_text(dump(data))
 
     config = Config.load_from_path(yml_file)
-    assert config.project_name == "project-name"
+    assert config.project_name == "project_name"
     assert config.package_name == "package_name"

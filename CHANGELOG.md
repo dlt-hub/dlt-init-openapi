@@ -1,5 +1,13 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+0.0.5a2
+* Better fallbacks for paginator and json_path if detection failed
+* Add telemetry on init command
+* Sanitze and snake case folders and files output
+
+0.0.5a1
+* pypi package and rename, pyproject fixes 0.0.5a1 pypi release
+
 0.0.4
 * Project rename to dlt-init-openapi
 * Pypi alpha release

@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 import questionary
 import typer
+from dlt.cli import utils
 from loguru import logger
 
 from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
@@ -60,6 +61,32 @@ def init(
     ),
 ) -> None:
     """Generate a new OpenAPI Client library"""
+    _init_command_wrapped(
+        source=source,
+        url=url,
+        path=path,
+        output_path=output_path,
+        config_path=config_path,
+        interactive=interactive,
+        loglevel=loglevel,
+        global_limit=global_limit,
+        update_rest_api_source=update_rest_api_source,
+    )
+
+
+@utils.track_command("init-openapi", False, "source", "url", "path")
+def _init_command_wrapped(
+    source: str,
+    url: Optional[str] = None,
+    path: Optional[pathlib.Path] = None,
+    output_path: Optional[pathlib.Path] = None,
+    config_path: Optional[pathlib.Path] = None,
+    interactive: bool = True,
+    loglevel: int = 20,
+    global_limit: int = 0,
+    update_rest_api_source: bool = False,
+) -> None:
+
     from dlt_init_openapi import create_new_client
 
     # set up console logging

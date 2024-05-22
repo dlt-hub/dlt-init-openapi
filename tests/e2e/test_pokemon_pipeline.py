@@ -1,6 +1,6 @@
 import duckdb
 
-POKE_DUCKDB_FILE = "./pokemon-pipeline/pokemon_pipeline.duckdb"
+POKE_DUCKDB_FILE = "./pokemon_pipeline/pokemon_pipeline.duckdb"
 
 
 def test_pokemon_pipeline() -> None:

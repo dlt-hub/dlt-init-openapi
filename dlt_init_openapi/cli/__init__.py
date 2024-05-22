@@ -4,6 +4,7 @@ from typing import Any, Optional
 
 import questionary
 import typer
+from dlt.cli import utils
 from loguru import logger
 
 from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
@@ -46,6 +47,7 @@ CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to 
 
 # pylint: disable=too-many-arguments
 @app.command()
+@utils.track_command("init-openapi", False, "source")
 def init(
     source: str = typer.Argument(None, help="A name of data source for which to generate a pipeline"),
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON/YAML spec from"),

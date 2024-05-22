@@ -126,6 +126,9 @@ And use it with the config argument:
 $ dlt-init-openapi init pokemon --url ... --config config.yml
 ```
 
+## Telemetry
+We track your usage of this tool similar to how we track other commands in the dlt core library. Read more about this and how to disable it here: https://dlthub.com/docs/reference/telemetry.
+
 ## Implementation notes
 * OAuth Authentication currently is not natively supported, you can supply your own
 * Per endpoint authentication currently is not supported by the generator, only the first globally set securityScheme will be applied. You can add your own per endpoint if you need to.

@@ -21,6 +21,5 @@ def test_simple_dotastats_load() -> None:
         "table_name": "team",
         "endpoint": {
             "path": "/teams",
-            "data_selector": "$",
         },
     }

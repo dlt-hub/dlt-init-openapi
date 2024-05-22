@@ -73,7 +73,7 @@ def test_global_paginator() -> None:
 
     # check endpoint pagination settings
     resources: Any = {entry["name"]: entry for entry in api_dict["resources"]}  # type: ignore
-    assert not resources["item_endpoint"]["endpoint"].get("paginator")
+    assert resources["item_endpoint"]["endpoint"].get("paginator") == "auto"  # nothing detected
     assert not resources["collection_1"]["endpoint"].get("paginator")
     assert not resources["collection_2"]["endpoint"].get("paginator")
 

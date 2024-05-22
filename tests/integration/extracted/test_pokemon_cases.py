@@ -11,7 +11,7 @@ def test_simple_poke_load() -> None:
     assert source["resources"][0] == {
         "name": "pokemon",
         "table_name": "pokemon",
-        "endpoint": {"path": "/api/v2/pokemon/", "data_selector": "$"},
+        "endpoint": {"path": "/api/v2/pokemon/", "paginator": "auto"},
     }
 
 
@@ -72,6 +72,7 @@ def test_simple_child_table_poke_load() -> None:
         "primary_key": "id",
         "write_disposition": "merge",
         "endpoint": {
+            "paginator": "auto",
             "path": "/api/v2/pokemon/{name}/",
             "data_selector": "$",
             "params": {

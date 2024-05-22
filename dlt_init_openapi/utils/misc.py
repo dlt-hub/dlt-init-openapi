@@ -58,6 +58,8 @@ def fix_reserved_words(value: str) -> str:
 
 def snake_case(value: str) -> str:
     """Converts to snake_case"""
+    if not value:
+        return value
     words = split_words(sanitize(value))
     return "_".join(words).lower()
 

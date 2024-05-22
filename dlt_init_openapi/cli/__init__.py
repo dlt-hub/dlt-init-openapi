@@ -10,7 +10,7 @@ from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_sel
 from dlt_init_openapi.config import Config
 from dlt_init_openapi.utils import update_rest_api
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
 
 
 def _print_version(value: bool) -> None:

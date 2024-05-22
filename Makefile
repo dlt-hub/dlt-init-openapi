@@ -45,7 +45,7 @@ create-e2e-pokemon-pipeline:
 	poetry run dlt-init-openapi init pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 2 --no-interactive
 
 run-pokemon-pipeline:
-	cd pokemon-pipeline && poetry run python pipeline.py
+	cd pokemon_pipeline && poetry run python pokemon_pipeline.py
 
 check-pokemon-pipeline:
 	poetry run pytest tests/e2e

@@ -31,7 +31,9 @@ custom-e2e/
 
 client/
 *-pipeline/
+*_pipeline/
 tests/_local/
 .DS_Store
 !hackathon/*-pipeline/
+!hackathon/*_pipeline/
 rest_api

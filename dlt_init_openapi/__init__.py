@@ -57,7 +57,10 @@ class Project:  # pylint: disable=too-many-instance-attributes
         logger.info("Rendering project")
         if self.config.endpoint_filter:
             filtered_endpoints = self.config.endpoint_filter(self.openapi.endpoints)
-            self.openapi.endpoints.set_ids_to_render(filtered_endpoints)
+            if filtered_endpoints:
+                self.openapi.endpoints.set_ids_to_render(filtered_endpoints)
+            else:
+                logger.warning("You have not selected any endpoints, all endpoints will be rendered.")
         self.renderer.run(self.openapi, dry=dry)
         logger.success(f"Rendered project to: {self.config.project_dir}")
         logger.info("You can now run your pipeline from this folder with 'python pipeline.py'.")

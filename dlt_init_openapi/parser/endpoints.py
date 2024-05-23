@@ -176,7 +176,7 @@ class Endpoint:
             response_schema = context.response_from_reference(response_ref)
             content_schema: Optional[SchemaWrapper] = None
             for content_type, media_type in (response_schema.content or {}).items():
-                if content_type.endswith("json") and media_type.media_type_schema:
+                if (content_type.endswith("json") or content_type == "*/*") and media_type.media_type_schema:
                     content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
                     break
 

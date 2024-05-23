@@ -3,7 +3,7 @@ from dlt.common.configuration.exceptions import InvalidNativeValue
 
 from tests.integration.utils import get_all_spec_paths, get_source
 
-SKIP_CASES = ["zoom_with_pagination.yml"]
+SKIP_CASES = ["zoom_with_pagination", "art_institute_chicago_api"]  # broken spec  # swagger 2.0 spec
 
 
 @pytest.mark.slow

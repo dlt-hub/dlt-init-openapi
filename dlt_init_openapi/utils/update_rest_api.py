@@ -32,4 +32,4 @@ def update_rest_api(force: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    update_rest_api()
+    update_rest_api(False)

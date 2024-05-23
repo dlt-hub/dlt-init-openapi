@@ -7,7 +7,7 @@ import yaml
 from loguru import logger
 from yaml import BaseLoader
 
-from dlt_init_openapi.exceptions import DltOpenAPIException
+from dlt_init_openapi.exceptions import DltInvalidSpecException, DltOpenAPINot30Exception, DltUnparseableSpecException
 from dlt_init_openapi.parser.config import Config
 from dlt_init_openapi.parser.context import OpenapiContext
 from dlt_init_openapi.parser.endpoints import EndpointCollection
@@ -39,30 +39,17 @@ class OpenapiParser:
         try:
             spec = osp.OpenAPI.parse_obj(self.spec_raw)
         except Exception as e:
-            raise DltOpenAPIException("Could not Validate spec:\n" + str(e)) from e
+            raise DltInvalidSpecException() from e
         logger.success("Spec validation successful")
 
         # check if this is openapi 3.0
-        convert_info = (
-            "you can convert it to an openapi 3.0 spec by going to https://editor.swagger.io/, "
-            + "pasting your spec and selecting 'Edit' -> 'Convert to OpenAPI 3.0' from the Menu "
-            + "and then retry with the converted file."
-        )
         swagger_version = self.spec_raw.get("swagger")
         if swagger_version:
-            logger.error(
-                "The spec you selected appears to be a Swagger/OpenAPI version 2 spec or older, " + convert_info
-            )
-            exit(0)
+            raise DltOpenAPINot30Exception(swagger_detected=True)
 
         openapi_version = self.spec_raw.get("openapi")
         if not openapi_version or not openapi_version.startswith("3"):
-            logger.error(
-                "The spec you selected does not appear to be an OpenAPI 3.0 spec. "
-                + "If this is a a Swagger/OpenAPI version 2 spec or older, "
-                + convert_info
-            )
-            exit(1)
+            raise DltOpenAPINot30Exception(swagger_detected=False)
 
         logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
@@ -88,19 +75,21 @@ class OpenapiParser:
 
     def _load_yaml_or_json(self, data: bytes) -> Dict[str, Any]:
         logger.info("Trying to parse spec as JSON")
-
-        data_size = sys.getsizeof(data)
-        if data_size > 1000000:
-            mb = round(data_size / 1000000)
-            logger.warning(f"Spec is around {mb} mb, so parsing might take a while.")
         try:
-            result = json.loads(data.decode())
-            logger.success("Parsed spec as JSON")
+            data_size = sys.getsizeof(data)
+            if data_size > 1000000:
+                mb = round(data_size / 1000000)
+                logger.warning(f"Spec is around {mb} mb, so parsing might take a while.")
+            try:
+                result = json.loads(data.decode())
+                logger.success("Parsed spec as JSON")
+                return result
+            except ValueError:
+                logger.info("No valid JSON found")
+                pass
+            logger.info("Trying to parse spec as YAML")
+            result = yaml.load(data, Loader=BaseLoader)
+            logger.success("Parsed spec as YAML")
             return result
-        except ValueError:
-            logger.info("No valid JSON found")
-            pass
-        logger.info("Trying to parse spec as YAML")
-        result = yaml.load(data, Loader=BaseLoader)
-        logger.success("Parsed spec as YAML")
-        return result
+        except Exception as exc:
+            raise DltUnparseableSpecException() from exc

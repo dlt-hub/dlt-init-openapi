@@ -9,6 +9,7 @@ from loguru import logger
 
 from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_init_openapi.config import Config
+from dlt_init_openapi.exceptions import DltOpenAPITerminalException
 from dlt_init_openapi.utils import update_rest_api
 
 app = typer.Typer(add_completion=False)
@@ -91,31 +92,38 @@ def _init_command_wrapped(
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    # synch rest api
-    update_rest_api.update_rest_api(force=update_rest_api_source)
+    try:
 
-    config = _load_config(
-        path=config_path,
-        config={
-            "project_name": source,
-            "package_name": source,
-            "output_path": output_path,
-            "endpoint_filter": questionary_endpoint_selection if interactive else None,
-            "global_limit": global_limit,
-        },
-    )
+        # synch rest api
+        update_rest_api.update_rest_api(force=update_rest_api_source)
 
-    if config.project_dir.exists():
-        if not questionary.confirm(
-            f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
-            + "This will overwrite your changes in those files."
-        ).ask():
-            logger.warning("Exiting...")
-            exit(0)
+        config = _load_config(
+            path=config_path,
+            config={
+                "project_name": source,
+                "package_name": source,
+                "output_path": output_path,
+                "endpoint_filter": questionary_endpoint_selection if interactive else None,
+                "global_limit": global_limit,
+            },
+        )
 
-    create_new_client(
-        url=url,
-        path=path,
-        config=config,
-    )
-    logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")
+        if config.project_dir.exists():
+            if not questionary.confirm(
+                f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
+                + "This will overwrite your changes in those files."
+            ).ask():
+                logger.warning("Exiting...")
+                exit(0)
+
+        create_new_client(
+            url=url,
+            path=path,
+            config=config,
+        )
+        logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")
+
+    except DltOpenAPITerminalException as exc:
+        logger.error("Encountered terminal exception:")
+        logger.error(exc)
+        logger.info("Exiting...")

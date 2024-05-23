@@ -30,6 +30,7 @@ class Response:
     osp_response: osp.Response
     schema: Optional[SchemaWrapper]
     status_code: str
+    description: str
     # detected values
     detected_payload: Optional[DataPropertyPath] = None
     detected_primary_key: Optional[str] = None
@@ -144,6 +145,14 @@ class Endpoint:
                 return p.default
         return self.context.config.parameter_default_value
 
+    @property
+    def render_description(self) -> Optional[str]:
+        if self.description:
+            return self.description
+        if self.path_description:
+            return self.path_description
+        return None
+
     @classmethod
     def from_operation(
         cls,
@@ -172,7 +181,14 @@ class Endpoint:
                     content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
                     break
 
-            responses.append(Response(osp_response=response_schema, schema=content_schema, status_code=status_code))
+            responses.append(
+                Response(
+                    osp_response=response_schema,
+                    schema=content_schema,
+                    status_code=status_code,
+                    description=response_schema.description,
+                )
+            )
 
         return cls(
             method=method,

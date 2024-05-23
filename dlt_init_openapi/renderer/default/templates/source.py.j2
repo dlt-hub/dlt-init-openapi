@@ -42,6 +42,9 @@ def {{ source_name }}(
         "resources": 
         [
         {% for endpoint in endpoint_collection.all_endpoints_to_render %}
+        {% if endpoint.render_description %}
+        # {{ endpoint.render_description}}
+        {% endif %}
         {
             "name": "{{ endpoint.detected_resource_name }}",
             "table_name": "{{ endpoint.detected_table_name }}",

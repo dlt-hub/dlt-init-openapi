@@ -15,6 +15,6 @@ secrets.toml.
 ## Available resources
 {% for endpoint in endpoint_collection.all_endpoints_to_render %}
 * {{ endpoint.detected_resource_name }}  
-  _{{endpoint.method}} {{ endpoint.path }}_  
-  {% if endpoint.description %}{{endpoint.description}}{% endif %}
+  _{{endpoint.method}} {{ endpoint.path }}_  
+  {% if endpoint.render_description %}{{endpoint.render_description}}{% endif %}
 {% endfor %}

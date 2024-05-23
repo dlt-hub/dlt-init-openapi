@@ -12,30 +12,31 @@ version 3 first with one of many available converters.
 This project started as a fork of [openapi-python-client](https://github.com/openapi-generators/openapi-python-client). Pretty much all parts are heavily changed or completely replaced, but some lines of code still exist and we like to acknowledge the many good ideas we got from the original project :)
 
 
+## Support
+If you need support for this tool, [join our slack community](https://dlthub.com/community) and ask for help on the technical help channel. We're usually around to help you out or discuss features :)
+
+
 ## Features
 The dlt-init-openapi generates code from an OpenAPI spec that you can use to extract data from a `rest_api` into any [`destination`](https://dlthub.com/docs/dlt-ecosystem/destinations/) (e.g. Postgres, BigQuery, Redshift...) `dlt` supports.
 
 Features include
 
-* [Pagination](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#pagination) discovery
-* Primary key discovery
-* Endpoint relationship mapping into `dlt` [`transformers`](https://dlthub.com/docs/general-usage/resource#process-resources-with-dlttransformer) (e.g. /users/ -> /user/{id})
-* Payload JSON path [data selector](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#data-selection) discovery for nested results
-* [Authentication](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#authentication) discovery
+* **[Pagination](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#pagination) discovery** for each endpoint
+* **Primary key discovery** for each entity
+* **Endpoint relationship mapping** into `dlt` [`transformers`](https://dlthub.com/docs/general-usage/resource#process-resources-with-dlttransformer) (e.g. /users/ -> /user/{id})
+* **Payload JSON path [data selector](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#data-selection) discovery** for results nested in the returned json
+* **[Authentication](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api#authentication)** discovery for an API
 
 ## Setup
 
-You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.org/docs/) to install dependencies.
+You will need Python 3.9 or higher installed, as well as pip.
 
 ```console
-# 1. Checkout this repository locally
-$ git clone git@github.com:dlt-hub/dlt-init-openapi.git
+# 1. install this tool locally
+$ pip install dlt-init-openapi
 
-# 2. Install required poetry dependencies
-$ poetry install
-
-# 3. Start the poetry shell
-$ poetry shell
+# 2. Show the version of the installed package to verify it worked
+$ dlt-init-openapi --version
 ```
 
 ## Basic Usage
@@ -43,23 +44,30 @@ $ poetry shell
 Let's create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenAPI Spec instead if you like.
 
 ```console
-# 1. Run the generator with the dlt-init-openapi init command:
+# 1.a. Run the generator with the dlt-init-openapi init command:
 $ dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+
+# 1.b. If you have a local file, you can use the --path flag:
+$ dlt-init-openapi init pokemon --path ./my_specs/pokeapi.yml
 
 # 2. You can now pick the endpoints you need from the popup
 
 # 3. After selecting your pokemon endpoints and hitting Enter, your pipeline will be rendered
 
-# 4. Go to the created pipeline folder and run your pipeline
+# 4. If you have any kind of authentication on your pipeline (this example has not), open the `.dlt/secrets.toml` and provide the credentials. You can find further settings in the `.dlt/config.toml`.
+
+# 5. Go to the created pipeline folder and run your pipeline
 $ cd pokemon-pipeline
 $ PROGRESS=enlighten python pipeline.py # we use enlighten for a nice progress bar :)
 
-# 5. Print the pipeline info to console to see what got loaded
+# 6. Print the pipeline info to console to see what got loaded
 $ dlt pipeline pokemon_pipeline info
 
-# 6. You can now also install streamlit to see a preview of the data
+# 7. You can now also install streamlit to see a preview of the data
 $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
+
+# 8. You can go to our docs at https://dlthub.com/docs to learn how modify the generated pipeline to load to many destinations, place schema contracts on your pipeline and many other things.
 ```
 
 ## What will be created?

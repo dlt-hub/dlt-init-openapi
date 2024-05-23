@@ -3,7 +3,7 @@
 from enum import Enum
 from importlib.metadata import version
 from pathlib import Path
-from typing import Optional, cast
+from typing import cast
 
 import httpcore
 import httpx
@@ -87,30 +87,28 @@ class Project:  # pylint: disable=too-many-instance-attributes
                     logger.warning(w.msg)
 
 
-def _get_document(*, url: Optional[str] = None, path: Optional[Path] = None, timeout: int = 60) -> bytes:
-    if url is not None and path is not None:
+def _get_document(*, config: Config, timeout: int = 60) -> bytes:
+    if config.spec_url is not None and config.spec_path is not None:
         raise ValueError("Provide URL or Path, not both.")
-    if url is not None:
-        logger.info(f"Downloading spec from {url}")
+    if config.spec_url is not None:
+        logger.info(f"Downloading spec from {config.spec_url}")
         try:
-            response = httpx.get(url, timeout=timeout)
+            response = httpx.get(config.spec_url, timeout=timeout)
             logger.success("Download complete")
             return response.content
         except (httpx.HTTPError, httpcore.NetworkError) as e:
             raise ValueError("Could not get OpenAPI document from provided URL") from e
-    elif path is not None:
-        logger.info(f"Reading spec from {path}")
-        return Path(path).read_bytes()
+    elif config.spec_path is not None:
+        logger.info(f"Reading spec from {config.spec_path}")
+        return Path(config.spec_path).read_bytes()
     else:
         raise ValueError("No URL or Path provided")
 
 
 def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
-    url: Optional[str],
-    path: Optional[Path],
     config: Config = None,
 ) -> Project:
-    doc = _get_document(url=url, path=path)
+    doc = _get_document(config=config)
 
     renderer_cls = cast(BaseRenderer, import_class_from_string(config.renderer_class))
     detector_cls = cast(BaseDetector, import_class_from_string(config.detector_class))
@@ -126,8 +124,6 @@ def _get_project_for_url_or_path(  # pylint: disable=too-many-arguments
 
 def create_new_client(
     *,
-    url: Optional[str] = None,
-    path: Optional[Path] = None,
     config: Config = None,
 ) -> Project:
     """
@@ -137,8 +133,6 @@ def create_new_client(
         The project.
     """
     project = _get_project_for_url_or_path(
-        url=url,
-        path=path,
         config=config,
     )
     project.parse()

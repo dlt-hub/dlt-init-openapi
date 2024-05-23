@@ -105,6 +105,8 @@ def _init_command_wrapped(
                 "output_path": output_path,
                 "endpoint_filter": questionary_endpoint_selection if interactive else None,
                 "global_limit": global_limit,
+                "spec_url": url,
+                "spec_path": path,
             },
         )
 
@@ -117,8 +119,6 @@ def _init_command_wrapped(
                 exit(0)
 
         create_new_client(
-            url=url,
-            path=path,
             config=config,
         )
         logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")

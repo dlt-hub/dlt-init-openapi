@@ -55,6 +55,8 @@ class Config(BaseModel):
     # internal, do not set via config file
     project_dir: Path = None
     pipeline_file_name: str = None
+    spec_url: str = None
+    spec_path: Path = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Config, self).__init__(*args, **kwargs)

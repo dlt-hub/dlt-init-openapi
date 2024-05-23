@@ -42,6 +42,28 @@ class OpenapiParser:
             raise DltOpenAPIException("Could not Validate spec:\n" + str(e)) from e
         logger.success("Spec validation successful")
 
+        # check if this is openapi 3.0
+        convert_info = (
+            "you can convert it to an openapi 3.0 spec by going to https://editor.swagger.io/, "
+            + "pasting your spec and selecting 'Edit' -> 'Convert to OpenAPI 3.0' from the Menu "
+            + "and then retry with the converted file."
+        )
+        swagger_version = self.spec_raw.get("swagger")
+        if swagger_version:
+            logger.error(
+                "The spec you selected appears to be a Swagger/OpenAPI version 2 spec or older, " + convert_info
+            )
+            exit(0)
+
+        openapi_version = self.spec_raw.get("openapi")
+        if not openapi_version or not openapi_version.startswith("3"):
+            logger.error(
+                "The spec you selected does not appear to be an OpenAPI 3.0 spec. "
+                + "If this is a a Swagger/OpenAPI version 2 spec or older, "
+                + convert_info
+            )
+            exit(1)
+
         logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
         self.info = OpenApiInfo.from_context(self.context)

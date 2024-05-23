@@ -32,7 +32,12 @@ def test_basic_auth() -> None:
 
 def test_unused_auth() -> None:
     source_dict = get_dict_by_case("artificial", "auth/basic_auth_not_used.yml")
-    assert not source_dict["client"].get("auth")
+    # the first one gets set as default
+    assert source_dict["client"].get("auth") == {
+        "type": "http_basic",
+        "username": "SECRET_VALUE",
+        "password": "SECRET_VALUE",
+    }
 
 
 def test_oauth_warning() -> None:

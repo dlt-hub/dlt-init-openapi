@@ -39,7 +39,6 @@ class OpenapiParser:
 
         self.spec_raw = self._load_yaml_or_json(data)
         self.security_schemes = {}
-        print(self.spec_raw)
         logger.info("Validating spec structure")
         try:
             spec = osp.OpenAPI.parse_obj(self.spec_raw)

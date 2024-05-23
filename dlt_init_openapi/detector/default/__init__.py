@@ -126,6 +126,12 @@ class DefaultDetector(BaseDetector):
             elif global_scheme and not global_scheme.supported:
                 self._add_warning(UnsupportedSecuritySchemeWarning(global_scheme.type))
 
+        # set first auth as global scheme
+        if open_api.security_schemes and not open_api.detected_global_security_scheme:
+            global_scheme = list(open_api.security_schemes.values())[0]
+            if global_scheme.supported:
+                open_api.detected_global_security_scheme = global_scheme
+
     def detect_resource_names(self, endpoints: EndpointCollection) -> None:
         """iterate all endpoints and find a strategy to select the right resource name"""
 

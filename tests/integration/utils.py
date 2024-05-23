@@ -13,7 +13,7 @@ from tests.cases import case_path
 
 LOCAL_DIR = "tests/_local/"
 
-TType = Literal["artificial", "original", "extracted"]
+TType = Literal["artificial", "original", "extracted", "error"]
 
 
 def get_detected_project_from_open_api(case: str, config: Config) -> Project:

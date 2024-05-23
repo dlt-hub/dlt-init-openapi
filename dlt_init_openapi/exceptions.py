@@ -1,3 +1,6 @@
+from typing import List
+
+
 class DltOpenAPIException(Exception):
     pass
 
@@ -36,3 +39,11 @@ class DltUnparseableSpecException(DltOpenAPITerminalException):
     def __init__(self) -> None:
 
         super().__init__("Could not parse selected spec, please provide a valid YAML or JSON document.")
+
+
+class DltNoEndpointsDiscovered(DltOpenAPITerminalException):
+    def __init__(self, enabled_methods: List[str]):
+        super().__init__(
+            f"Did not find any endpoint with http methods {enabled_methods} in provided OpenAPI spec. "
+            + "Please check your spec if endpoints with these methods exist or add additional methods in your config."
+        )

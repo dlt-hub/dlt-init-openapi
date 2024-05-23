@@ -147,11 +147,10 @@ class Endpoint:
 
     @property
     def render_description(self) -> Optional[str]:
-        if self.description:
-            return self.description
-        if self.path_description:
-            return self.path_description
-        return None
+        description = self.description or self.path_description
+        if not description:
+            return None
+        return description.replace("\n", " ")
 
     @classmethod
     def from_operation(

@@ -51,10 +51,14 @@ class Config(BaseModel):
     """Set a limit on how many items are emitted from a resource"""
     parameter_default_value: str = "FILL_ME_IN"
     """default to render for required parameters that do not have a default in the spec"""
+    allow_openapi_2: bool = False
+    """Allow to use OpenAPI 2 specs"""
 
     # internal, do not set via config file
     project_dir: Path = None
     pipeline_file_name: str = None
+    spec_url: str = None
+    spec_path: Path = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super(Config, self).__init__(*args, **kwargs)

@@ -1,0 +1,4 @@
+def test_all_specs(case: str) -> None:
+    for skipped in SKIP_CASES:
+        if skipped in case:
+            return

@@ -30,6 +30,7 @@ class Response:
     osp_response: osp.Response
     schema: Optional[SchemaWrapper]
     status_code: str
+    description: str
     # detected values
     detected_payload: Optional[DataPropertyPath] = None
     detected_primary_key: Optional[str] = None
@@ -144,6 +145,13 @@ class Endpoint:
                 return p.default
         return self.context.config.parameter_default_value
 
+    @property
+    def render_description(self) -> Optional[str]:
+        description = self.description or self.path_description
+        if not description:
+            return None
+        return description.replace("\n", " ")
+
     @classmethod
     def from_operation(
         cls,
@@ -168,11 +176,18 @@ class Endpoint:
             response_schema = context.response_from_reference(response_ref)
             content_schema: Optional[SchemaWrapper] = None
             for content_type, media_type in (response_schema.content or {}).items():
-                if content_type.endswith("json") and media_type.media_type_schema:
+                if (content_type.endswith("json") or content_type == "*/*") and media_type.media_type_schema:
                     content_schema = SchemaWrapper.from_reference(media_type.media_type_schema, context)
                     break
 
-            responses.append(Response(osp_response=response_schema, schema=content_schema, status_code=status_code))
+            responses.append(
+                Response(
+                    osp_response=response_schema,
+                    schema=content_schema,
+                    status_code=status_code,
+                    description=response_schema.description,
+                )
+            )
 
         return cls(
             method=method,

@@ -55,6 +55,7 @@ class DefaultRenderer(BaseRenderer):
             package_name=self.package_name,
             project_name=self.config.project_name,
             credentials=self.openapi.detected_global_security_scheme,
+            config=self.config,
         )
 
         if dry:

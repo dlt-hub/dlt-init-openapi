@@ -7,7 +7,12 @@ import yaml
 from loguru import logger
 from yaml import BaseLoader
 
-from dlt_init_openapi.exceptions import DltInvalidSpecException, DltOpenAPINot30Exception, DltUnparseableSpecException
+from dlt_init_openapi.exceptions import (
+    DltInvalidSpecException,
+    DltNoEndpointsDiscovered,
+    DltOpenAPINot30Exception,
+    DltUnparseableSpecException,
+)
 from dlt_init_openapi.parser.config import Config
 from dlt_init_openapi.parser.context import OpenapiContext
 from dlt_init_openapi.parser.endpoints import EndpointCollection
@@ -34,7 +39,6 @@ class OpenapiParser:
 
         self.spec_raw = self._load_yaml_or_json(data)
         self.security_schemes = {}
-
         logger.info("Validating spec structure")
         try:
             spec = osp.OpenAPI.parse_obj(self.spec_raw)
@@ -42,14 +46,15 @@ class OpenapiParser:
             raise DltInvalidSpecException() from e
         logger.success("Spec validation successful")
 
-        # check if this is openapi 3.0
-        swagger_version = self.spec_raw.get("swagger")
-        if swagger_version:
-            raise DltOpenAPINot30Exception(swagger_detected=True)
+        if not self.config.allow_openapi_2:
+            # check if this is openapi 3.0
+            swagger_version = self.spec_raw.get("swagger")
+            if swagger_version:
+                raise DltOpenAPINot30Exception(swagger_detected=True)
 
-        openapi_version = self.spec_raw.get("openapi")
-        if not openapi_version or not openapi_version.startswith("3"):
-            raise DltOpenAPINot30Exception(swagger_detected=False)
+            openapi_version = self.spec_raw.get("openapi")
+            if not openapi_version or not openapi_version.startswith("3"):
+                raise DltOpenAPINot30Exception(swagger_detected=False)
 
         logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)
@@ -72,6 +77,9 @@ class OpenapiParser:
         logger.info("Parsing openapi endpoints")
         self.endpoints = EndpointCollection.from_context(self.context)
         logger.success(f"Completed parsing endpoints. {len(self.endpoints.endpoints)} endpoints found.")
+
+        if len(self.endpoints.endpoints) == 0:
+            raise DltNoEndpointsDiscovered(self.config.include_methods)
 
     def _load_yaml_or_json(self, data: bytes) -> Dict[str, Any]:
         logger.info("Trying to parse spec as JSON")

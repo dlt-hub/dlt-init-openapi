@@ -115,7 +115,11 @@ $ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
 - `--output-path PATH`: A path to render the output to
 - `--config PATH`: Path to the config file to use (see below)
 - `--no-interactive`: Skip endpoint selection and render all paths of the OpenAPI spec.
-- `--loglevel`: Set logging level for stdout output, defaults to 20 (INFO).
+- `--log-level`: Set logging level for stdout output, defaults to 20 (INFO).
+- `--global-limit`: Set a global limit on the generated source.
+- `--update-rest-api-source`: Update the locally cached rest_api verified source.
+- `--allow-openapi-2`: Allow to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended though.
+- `--version`: Show installed version of the generator.
 - `--help`: Show this message and exit.
 
 ## Config options

@@ -18,10 +18,10 @@ def questionary_endpoint_selection(endpoints: EndpointCollection) -> Set[str]:
             ("italic", f" {endpoint.path}"),
         ]
         choices.append(questionary.Choice(text, endpoint))
-    if not choices:
-        raise ValueError("No endpoints found")
     selected_endpoints: List[Endpoint] = questionary.checkbox(
-        "Which resources would you like to generate?", choices
+        "Which resources would you like to generate? Press enter to continue, "
+        + "if you do not select any resources, all of them will be rendered.",
+        choices,
     ).ask()
 
     # return resource names of selected endpoints

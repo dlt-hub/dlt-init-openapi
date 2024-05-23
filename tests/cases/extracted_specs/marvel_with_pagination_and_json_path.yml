@@ -1,0 +1,250 @@
+openapi: 3.0.1
+info:
+  title: gateway.marvel.com
+  version: Cable
+servers:
+- url: http://gateway.marvel.com/
+tags:
+- name: public
+paths:
+
+  /v1/public/characters/{characterId}/events:
+    get:
+      tags:
+      - public
+      summary: Fetches lists of events filtered by a character id.
+      description: Fetches lists of events in which a specific character appears,
+        with optional filters. See notes on individual parameters below.
+      operationId: getCharacterEventsCollection
+      parameters:
+      - name: characterId
+        in: path
+        description: The character ID.
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: name
+        in: query
+        description: Filter the event list by name.
+        schema:
+          type: string
+      - name: nameStartsWith
+        in: query
+        description: Return events with names that begin with the specified string
+          (e.g. Sp).
+        schema:
+          type: string
+      - name: modifiedSince
+        in: query
+        description: Return only events which have been modified since the specified
+          date.
+        schema:
+          type: string
+          format: date
+      - name: creators
+        in: query
+        description: Return only events which feature work by the specified creators
+          (accepts a comma-separated list of ids).
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: series
+        in: query
+        description: Return only events which are part of the specified series (accepts
+          a comma-separated list of ids).
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: comics
+        in: query
+        description: Return only events which take place in the specified comics (accepts
+          a comma-separated list of ids).
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: stories
+        in: query
+        description: Return only events which contain the specified stories (accepts
+          a comma-separated list of ids).
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      - name: orderBy
+        in: query
+        description: Order the result set by a field or fields. Add a "-" to the value
+          sort in descending order. Multiple values are given priority in the order
+          in which they are passed.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: limit
+        in: query
+        description: Limit the result set to the specified number of resources.
+        schema:
+          type: integer
+          format: int32
+      - name: offset
+        in: query
+        description: Skip the specified number of resources in the result set.
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: No response was specified
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EventDataWrapper'
+  
+components:
+  schemas:
+
+    EventList:
+      type: object
+      properties:
+        available:
+          type: integer
+          description: The number of total available events in this list. Will always
+            be greater than or equal to the "returned" value.
+          format: int32
+        returned:
+          type: integer
+          description: The number of events returned in this collection (up to 20).
+          format: int32
+        collectionURI:
+          type: string
+          description: The path to the full list of events in this collection.
+        items:
+          type: array
+          description: The list of returned events in this collection.
+          items:
+            $ref: '#/components/schemas/EventSummary'
+    Image:
+      type: object
+      properties:
+        path:
+          type: string
+          description: The directory path of to the image.
+        extension:
+          type: string
+          description: The file extension for the image.
+    Url:
+      type: object
+      properties:
+        type:
+          type: string
+          description: A text identifier for the URL.
+        url:
+          type: string
+          description: A full URL (including scheme, domain, and path).
+    EventDataContainer:
+      type: object
+      properties:
+        offset:
+          type: integer
+          description: The requested offset (number of skipped results) of the call.
+          format: int32
+        limit:
+          type: integer
+          description: The requested result limit.
+          format: int32
+        total:
+          type: integer
+          description: The total number of resources available given the current filter
+            set.
+          format: int32
+        count:
+          type: integer
+          description: The total number of results returned by this call.
+          format: int32
+        results:
+          type: array
+          description: The list of events returned by the call
+          items:
+            $ref: '#/components/schemas/Event'
+
+    EventDataWrapper:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The HTTP status code of the returned result.
+          format: int32
+        status:
+          type: string
+          description: A string description of the call status.
+        copyright:
+          type: string
+          description: The copyright notice for the returned result.
+        attributionText:
+          type: string
+          description: The attribution notice for this result.  Please display either
+            this notice or the contents of the attributionHTML field on all screens
+            which contain data from the Marvel Comics API.
+        attributionHTML:
+          type: string
+          description: An HTML representation of the attribution notice for this result.  Please
+            display either this notice or the contents of the attributionText field
+            on all screens which contain data from the Marvel Comics API.
+        data:
+          $ref: '#/components/schemas/EventDataContainer'
+        etag:
+          type: string
+          description: A digest value of the content returned by the call.
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The unique ID of the event resource.
+          format: int32
+        title:
+          type: string
+          description: The title of the event.
+        description:
+          type: string
+          description: A description of the event.
+        resourceURI:
+          type: string
+          description: The canonical URL identifier for this resource.
+        urls:
+          type: array
+          description: A set of public web site URLs for the event.
+          items:
+            $ref: '#/components/schemas/Url'
+        modified:
+          type: string
+          description: The date the resource was most recently modified.
+          format: date
+        start:
+          type: string
+          description: The date of publication of the first issue in this event.
+          format: date
+        end:
+          type: string
+          description: The date of publication of the last issue in this event.
+          format: date
+
+   

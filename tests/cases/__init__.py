@@ -9,7 +9,12 @@ NAMING_SPECS_FOLDER = "./tests/cases/naming_specs"
 
 PREFIX = "./tests/cases"
 
-CASE_FOLDERS = {"original": "original_specs", "artificial": "artificial_specs", "extracted": "extracted_specs"}
+CASE_FOLDERS = {
+    "original": "original_specs",
+    "artificial": "artificial_specs",
+    "extracted": "extracted_specs",
+    "error": "error",
+}
 
 
 def case_path(type: str, case: str) -> str:

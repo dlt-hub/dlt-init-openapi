@@ -87,6 +87,13 @@ class DefaultRenderer(BaseRenderer):
             encoding=FILE_ENCODING,
         )
 
+        gitignore_template = self.env.get_template("gitignore.j2")
+        gitignore_path = self.config.project_dir / ".gitignore"
+        gitignore_path.write_text(
+            gitignore_template.render(),
+            encoding=FILE_ENCODING,
+        )
+
     def _create_package(self) -> None:
         self.config.project_dir.mkdir(exist_ok=True, parents=True)
         self.package_dir.mkdir(exist_ok=True)

@@ -44,11 +44,11 @@ $ dlt-init-openapi --version
 Let's create an example pipeline from the [PokeAPI spec](https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml). You can point to any other OpenAPI Spec instead if you like.
 
 ```console
-# 1.a. Run the generator with the dlt-init-openapi init command:
-$ dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+# 1.a. Run the generator with an url:
+$ dlt-init-openapi pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
 # 1.b. If you have a local file, you can use the --path flag:
-$ dlt-init-openapi init pokemon --path ./my_specs/pokeapi.yml
+$ dlt-init-openapi pokemon --path ./my_specs/pokeapi.yml
 
 # 2. You can now pick the endpoints you need from the popup
 
@@ -84,33 +84,33 @@ When you run the `init` command above, the following files will be generated:
 ## CLI commands
 
 ```console
-$ dlt-init [OPTIONS] COMMAND [ARGS]...
+$ dlt-init-openapi [OPTIONS] <source_name> [ARGS]
 # example:
-$ dlt-init init pokemon --path ./path/to/my_spec.yml
+$ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
 ```
 
 **Options**:
 
-- `--version`: Print the version and exit [default: False]
+- `--version`: Print the version and exit
 - `--help`: Show this message and exit.
 
 **Commands**:
 
 - `init`: Generate a new `dlt` `rest_api` `source`
 
-### `dlt-init-openapi init`
+### `dlt-init-openapi`
 
 Generate a new `dlt` `rest_api` `source`
 
 **Usage**:
 
 ```console
-$ dlt-init-openapi init pokemon --path ./path/to/my_spec.yml
+$ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
 ```
 
 **Options**:
 
-- `--url TEXT`: A url to read the OpenAPI JSON or YAML file from
+- `--url URL`: A url to read the OpenAPI JSON or YAML file from
 - `--path PATH`: A path to read the OpenAPI JSON or YAML file from locally
 - `--output-path PATH`: A path to render the output to
 - `--config PATH`: Path to the config file to use (see below)
@@ -119,7 +119,7 @@ $ dlt-init-openapi init pokemon --path ./path/to/my_spec.yml
 - `--help`: Show this message and exit.
 
 ## Config options
-You can pass a path to a config file with the `--config PATH` argument. To see available config values, go to https://github.com/dlt-hub/dlt-init-openapi/blob/master/dlt_init_openapi/config.py and read the information below each field on the `Config` class.
+You can pass a path to a config file with the `--config PATH` argument. To see available config values, go to https://github.com/dlt-hub/dlt-init-openapi/blob/devel/dlt_init_openapi/config.py and read the information below each field on the `Config` class.
 
 The config file can be supplied as json or yaml dictionary. For example to change the package name, you can create a yaml file:
 
@@ -131,7 +131,7 @@ package_name: "other_package_name"
 And use it with the config argument:
 
 ```console
-$ dlt-init-openapi init pokemon --url ... --config config.yml
+$ dlt-init-openapi pokemon --url ... --config config.yml
 ```
 
 ## Telemetry

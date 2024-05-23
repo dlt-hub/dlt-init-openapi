@@ -35,14 +35,14 @@ test-slow: update-rest-api
 
 # dev helpers
 create-pokemon-pipeline:
-	poetry run dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml --no-interactive
+	poetry run dlt-init-openapi pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml --no-interactive
 
 create-pokemon-pipeline-interactive:
-	poetry run dlt-init-openapi init pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
+	poetry run dlt-init-openapi pokemon --url https://raw.githubusercontent.com/cliffano/pokeapi-clients/ec9a2707ef2a85f41b747d8df013e272ef650ec5/specification/pokeapi.yml
 
 # e2e test helpers
 create-e2e-pokemon-pipeline:
-	poetry run dlt-init-openapi init pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 2 --no-interactive
+	poetry run dlt-init-openapi pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 2 --no-interactive
 
 run-pokemon-pipeline:
 	cd pokemon_pipeline && poetry run python pokemon_pipeline.py

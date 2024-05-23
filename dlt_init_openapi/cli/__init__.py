@@ -9,6 +9,7 @@ from loguru import logger
 
 from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_init_openapi.config import Config
+from dlt_init_openapi.exceptions import DltOpenAPITerminalException
 from dlt_init_openapi.utils import update_rest_api
 
 app = typer.Typer(add_completion=False)
@@ -33,18 +34,6 @@ def _load_config(path: Optional[pathlib.Path], config: Any) -> Config:
     return c
 
 
-# noinspection PyUnusedLocal
-# pylint: disable=unused-argument
-@app.callback(name="dlt-init-openapi")
-def cli(
-    version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
-) -> None:
-    """Generate a Python client from an OpenAPI JSON document"""
-
-
-CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
-
-
 # pylint: disable=too-many-arguments
 @app.command()
 def init(
@@ -52,15 +41,17 @@ def init(
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON/YAML spec from"),
     path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON/YAML spec file"),
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
-    config_path: Optional[pathlib.Path] = CONFIG_OPTION,
+    config_path: Optional[pathlib.Path] = typer.Option(None, "--config", help="Path to the config file to use"),
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
     loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
     global_limit: int = typer.Option(0, help="Set a global limit on the generated source"),
     update_rest_api_source: bool = typer.Option(
         False, help="Wether to update the locally cached rest_api verified source"
     ),
+    version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
 ) -> None:
-    """Generate a new OpenAPI Client library"""
+    """Generate a new dlt pipeline"""
+
     _init_command_wrapped(
         source=source,
         url=url,
@@ -101,31 +92,38 @@ def _init_command_wrapped(
         typer.secho("Provide either --url or --path, not both", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    # synch rest api
-    update_rest_api.update_rest_api(force=update_rest_api_source)
+    try:
 
-    config = _load_config(
-        path=config_path,
-        config={
-            "project_name": source,
-            "package_name": source,
-            "output_path": output_path,
-            "endpoint_filter": questionary_endpoint_selection if interactive else None,
-            "global_limit": global_limit,
-        },
-    )
+        # synch rest api
+        update_rest_api.update_rest_api(force=update_rest_api_source)
 
-    if config.project_dir.exists():
-        if not questionary.confirm(
-            f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
-            + "This will overwrite your changes in those files."
-        ).ask():
-            logger.warning("Exiting...")
-            exit(0)
+        config = _load_config(
+            path=config_path,
+            config={
+                "project_name": source,
+                "package_name": source,
+                "output_path": output_path,
+                "endpoint_filter": questionary_endpoint_selection if interactive else None,
+                "global_limit": global_limit,
+            },
+        )
 
-    create_new_client(
-        url=url,
-        path=path,
-        config=config,
-    )
-    logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")
+        if config.project_dir.exists():
+            if not questionary.confirm(
+                f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
+                + "This will overwrite your changes in those files."
+            ).ask():
+                logger.warning("Exiting...")
+                exit(0)
+
+        create_new_client(
+            url=url,
+            path=path,
+            config=config,
+        )
+        logger.success("Pipeline created. Learn more at https://dlthub.com/docs. See you next time :)")
+
+    except DltOpenAPITerminalException as exc:
+        logger.error("Encountered terminal exception:")
+        logger.error(exc)
+        logger.info("Exiting...")

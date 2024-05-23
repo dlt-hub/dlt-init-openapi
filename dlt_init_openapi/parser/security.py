@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 
 
 @dataclass
@@ -9,7 +10,7 @@ class SecurityScheme:
     name: str
     location: str
 
-    detected_secret_name: str = ""
+    detected_secret_names: List[str] = field(default_factory=list)
     detected_auth_vars: str = ""
 
     @property

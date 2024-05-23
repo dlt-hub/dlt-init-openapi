@@ -75,6 +75,7 @@ Oauth20Credentials = Any
     os.environ["TOKEN"] = "some token"
     os.environ["PASSWORD"] = "some password"
     os.environ["API_KEY"] = "some api key"
+    os.environ["USERNAME"] = "some username"
 
     module = importlib.import_module(local.replace("/", "."))
     importlib.reload(module)

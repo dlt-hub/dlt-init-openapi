@@ -1,5 +1,12 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+0.0.5a3
+* Render gitignore file and add source section to secrets.toml even if there are no secrets detected
+* Updated readme with feedback from users and added pip instructions
+* Make "username" a secret on basic auth
+* Prevent openapi 2.0 specs with helpful output on how to migrate
+* Fix e2e tests
+
 0.0.5a2
 * Better fallbacks for paginator and json_path if detection failed
 * Add telemetry on init command

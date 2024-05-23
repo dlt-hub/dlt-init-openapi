@@ -46,14 +46,15 @@ class OpenapiParser:
             raise DltInvalidSpecException() from e
         logger.success("Spec validation successful")
 
-        # check if this is openapi 3.0
-        swagger_version = self.spec_raw.get("swagger")
-        if swagger_version:
-            raise DltOpenAPINot30Exception(swagger_detected=True)
+        if not self.config.allow_openapi_2:
+            # check if this is openapi 3.0
+            swagger_version = self.spec_raw.get("swagger")
+            if swagger_version:
+                raise DltOpenAPINot30Exception(swagger_detected=True)
 
-        openapi_version = self.spec_raw.get("openapi")
-        if not openapi_version or not openapi_version.startswith("3"):
-            raise DltOpenAPINot30Exception(swagger_detected=False)
+            openapi_version = self.spec_raw.get("openapi")
+            if not openapi_version or not openapi_version.startswith("3"):
+                raise DltOpenAPINot30Exception(swagger_detected=False)
 
         logger.info("Extracting openapi metadata")
         self.context = OpenapiContext(self.config, spec, self.spec_raw)

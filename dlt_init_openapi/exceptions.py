@@ -19,7 +19,9 @@ class DltOpenAPINot30Exception(DltOpenAPITerminalException):
         convert_helper = (
             "you can convert it to an openapi 3.0 spec by going to https://editor.swagger.io/, "
             + "pasting your spec and selecting 'Edit' -> 'Convert to OpenAPI 3.0' from the Menu "
-            + "and then retry with the converted file."
+            + "and then retry with the converted file. Alternatively you can run the generator "
+            + "with the --allow-openapi-2 flag. The generated result usually improves if you convert "
+            + "your spec to 3.0 thouhg."
         )
 
         super().__init__(

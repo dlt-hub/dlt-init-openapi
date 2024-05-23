@@ -43,8 +43,13 @@ def init(
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
     config_path: Optional[pathlib.Path] = typer.Option(None, "--config", help="Path to the config file to use"),
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
-    loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
+    log_level: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
     global_limit: int = typer.Option(0, help="Set a global limit on the generated source"),
+    allow_openapi_2: bool = typer.Option(
+        False,
+        "--allow-openapi-2",
+        help="Allow to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended though.",
+    ),
     update_rest_api_source: bool = typer.Option(
         False, help="Wether to update the locally cached rest_api verified source"
     ),
@@ -59,9 +64,10 @@ def init(
         output_path=output_path,
         config_path=config_path,
         interactive=interactive,
-        loglevel=loglevel,
+        log_level=log_level,
         global_limit=global_limit,
         update_rest_api_source=update_rest_api_source,
+        allow_openapi_2=allow_openapi_2,
     )
 
 
@@ -73,16 +79,17 @@ def _init_command_wrapped(
     output_path: Optional[pathlib.Path] = None,
     config_path: Optional[pathlib.Path] = None,
     interactive: bool = True,
-    loglevel: int = 20,
+    log_level: int = 20,
     global_limit: int = 0,
     update_rest_api_source: bool = False,
+    allow_openapi_2: bool = False,
 ) -> None:
 
     from dlt_init_openapi import create_new_client
 
     # set up console logging
     logger.remove()
-    logger.add(sys.stdout, level=loglevel)
+    logger.add(sys.stdout, level=log_level)
     logger.success("Starting dlt openapi generator")
 
     if not url and not path:
@@ -107,6 +114,7 @@ def _init_command_wrapped(
                 "global_limit": global_limit,
                 "spec_url": url,
                 "spec_path": path,
+                "allow_openapi_2": allow_openapi_2,
             },
         )
 

@@ -50,9 +50,7 @@ def init(
         "--allow-openapi-2",
         help="Allow to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended though.",
     ),
-    update_rest_api_source: bool = typer.Option(
-        False, help="Wether to update the locally cached rest_api verified source"
-    ),
+    update_rest_api_source: bool = typer.Option(False, help="Update the locally cached rest_api verified source."),
     version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
 ) -> None:
     """Generate a new dlt pipeline"""

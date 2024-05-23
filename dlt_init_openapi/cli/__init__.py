@@ -33,18 +33,6 @@ def _load_config(path: Optional[pathlib.Path], config: Any) -> Config:
     return c
 
 
-# noinspection PyUnusedLocal
-# pylint: disable=unused-argument
-@app.callback(name="dlt-init-openapi")
-def cli(
-    version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
-) -> None:
-    """Generate a Python client from an OpenAPI JSON document"""
-
-
-CONFIG_OPTION = typer.Option(None, "--config", help="Path to the config file to use")
-
-
 # pylint: disable=too-many-arguments
 @app.command()
 def init(
@@ -52,15 +40,17 @@ def init(
     url: Optional[str] = typer.Option(None, help="A URL to read the JSON/YAML spec from"),
     path: Optional[pathlib.Path] = typer.Option(None, help="A path to the JSON/YAML spec file"),
     output_path: Optional[pathlib.Path] = typer.Option(None, help="A path to render the output to."),
-    config_path: Optional[pathlib.Path] = CONFIG_OPTION,
+    config_path: Optional[pathlib.Path] = typer.Option(None, "--config", help="Path to the config file to use"),
     interactive: bool = typer.Option(True, help="Wether to select needed endpoints interactively"),
     loglevel: int = typer.Option(20, help="Set logging level for stdout output, defaults to 20 (INFO)"),
     global_limit: int = typer.Option(0, help="Set a global limit on the generated source"),
     update_rest_api_source: bool = typer.Option(
         False, help="Wether to update the locally cached rest_api verified source"
     ),
+    version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
 ) -> None:
-    """Generate a new OpenAPI Client library"""
+    """Generate a new dlt pipeline"""
+
     _init_command_wrapped(
         source=source,
         url=url,

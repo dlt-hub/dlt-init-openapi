@@ -92,7 +92,7 @@ class DefaultDetector(BaseDetector):
         for name, scheme in open_api.security_schemes.items():
 
             if scheme.type == "apiKey":
-                scheme.detected_secret_name = "api_key"
+                scheme.detected_secret_names = ["api_key"]
                 scheme.detected_auth_vars = f"""
             "type": "api_key",
             "api_key": api_key,
@@ -100,14 +100,14 @@ class DefaultDetector(BaseDetector):
             "location": "{scheme.location}"
 """
             elif scheme.type == "http" and scheme.scheme == "basic":
-                scheme.detected_secret_name = "password"
+                scheme.detected_secret_names = ["username", "password"]
                 scheme.detected_auth_vars = """
             "type": "http_basic",
-            "username": "username",
+            "username": username,
             "password": password,
 """
             elif scheme.type == "http" and scheme.scheme == "bearer":
-                scheme.detected_secret_name = "token"
+                scheme.detected_secret_names = ["token"]
                 scheme.detected_auth_vars = """
             "type": "bearer",
             "token": token,

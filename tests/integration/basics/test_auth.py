@@ -25,7 +25,7 @@ def test_basic_auth() -> None:
     source_dict = get_dict_by_case("artificial", "auth/basic_auth.yml")
     assert source_dict["client"]["auth"] == {
         "type": "http_basic",
-        "username": "username",
+        "username": "SECRET_VALUE",
         "password": "SECRET_VALUE",
     }
 

@@ -29,17 +29,14 @@ Features include
 
 ## Setup
 
-You will need Python 3.9 installed, as well as [`poetry`](https://python-poetry.org/docs/) to install dependencies.
+You will need Python 3.9 or higher installed, as well as pip.
 
 ```console
-# 1. Checkout this repository locally
-$ git clone git@github.com:dlt-hub/dlt-init-openapi.git
+# 1. install this tool locally
+$ pip install dlt-init-openapi
 
-# 2. Install required poetry dependencies
-$ poetry install
-
-# 3. Start the poetry shell
-$ poetry shell
+# 2. Show the version of the installed package to verify it worked
+$ dlt-init-openapi --version
 ```
 
 ## Basic Usage
@@ -69,6 +66,8 @@ $ dlt pipeline pokemon_pipeline info
 # 7. You can now also install streamlit to see a preview of the data
 $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
+
+# 8. You can go to our docs at https://dlthub.com/docs to learn how modify the generated pipeline to load to many destinations, place schema contracts on your pipeline and many other things.
 ```
 
 ## What will be created?

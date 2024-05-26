@@ -1,4 +1,5 @@
-# dlt openapi source generator (dlt-init-openapi)
+# dlt-init-openapi - An OpenAPI Source Generator for the `dlt` Python Library
+
 `dlt-init-openapi` generates [`dlt`](https://dlthub.com/docs) data pipelines from OpenAPI 3.x specs using the [`dlt` `rest_api` `verified source`](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to extract data from any REST API. If you are not familiar with `dlt` or our `verified sources`, please read:
 
 * [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics.

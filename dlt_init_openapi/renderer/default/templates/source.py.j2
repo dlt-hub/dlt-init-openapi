@@ -60,7 +60,7 @@ def {{ source_name }}(
                 "data_selector": "{{ endpoint.data_json_path }}",
                 {% endif %}
                 "path": "{{endpoint.path }}",
-                {% if endpoint.transformer or endpoint.unresolvable_path_param_names or endpoint.unresolvable_query_param_names %}
+                {% if endpoint.transformer or endpoint.unresolvable_path_param_names or endpoint.unresolvable_query_params %}
                 "params": {
                     {% if endpoint.transformer %}
                     {% for key, value in endpoint.transformer.path_params_mapping.items()%}
@@ -72,11 +72,18 @@ def {{ source_name }}(
                     {% endfor %}
                     {% endif %}
                     {% for param_name in endpoint.unresolvable_path_param_names %}
-                    "{{param_name}}": "{{ endpoint.default_for_param('path', param_name) }}", # TODO: fill in path parameter
+                    "{{param_name}}": "{{ endpoint.default_for_param('path', param_name) }}", # TODO: fill in required path parameter
                     {% endfor %}
-                    {% for param_name in endpoint.unresolvable_query_param_names %}
-                    {% if not endpoint.is_query_param_required(param_name) %}# {% endif %}"{{param_name}}": "{{ endpoint.default_for_param('query', param_name) }}", # TODO: fill in query parameter
+                    {% for param_name in endpoint.unresolvable_required_query_param_names %}
+                    "{{param_name}}": "{{ endpoint.default_for_param('query', param_name) }}", # TODO: fill in required query parameter
                     {% endfor %}
+                    {% if endpoint.unresolvable_unrequired_query_param_names %}
+                    # the parameters below can optionally be configured
+                    {% for param_name in endpoint.unresolvable_unrequired_query_param_names %}
+                    # "{{param_name}}": "{{ endpoint.default_for_param('query', param_name) }}",
+                    {% endfor %}
+                    {% endif %}
+
                 },
                 {% endif %}
                 {% if endpoint.render_pagination_args %}

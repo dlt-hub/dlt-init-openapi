@@ -3,6 +3,7 @@
 
 * [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics
 * [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our `rest_api` source works
+* We also have a cool (google colab example)[https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr] that demonstrates this generator.
 
 
 ## Features
@@ -46,7 +47,7 @@ $ PROGRESS=enlighten python pipeline.py # we use enlighten for a nice progress b
 # 6. Print the pipeline info to console to see what got loaded
 $ dlt pipeline pokemon_pipeline info
 
-# 7. You can now also install streamlit to see a preview of the data
+# 7. You can now also install streamlit to see a preview of the data, you should have loaded 40 pokemons and their details
 $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
 
@@ -78,7 +79,7 @@ pokemon_pipeline/
 
 ## A closer look at pokemon/__init__.py
 
-... TODO
+This file contains the configuration dictionary for the [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) source which is the main result of running this generator. For our pokemon example we have used an OpenAPI 3 spec that works out of the box, the result of this dict depends on the quality of the spec you are using, wether the API you are querying actually adheres to this spec and wether our heuristics manage to find the right values. You can edit this file to adapt the behavior of the dlt rest_api accordingly, please read our [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) docs to learn how to do this and play with our (google colab example)[https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr]
 
 ## CLI command
 

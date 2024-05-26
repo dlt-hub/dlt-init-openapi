@@ -3,7 +3,7 @@
 
 * [Getting started](https://dlthub.com/docs/getting-started) to learn the `dlt` basics
 * [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) to learn how our `rest_api` source works
-* We also have a cool (google colab example)[https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr] that demonstrates this generator.
+* We also have a cool [google colab example](https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr) that demonstrates this generator.
 
 
 ## Features
@@ -77,9 +77,54 @@ pokemon_pipeline/
 
 > If you re-generate your pipeline, you will be prompted to continue if this folder exists. If you select yes, all generated files will be overwritten. All other files you may have created will remain in this folder.
 
-## A closer look at pokemon/__init__.py
+## A closer look at your rest_api dictionary in pokemon/\_\_init\_\_.py
 
-This file contains the configuration dictionary for the [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) source which is the main result of running this generator. For our pokemon example we have used an OpenAPI 3 spec that works out of the box, the result of this dict depends on the quality of the spec you are using, wether the API you are querying actually adheres to this spec and wether our heuristics manage to find the right values. You can edit this file to adapt the behavior of the dlt rest_api accordingly, please read our [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) docs to learn how to do this and play with our (google colab example)[https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr]
+This file contains the configuration dictionary for the [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) source which is the main result of running this generator. For our pokemon example we have used an OpenAPI 3 spec that works out of the box, the result of this dict depends on the quality of the spec you are using, wether the API you are querying actually adheres to this spec and wether our heuristics manage to find the right values. You can edit this file to adapt the behavior of the dlt rest_api accordingly, please read our [dlt rest_api](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api) docs to learn how to do this and play with our detailed [google colab example](https://colab.research.google.com/drive/1MRZvguOTZj1MlkEGzjiso8lQ_wr1MJRI?usp=sharing#scrollTo=LHGxzf1Ev_yr)
+
+The generated dict will look something like this:
+
+```json
+{
+    "client": {
+        "base_url": base_url,
+        # -> the detected common paginator
+        "paginator": {
+            ...
+        },
+    },
+    # -> your two endpoints
+    "resources": [
+        {
+            "name": "pokemon_list",
+            "table_name": "pokemon",
+            "endpoint": {
+                "data_selector": "results",
+                "path": "/api/v2/pokemon/",
+            },
+        },
+        {
+            "name": "pokemon_read",
+            "table_name": "pokemon",
+            "primary_key": "name",
+            "write_disposition": "merge",
+            "endpoint": {
+                "data_selector": "$",
+                "path": "/api/v2/pokemon/{name}/",
+                "params": {
+                    # -> your detected transformer settings
+                    # this is a child endpoint of the pokemon_list
+                    "name": {
+                        "type": "resolve",
+                        "resource": "pokemon_list",
+                        "field": "name",
+                    },
+                },
+            },
+        },
+    ],
+}
+```
+
 
 ## CLI command
 

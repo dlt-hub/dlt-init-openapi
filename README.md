@@ -83,7 +83,7 @@ This file contains the configuration dictionary for the [dlt rest_api](https://d
 
 The generated dict will look something like this:
 
-```json
+```python
 {
     "client": {
         "base_url": base_url,
@@ -95,9 +95,13 @@ The generated dict will look something like this:
     # -> your two endpoints
     "resources": [
         {
+            # -> A primary key could not be inferred from
+            # the spec, usual suspects such as id, pokemon_id etc.
+            # are not defined, you can add one if you know
             "name": "pokemon_list",
             "table_name": "pokemon",
             "endpoint": {
+                # -> the results seem to be nested in { resuls: [...] }
                 "data_selector": "results",
                 "path": "/api/v2/pokemon/",
             },
@@ -105,6 +109,8 @@ The generated dict will look something like this:
         {
             "name": "pokemon_read",
             "table_name": "pokemon",
+            # -> A primary key *name* is assumed, as it is found in the 
+            # url
             "primary_key": "name",
             "write_disposition": "merge",
             "endpoint": {

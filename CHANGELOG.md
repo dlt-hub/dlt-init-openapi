@@ -1,5 +1,10 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+0.1.0a2 - Getting ready for the first release
+* Updated Readme, reordered content blocks and made example nicer
+* Better rendering of required and non-required query args
+* Do not ask wether output directory should be written when in non-interactive mode
+
 0.1.0a1 - Getting ready for the first release
 * Remove init command from CLI. The same functionality is now the default command, see updated README file.
 * Add better error messages for broken and incompatible specs

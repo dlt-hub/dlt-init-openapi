@@ -76,36 +76,21 @@ pokemon_pipeline/
 
 > If you re-generate your pipeline, you will be prompted to continue if this folder exists. If you select yes, all generated files will be overwritten. All other files you may have created will remain in this folder.
 
-## A closer look
+## A closer look at pokemon/__init__.py
 
-## CLI commands
+... TODO
+
+## CLI command
 
 ```console
-$ dlt-init-openapi [OPTIONS] <source_name> [ARGS]
+$ dlt-init-openapi <source_name> [OPTIONS]
 # example:
-$ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
+$ dlt-init-openapi pokemon --path ./path/to/my_spec.yml --no-interactive --output-path ./my_pipeline
 ```
 
 **Options**:
 
-- `--version`: Print the version and exit
-- `--help`: Show this message and exit.
-
-**Commands**:
-
-- `init`: Generate a new `dlt` `rest_api` `source`
-
-### `dlt-init-openapi`
-
-Generate a new `dlt` `rest_api` `source`
-
-**Usage**:
-
-```console
-$ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
-```
-
-**Options**:
+_The only required options are either to supply a path or a url to a spec_
 
 - `--url URL`: A url to read the OpenAPI JSON or YAML file from
 - `--path PATH`: A path to read the OpenAPI JSON or YAML file from locally
@@ -115,8 +100,8 @@ $ dlt-init-openapi pokemon --path ./path/to/my_spec.yml
 - `--log-level`: Set logging level for stdout output, defaults to 20 (INFO).
 - `--global-limit`: Set a global limit on the generated source.
 - `--update-rest-api-source`: Update the locally cached rest_api verified source.
-- `--allow-openapi-2`: Allow to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended though.
-- `--version`: Show installed version of the generator.
+- `--allow-openapi-2`: Allows to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended for better results though.
+- `--version`: Show installed version of the generator and exit.
 - `--help`: Show this message and exit.
 
 ## Config options
@@ -144,3 +129,4 @@ This project started as a fork of [openapi-python-client](https://github.com/ope
 ## Implementation notes
 * OAuth Authentication currently is not natively supported, you can supply your own
 * Per endpoint authentication currently is not supported by the generator, only the first globally set securityScheme will be applied. You can add your own per endpoint if you need to.
+* Basic OpenAPI 2.0 support is implemented, we recommend updating your specs at https://editor.swagger.io before using `dlt-init-openapi`

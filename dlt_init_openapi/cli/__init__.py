@@ -99,7 +99,7 @@ def _init_command_wrapped(
 
     try:
 
-        # synch rest api
+        # sync rest api
         update_rest_api.update_rest_api(force=update_rest_api_source)
 
         config = _load_config(
@@ -117,7 +117,9 @@ def _init_command_wrapped(
         )
 
         if config.project_dir.exists():
-            if not questionary.confirm(
+            if not interactive:
+                logger.info("Non interactive mode selected, overwriting existing source.")
+            elif not questionary.confirm(
                 f"Directory {config.project_dir} exists, do you want to continue and update the generated files? "
                 + "This will overwrite your changes in those files."
             ).ask():

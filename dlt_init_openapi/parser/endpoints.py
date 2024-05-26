@@ -123,27 +123,36 @@ class Endpoint:
         return [p for p in params if p != transformer_param]
 
     @property
-    def unresolvable_query_param_names(self) -> List[str]:
+    def unresolvable_query_params(self) -> List[Parameter]:
         """returns a list of required query param names with params that are used by the paginator excluded"""
+        print("HERE")
         paginator_params = self.detected_pagination.param_names if self.detected_pagination else []
-        query_param_names = []
+        query_params: List[Parameter] = []
         for param in self.list_all_parameters:
             if param.name not in paginator_params and param.location == "query":
-                query_param_names.append(param.name)
-        return query_param_names
+                query_params.append(param)
+        return query_params
 
-    def is_query_param_required(self, param_name: str) -> bool:
-        for key, p in self.parameters.items():
-            if p.name == param_name and p.location == "query":
-                return p.required
-        return False
+    @property
+    def unresolvable_required_query_param_names(self) -> List[str]:
+        """returns a list of required query param names with params that are used by the paginator excluded"""
+        return [param.name for param in self.unresolvable_query_params if param.required]
+
+    @property
+    def unresolvable_unrequired_query_param_names(self) -> List[str]:
+        return [param.name for param in self.unresolvable_query_params if not param.required]
 
     def default_for_param(self, location: Literal["path", "query"], param_name: str) -> str:
         """get's a default value for the given param, returns"""
+        param: Parameter = None
         for key, p in self.parameters.items():
-            if p.name == param_name and p.location == location and p.default:
-                return p.default
-        return self.context.config.parameter_default_value
+            if p.name == param_name and p.location == location:
+                param = p
+        if param and param.default:
+            return param.default
+        if not param or param.required or location == "path":
+            return self.context.config.required_parameter_default_value
+        return self.context.config.unrequired_parameter_default_value
 
     @property
     def render_description(self) -> Optional[str]:

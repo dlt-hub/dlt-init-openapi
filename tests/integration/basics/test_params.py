@@ -5,7 +5,7 @@ import pytest
 from dlt_init_openapi.config import Config
 from tests.integration.utils import get_indexed_resources
 
-DEFAULT_VALUE = Config().parameter_default_value
+DEFAULT_VALUE = Config().required_parameter_default_value
 
 
 @pytest.fixture(scope="module")

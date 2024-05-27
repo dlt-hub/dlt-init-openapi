@@ -1,5 +1,9 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+0.1.0a3 - Getting ready for the first release
+* Remove left over print statement
+* Small udpates to readme
+
 0.1.0a2 - Getting ready for the first release
 * Updated Readme, reordered content blocks and made example nicer
 * Better rendering of required and non-required query args

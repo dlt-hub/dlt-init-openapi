@@ -26,7 +26,7 @@ You will need Python 3.9 or higher installed, as well as pip. You can run `pip i
 
 We will create a simple example pipeline from a [PokeAPI spec](https://pokeapi.co/) in our repo. You can point to any other OpenAPI Spec instead if you prefer.
 
-```console
+```sh
 # 1.a. Run the generator with a URL:
 $ dlt-init-openapi pokemon --url https://raw.githubusercontent.com/dlt-hub/dlt-init-openapi/devel/tests/cases/e2e_specs/pokeapi.yml --global-limit 2
 
@@ -35,9 +35,12 @@ $ dlt-init-openapi pokemon --path ./my_specs/pokeapi.yml
 
 # 2. You can now pick both of the endpoints from the popup.
 
-# 3. After selecting your Pokemon endpoints and hitting Enter, your pipeline will be rendered.
+# 3. After selecting your Pokemon endpoints and hitting Enter, 
+#    your pipeline will be rendered.
 
-# 4. If you have any kind of authentication on your pipeline (this example does not), open the `.dlt/secrets.toml` and provide the credentials. You can find further settings in the `.dlt/config.toml`.
+# 4. If you have any kind of authentication on your pipeline (this example does not), 
+#    open the `.dlt/secrets.toml` and provide the credentials. You can find further 
+#    settings in the `.dlt/config.toml`.
 
 # 5. Go to the created pipeline folder and run your pipeline.
 $ cd pokemon-pipeline
@@ -46,22 +49,25 @@ $ PROGRESS=enlighten python pipeline.py # we use enlighten for a nice progress b
 # 6. Print the pipeline info to the console to see what got loaded.
 $ dlt pipeline pokemon_pipeline info
 
-# 7. You can now also install Streamlit to see a preview of the data; you should have loaded 40 Pokemons and their details.
+# 7. You can now also install Streamlit to see a preview of the data; you should 
+#    have loaded 40 Pokemons and their details.
 $ pip install pandas streamlit
 $ dlt pipeline pokemon_pipeline show
 
-# 8. You can go to our docs at https://dlthub.com/docs to learn how to modify the generated pipeline to load to many destinations, place schema contracts on your pipeline, and many other things.
+# 8. You can go to our docs at https://dlthub.com/docs to learn how to modify 
+#    the generated pipeline to load to many destinations, place schema contracts 
+#    on your pipeline, and many other things.
 
-# NOTE: We used the `--global-limit 2` CLI flag to limit the requests to the PokeAPI for this example. This way, the Pokemon collection endpoint only gets queried twice, resulting in 2 x 20 Pokemon
-
- details being rendered.
+# NOTE: We used the `--global-limit 2` CLI flag to limit the requests to the PokeAPI 
+#       for this example. This way, the Pokemon collection endpoint only gets queried 
+#       twice, resulting in 2 x 20 Pokemon details being rendered.
 ```
 
 ## What will be created?
 
 When you run the `init` command above, the following files will be generated:
 
-```
+```text
 pokemon_pipeline/
 ├── .dlt/
 │   ├── config.toml     # dlt config, learn more at dlthub.com/docs
@@ -84,7 +90,7 @@ This file contains the configuration dictionary for the [dlt rest_api](https://d
 
 The generated dictionary will look something like this:
 
-```python
+```py
 {
     "client": {
         "base_url": base_url,
@@ -134,7 +140,7 @@ The generated dictionary will look something like this:
 
 ## CLI command
 
-```console
+```sh
 $ dlt-init-openapi <source_name> [OPTIONS]
 # example:
 $ dlt-init-openapi pokemon --path ./path/to/my_spec.yml --no-interactive --output-path ./my_pipeline
@@ -170,7 +176,7 @@ package_name: "other_package_name"
 
 And use it with the config argument:
 
-```console
+```sh
 $ dlt-init-openapi pokemon --url ... --config config.yml
 ```
 

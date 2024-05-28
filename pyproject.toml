@@ -24,7 +24,7 @@ include = ["CHANGELOG.md", "dlt_init_openapi/py.typed", "LICENSE"]
 
 [tool.poetry.dependencies]
 python = "^3.9,<3.13"
-dlt = {extras = ["duckdb"], version = "^0.4.11"}
+dlt = {extras = ["duckdb"], version = "^0.4.12"}
 jinja2 = "^3.0.0"
 typer = "^0.12.3"
 black = ">=23"

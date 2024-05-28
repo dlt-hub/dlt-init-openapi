@@ -1,5 +1,8 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+0.1.0 - Initial Release
+* Bump dlt to 0.4.12
+
 0.1.0a3 - Getting ready for the first release
 * Remove left over print statement
 * Small udpates to readme

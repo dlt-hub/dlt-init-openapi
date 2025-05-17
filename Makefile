@@ -13,12 +13,12 @@ lint: update-rest-api
 	poetry run flake8 dlt_init_openapi tests
 	poetry run mypy dlt_init_openapi tests
 	poetry run black tests dlt_init_openapi --check
-	poetry run isort black tests dlt_init_openapi --check --diff
+	poetry run isort --profile black tests dlt_init_openapi --check --diff
 
 # format the whole project
 format: update-rest-api
 	rm -rf tests/_local
-	poetry run isort black tests dlt_init_openapi
+	poetry run isort --profile black tests dlt_init_openapi
 	poetry run black tests dlt_init_openapi
 
 # all tests excluding the checks on e2e tests
@@ -42,7 +42,7 @@ create-pokemon-pipeline-interactive:
 
 # e2e test helpers
 create-e2e-pokemon-pipeline:
-	poetry run dlt-init-openapi pokemon --path tests/cases/e2e_specs/pokeapi.yml --global-limit 2 --no-interactive
+	poetry run dlt-init-openapi pokemon --path tests/cases/e2e_specs/pokeapi.yml --no-interactive --global-limit 2
 
 run-pokemon-pipeline:
 	cd pokemon_pipeline && poetry run python pokemon_pipeline.py

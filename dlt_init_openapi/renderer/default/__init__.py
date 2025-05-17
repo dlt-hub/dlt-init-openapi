@@ -4,7 +4,6 @@ Default renderer
 
 import shutil
 import subprocess
-from distutils.dir_util import copy_tree
 
 from jinja2 import Environment, PackageLoader
 from loguru import logger
@@ -69,7 +68,7 @@ class DefaultRenderer(BaseRenderer):
         self._run_post_hooks()
 
         # copy rest api source into project dir
-        copy_tree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
+        shutil.copytree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")

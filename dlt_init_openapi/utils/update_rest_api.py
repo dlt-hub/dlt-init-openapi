@@ -1,34 +1,24 @@
 import pathlib
 
-import requests
 from loguru import logger
-
-from dlt_init_openapi.config import REST_API_SOURCE_LOCATION
-
-BASEPATH = "https://raw.githubusercontent.com/dlt-hub/verified-sources/master/sources/rest_api/"
-FILES = ["README.md", "__init__.py", "config_setup.py", "exceptions.py", "requirements.txt", "typing.py", "utils.py"]
 
 
 def update_rest_api(force: bool = False) -> None:
-    """updates local rest api"""
-    logger.info("Syncing rest_api verified source")
-
-    path = pathlib.Path(REST_API_SOURCE_LOCATION)
-    if path.exists() and not force:
-        logger.info("rest_api verified source already present")
-        return
-
-    path.mkdir(exist_ok=True)
-    for file in FILES:
-        src_path = BASEPATH + file
-        dst_path = REST_API_SOURCE_LOCATION + "/" + file
-        logger.info(f"Copying {src_path}")
-        with requests.get(src_path, stream=True) as r:
-            r.raise_for_status()
-            with open(dst_path, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-    logger.success("rest_api verified source synced")
+    """
+    This function is kept for backwards compatibility.
+    In dlt >=1.0.0, rest_api is part of the main package.
+    No need to vendor the files separately.
+    """
+    logger.info("Using built-in dlt.sources.rest_api (dlt >=1.11.0)")
+    # Create an empty rest_api directory to maintain compatibility
+    script_dir = pathlib.Path(__file__).parent.resolve()
+    vendor_path = script_dir.parent / "rest_api"
+    vendor_path.mkdir(parents=True, exist_ok=True)
+    # Create empty __init__.py to make it a proper package
+    init_file = vendor_path / "__init__.py"
+    if not init_file.exists():
+        with open(init_file, "w") as f:
+            f.write("# This is a compatibility package. Use dlt.sources.rest_api instead.\n")
 
 
 if __name__ == "__main__":

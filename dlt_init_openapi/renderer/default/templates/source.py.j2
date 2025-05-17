@@ -3,8 +3,8 @@ from typing import List
 import dlt
 from dlt.extract.source import DltResource
 
-from rest_api.typing import RESTAPIConfig
-from rest_api import rest_api_source
+from dlt.sources.rest_api.typing import RESTAPIConfig
+from dlt.sources.rest_api import rest_api_source
 
 
 @dlt.source(name="{{source_name}}", max_table_nesting=2)

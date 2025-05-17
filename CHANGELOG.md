@@ -1,5 +1,14 @@
 [Go to GitHub Releases](https://github.com/dlt-hub/dlt-init-openapi/releases)
 
+## Unreleased
+
+* Bump dlt to 1.11.0
+
+## 0.1.0
+
+* Bump dlt to 0.4.12
+* First beta release of REST API client generator
+
 0.1.0 - Initial Release
 * Bump dlt to 0.4.12
 

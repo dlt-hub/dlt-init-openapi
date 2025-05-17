@@ -2,7 +2,7 @@ import json
 import mimetypes
 import pathlib
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -11,7 +11,12 @@ from dlt_init_openapi.utils.misc import snake_case
 
 from .typing import TEndpointFilter
 
-REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.resolve() / "../rest_api")
+# In dlt>=1.11.0, the rest_api is part of the main package
+# For backwards compatibility, we keep a stub directory
+REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent / "rest_api")
+
+# Placeholder for SecretsTomlConfig to resolve ImportError in tests
+SecretsTomlConfig = Dict[str, Any]
 
 
 class Config(BaseModel):

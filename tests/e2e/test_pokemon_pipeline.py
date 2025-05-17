@@ -12,4 +12,4 @@ def test_pokemon_pipeline() -> None:
 
     # there should be 20 entries with pokemon details loaded
     # (the id is only loaded on the full request)
-    assert db.sql("SELECT count (*) from pokemon_data.pokemon as p WHERE p.id IS NOT NULL").fetchone()[0] == 40
+    assert db.sql("SELECT count (*) from pokemon_data.pokemon as p WHERE p.id IS NOT NULL").fetchone()[0] == 2

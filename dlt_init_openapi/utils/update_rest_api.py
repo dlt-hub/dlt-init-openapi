@@ -5,8 +5,8 @@ from loguru import logger
 
 from dlt_init_openapi.config import REST_API_SOURCE_LOCATION
 
-BASEPATH = "https://raw.githubusercontent.com/dlt-hub/verified-sources/master/sources/rest_api/"
-FILES = ["README.md", "__init__.py", "config_setup.py", "exceptions.py", "requirements.txt", "typing.py", "utils.py"]
+BASEPATH = "https://raw.githubusercontent.com/dlt-hub/dlt/refs/heads/devel/dlt/sources/rest_api/"
+FILES = [ "__init__.py", "config_setup.py", "exceptions.py",  "typing.py", "utils.py"]
 
 
 def update_rest_api(force: bool = False) -> None:

@@ -8,8 +8,7 @@ from dlt.extract.source import DltSource
 from dlt.sources.rest_api.typing import ClientConfig, EndpointResource, RESTAPIConfig
 
 from dlt_init_openapi import Project, _get_project_for_url_or_path
-from dlt_init_openapi.config import REST_API_SOURCE_LOCATION, Config, SecretsTomlConfig
-from dlt_init_openapi.parser.context import OpenapiContext
+from dlt_init_openapi.config import Config
 from tests.cases import case_path
 
 LOCAL_DIR = "tests/_local/"
@@ -43,7 +42,6 @@ def get_source_or_dict_from_open_api(
     This function renders the source into a string and returns the extracted
     dict for further inspection
     """
-    shutil.copytree(REST_API_SOURCE_LOCATION, LOCAL_DIR + "rest_api", dirs_exist_ok=True)
 
     TOP = """
 # type: ignore
@@ -82,8 +80,6 @@ Oauth20Credentials = Any
 
     module = importlib.import_module(local.replace("/", "."))
     importlib.reload(module)
-
-    shutil.rmtree(LOCAL_DIR + "rest_api")
 
     return cast(DltSource, module.test_source())
 

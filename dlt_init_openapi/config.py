@@ -11,12 +11,10 @@ from dlt_init_openapi.utils.misc import snake_case
 
 from .typing import TEndpointFilter
 
-# In dlt>=1.11.0, the rest_api is part of the main package
-# For backwards compatibility, we keep a stub directory
-REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent / "rest_api")
+
 
 # Placeholder for SecretsTomlConfig to resolve ImportError in tests
-SecretsTomlConfig = Dict[str, Any]
+# SecretsTomlConfig = Dict[str, Any]
 
 
 class Config(BaseModel):

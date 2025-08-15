@@ -1,14 +1,8 @@
-# some useful commands for developing
-
-
-update-rest-api:
-	poetry run python dlt_init_openapi/utils/update_rest_api.py
-
 dev:
 	poetry install --all-extras
 
 # lint
-lint: update-rest-api
+lint:
 	rm -rf tests/_local
 	poetry run flake8 dlt_init_openapi tests
 	poetry run mypy dlt_init_openapi tests
@@ -16,21 +10,21 @@ lint: update-rest-api
 	poetry run isort --profile black tests dlt_init_openapi --check --diff
 
 # format the whole project
-format: update-rest-api
+format:
 	rm -rf tests/_local
 	poetry run isort --profile black tests dlt_init_openapi
 	poetry run black tests dlt_init_openapi
 
 # all tests excluding the checks on e2e tests
-test: update-rest-api
+test:
 	poetry run python dlt_init_openapi/utils/update_rest_api.py
 	poetry run pytest tests --ignore=tests/e2e
 
 # test without running all the specs through a source
-test-fast: update-rest-api
+test-fast:
 	poetry run pytest tests -m "not slow" --ignore=tests/e2e
 
-test-slow: update-rest-api
+test-slow:
 	poetry run pytest tests -m "slow" --ignore=tests/e2e
 
 # dev helpers

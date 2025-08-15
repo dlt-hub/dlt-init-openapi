@@ -1,8 +1,7 @@
 import json
 import mimetypes
-import pathlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 import yaml
 from pydantic import BaseModel
@@ -10,11 +9,6 @@ from pydantic import BaseModel
 from dlt_init_openapi.utils.misc import snake_case
 
 from .typing import TEndpointFilter
-
-
-
-# Placeholder for SecretsTomlConfig to resolve ImportError in tests
-# SecretsTomlConfig = Dict[str, Any]
 
 
 class Config(BaseModel):

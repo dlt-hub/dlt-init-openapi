@@ -67,7 +67,6 @@ class DefaultRenderer(BaseRenderer):
         self._build_meta_files()
         self._run_post_hooks()
 
-
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")
         req_path = self.config.project_dir / "requirements.txt"

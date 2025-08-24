@@ -43,8 +43,7 @@ def get_source_or_dict_from_open_api(
     dict for further inspection
     """
 
-    TOP = """
-# type: ignore
+    TOP = """# type: ignore
 # flake8: noqa
 from typing import Any
 Oauth20Credentials = Any
@@ -63,6 +62,9 @@ Oauth20Credentials = Any
     # No need to replace imports
 
     basename = os.path.basename(case).split(".")[0] + "_" + rt
+
+    # Ensure the LOCAL_DIR exists
+    os.makedirs(LOCAL_DIR, exist_ok=True)
 
     local = LOCAL_DIR + basename
     with open(LOCAL_DIR + "__init__.py", "w") as f:

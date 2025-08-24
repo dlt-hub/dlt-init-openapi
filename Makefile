@@ -17,7 +17,6 @@ format:
 
 # all tests excluding the checks on e2e tests
 test:
-	poetry run python dlt_init_openapi/utils/update_rest_api.py
 	poetry run pytest tests --ignore=tests/e2e
 
 # test without running all the specs through a source

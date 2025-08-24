@@ -1,4 +1,4 @@
-""" Generate modern Python clients from OpenAPI """
+"""Generate modern Python clients from OpenAPI"""
 
 from enum import Enum
 from importlib.metadata import version

@@ -1,4 +1,3 @@
-import os.path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 
@@ -15,12 +14,23 @@ def table_names_from_paths(paths: Iterable[str]) -> Dict[str, str]:
     # Remove common prefix for endpoints. For example  all paths might
     # start with /api/v2 and we don't want this to be part of the name
     paths = list(paths)
-    if not (paths := list(paths)):
+    if not paths:
         return {}
 
-    # normalize paths
-    api_prefix = os.path.commonpath(paths)
-    norm_paths = [p.removeprefix(api_prefix) for p in paths]
+    # Get path parts for all paths
+    path_parts = [tuple(get_path_parts(path)) for path in paths]
+    # Find the longest common prefix
+    common_prefix = find_longest_common_prefix(path_parts)
+    # Remove the common prefix from each path
+    norm_paths = []
+    for path, parts in zip(paths, path_parts):
+        if common_prefix:
+            # Remove the common prefix parts
+            remaining_parts = parts[len(common_prefix) :]
+            norm_path = "/" + "/".join(remaining_parts) if remaining_parts else "/"
+        else:
+            norm_path = path
+        norm_paths.append(norm_path)
 
     # Get all path components without slashes and without {parameters}
     split_paths = [get_non_var_path_parts(path) for path in norm_paths]

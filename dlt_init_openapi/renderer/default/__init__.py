@@ -2,7 +2,6 @@
 Default renderer
 """
 
-import pathlib
 import shutil
 import subprocess
 
@@ -13,10 +12,6 @@ from dlt_init_openapi.config import Config
 from dlt_init_openapi.parser.openapi_parser import OpenapiParser
 from dlt_init_openapi.renderer.base_renderer import BaseRenderer
 from dlt_init_openapi.utils import misc
-
-# Import REST_API_SOURCE_LOCATION separately to avoid mypy issues
-REST_API_SOURCE_LOCATION = str(pathlib.Path(__file__).parent.parent.parent.resolve() / "rest_api")
-
 
 FILE_ENCODING = "utf-8"
 TEMPLATE_FILTERS = {
@@ -71,9 +66,6 @@ class DefaultRenderer(BaseRenderer):
         self._build_pipeline()
         self._build_meta_files()
         self._run_post_hooks()
-
-        # copy rest api source into project dir
-        shutil.copytree(REST_API_SOURCE_LOCATION, str(self.config.project_dir / "rest_api"))
 
     def _build_meta_files(self) -> None:
         requirements_template = self.env.get_template("requirements.txt.j2")

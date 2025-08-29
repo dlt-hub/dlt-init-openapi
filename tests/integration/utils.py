@@ -1,14 +1,14 @@
 import importlib
 import os
-from distutils.dir_util import copy_tree, remove_tree
-from typing import Dict, Iterable, List, Literal, Union, cast
+import shutil
+from typing import Any, Dict, Iterable, List, Literal, Optional, TypedDict, Union, cast
 
 from dlt.common.validation import validate_dict
 from dlt.extract.source import DltSource
+from dlt.sources.rest_api.typing import ClientConfig, EndpointResource, RESTAPIConfig
 
 from dlt_init_openapi import Project, _get_project_for_url_or_path
-from dlt_init_openapi.config import REST_API_SOURCE_LOCATION, Config
-from rest_api.typing import EndpointResource, RESTAPIConfig
+from dlt_init_openapi.config import Config
 from tests.cases import case_path
 
 LOCAL_DIR = "tests/_local/"
@@ -17,7 +17,6 @@ TType = Literal["artificial", "original", "extracted", "error"]
 
 
 def get_detected_project_from_open_api(case: str, config: Config) -> Project:
-
     config = config or Config()
 
     config.project_name = "test"
@@ -43,11 +42,9 @@ def get_source_or_dict_from_open_api(
     This function renders the source into a string and returns the extracted
     dict for further inspection
     """
-    copy_tree(REST_API_SOURCE_LOCATION, LOCAL_DIR + "rest_api")
 
-    TOP = """
-# type: ignore
-# flake8: noqa 
+    TOP = """# type: ignore
+# flake8: noqa
 from typing import Any
 Oauth20Credentials = Any
 """
@@ -61,8 +58,13 @@ Oauth20Credentials = Any
         source = source.replace("rest_api_source(source_config)", "source_config")
         source = source.replace("dlt.secrets.value", '"SECRET_VALUE"')
 
-    source = source.replace("from rest_api", "from .rest_api")
+    # The template now correctly uses dlt.sources.rest_api imports
+    # No need to replace imports
+
     basename = os.path.basename(case).split(".")[0] + "_" + rt
+
+    # Ensure the LOCAL_DIR exists
+    os.makedirs(LOCAL_DIR, exist_ok=True)
 
     local = LOCAL_DIR + basename
     with open(LOCAL_DIR + "__init__.py", "w") as f:
@@ -80,8 +82,6 @@ Oauth20Credentials = Any
 
     module = importlib.import_module(local.replace("/", "."))
     importlib.reload(module)
-
-    remove_tree(LOCAL_DIR + "rest_api")
 
     return cast(DltSource, module.test_source())
 

@@ -10,7 +10,6 @@ from loguru import logger
 from dlt_init_openapi.cli.cli_endpoint_selection import questionary_endpoint_selection
 from dlt_init_openapi.config import Config
 from dlt_init_openapi.exceptions import DltOpenAPITerminalException
-from dlt_init_openapi.utils import update_rest_api
 
 app = typer.Typer(add_completion=False)
 
@@ -50,7 +49,6 @@ def init(
         "--allow-openapi-2",
         help="Allow to use OpenAPI v2. specs. Migration of the spec to 3.0 is recommended though.",
     ),
-    update_rest_api_source: bool = typer.Option(False, help="Update the locally cached rest_api verified source."),
     version: bool = typer.Option(False, "--version", callback=_print_version, help="Print the version and exit"),
 ) -> None:
     """Generate a new dlt pipeline"""
@@ -64,7 +62,6 @@ def init(
         interactive=interactive,
         log_level=log_level,
         global_limit=global_limit,
-        update_rest_api_source=update_rest_api_source,
         allow_openapi_2=allow_openapi_2,
     )
 
@@ -100,7 +97,6 @@ def _init_command_wrapped(
     try:
 
         # sync rest api
-        update_rest_api.update_rest_api(force=update_rest_api_source)
 
         config = _load_config(
             path=config_path,

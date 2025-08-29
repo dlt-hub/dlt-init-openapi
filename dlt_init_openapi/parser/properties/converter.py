@@ -1,4 +1,4 @@
-""" Utils for converting default values into valid Python """
+"""Utils for converting default values into valid Python"""
 
 __all__ = ["convert", "convert_chain"]
 

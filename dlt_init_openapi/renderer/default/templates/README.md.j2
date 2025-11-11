@@ -5,6 +5,24 @@ Created with [dlt-init-openapi](https://github.com/dlt-hub/dlt-init-openapi) v. 
 {% if config.spec_path %}Generated from local spec at `{{ config.spec_path }}`.{% endif %}
 {% if config.spec_url %}Generated from downloaded spec at `{{ config.spec_url }}`{% endif %}
 
+## Quickstart
+
+### Set your credentials
+
+See [Credentials section](#credentials).
+
+### Run the pipeline
+```sh
+python {{ package_name}}_pipeline.py
+```
+
+### Look at the data
+```sh
+pip install streamlit
+pip install watchdog
+dlt pipeline {{ package_name}}_pipeline show
+```
+
 ## Learn more at
 
 * https://dlthub.com

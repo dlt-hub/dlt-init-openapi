@@ -63,7 +63,7 @@ class Project:  # pylint: disable=too-many-instance-attributes
                 logger.warning("You have not selected any endpoints, all endpoints will be rendered.")
         self.renderer.run(self.openapi, dry=dry)
         logger.success(f"Rendered project to: {self.config.project_dir}")
-        logger.info("You can now run your pipeline from this folder with 'python pipeline.py'.")
+        logger.info("You can now run your pipeline from this folder with 'python {self.config.project_dir}.py'.")
 
     def print_warnings(self) -> None:
         """print warnings to logger if any where encountered for endpoints that are being rendered"""

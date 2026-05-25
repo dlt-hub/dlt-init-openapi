@@ -23,6 +23,7 @@ def _print_version(value: bool) -> None:
 
 
 def _load_config(path: Optional[pathlib.Path], config: Any) -> Config:
+    config = {key: value for key, value in config.items() if value is not None}
     if not path:
         c = Config(**config)
     else:
@@ -31,6 +32,11 @@ def _load_config(path: Optional[pathlib.Path], config: Any) -> Config:
         except Exception as err:
             raise typer.BadParameter("Unable to parse config") from err
     return c
+
+
+def _ensure_project_dir(config: Config) -> None:
+    if config.project_dir is None:
+        raise typer.BadParameter("Provide a source name or set project_name in the config file")
 
 
 # pylint: disable=too-many-arguments
@@ -111,6 +117,8 @@ def _init_command_wrapped(
                 "allow_openapi_2": allow_openapi_2,
             },
         )
+
+        _ensure_project_dir(config)
 
         if config.project_dir.exists():
             if not interactive:

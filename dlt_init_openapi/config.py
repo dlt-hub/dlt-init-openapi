@@ -82,5 +82,6 @@ class Config(BaseModel):
             config_data = json.loads(path.read_text())
         else:
             config_data = yaml.safe_load(path.read_text())
-        config = Config(**config_data, **kwargs)
+        config_data = config_data or {}
+        config = Config(**{**config_data, **kwargs})
         return config

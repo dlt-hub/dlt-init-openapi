@@ -55,7 +55,7 @@ Oauth20Credentials = Any
 
     if rt == "dict":
         source = source.replace('@dlt.source(name="test_source", max_table_nesting=2)', "")
-        source = source.replace("rest_api_source(source_config)", "source_config")
+        source = source.replace("yield from rest_api_resources(source_config)", "return source_config")
         source = source.replace("dlt.secrets.value", '"SECRET_VALUE"')
 
     # The template now correctly uses dlt.sources.rest_api imports

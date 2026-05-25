@@ -1,5 +1,6 @@
 from dlt_init_openapi.config import Config
-from tests.integration.utils import get_indexed_resources
+from tests.cases import case_path
+from tests.integration.utils import get_detected_project_from_open_api, get_indexed_resources
 
 
 def test_endpoint_selection() -> None:
@@ -19,3 +20,16 @@ def test_endpoint_selection() -> None:
     )
     assert len(filtered_resources.keys()) == 2
     assert list(filtered_resources.keys()) == [base_keys[0], base_keys[3]]
+
+
+def test_source_template_yields_rest_api_resources() -> None:
+    project = get_detected_project_from_open_api(
+        case_path("artificial", "pagination.yml"),
+        config=Config(name_resources_by_operation=True),
+    )
+    project.render(dry=True)
+    source = project.renderer._render_source()  # type: ignore
+
+    assert "from dlt.sources.rest_api import RESTAPIConfig, rest_api_resources" in source
+    assert "yield from rest_api_resources(source_config)" in source
+    assert "rest_api_source(" not in source

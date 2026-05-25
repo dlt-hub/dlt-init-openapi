@@ -1,10 +1,9 @@
-from typing import List
+from typing import Iterable
 
 import dlt
 from dlt.extract.source import DltResource
 
-from dlt.sources.rest_api.typing import RESTAPIConfig
-from dlt.sources.rest_api import rest_api_source
+from dlt.sources.rest_api import RESTAPIConfig, rest_api_resources
 
 
 @dlt.source(name="{{source_name}}", max_table_nesting=2)
@@ -15,7 +14,7 @@ def {{ source_name }}(
         {% endfor %}
         {% endif %}
         base_url: str = dlt.config.value,
-) -> List[DltResource]:
+) -> Iterable[DltResource]:
 
     # source configuration
     source_config: RESTAPIConfig = {
@@ -107,5 +106,4 @@ def {{ source_name }}(
         ]
     }
 
-    return rest_api_source(source_config)
-
+    yield from rest_api_resources(source_config)
